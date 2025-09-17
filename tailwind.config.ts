@@ -47,16 +47,15 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        // Custom BDOG colors
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          light: "hsl(var(--gold-light))",
+          dark: "hsl(var(--gold-dark))",
         },
+        "white-glow": "hsl(var(--white-glow))",
+        "black-card": "hsl(var(--black-card))",
+        "gray-subtle": "hsl(var(--gray-subtle))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -80,10 +79,85 @@ export default {
             height: "0",
           },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "pulse-gold": {
+          "0%, 100%": { 
+            boxShadow: "0 0 20px hsl(45 100% 50% / 0.3)",
+            transform: "scale(1)"
+          },
+          "50%": { 
+            boxShadow: "0 0 40px hsl(45 100% 50% / 0.6)",
+            transform: "scale(1.02)"
+          },
+        },
+        "fade-in-up": {
+          from: {
+            opacity: "0",
+            transform: "translateY(30px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "slide-in-right": {
+          from: {
+            opacity: "0",
+            transform: "translateX(50px)",
+          },
+          to: {
+            opacity: "1",
+            transform: "translateX(0)",
+          },
+        },
+        "glow-text": {
+          "0%, 100%": {
+            textShadow: "0 0 10px hsl(45 100% 50% / 0.5)",
+          },
+          "50%": {
+            textShadow: "0 0 20px hsl(45 100% 50% / 0.8), 0 0 30px hsl(45 100% 50% / 0.6)",
+          },
+        },
+        "bounce-in": {
+          "0%": {
+            opacity: "0",
+            transform: "scale(0.3)",
+          },
+          "50%": {
+            opacity: "1",
+            transform: "scale(1.05)",
+          },
+          "70%": {
+            transform: "scale(0.9)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "scale(1)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        float: "float 3s ease-in-out infinite",
+        "pulse-gold": "pulse-gold 2s ease-in-out infinite",
+        "fade-in-up": "fade-in-up 0.8s ease-out forwards",
+        "slide-in-right": "slide-in-right 0.6s ease-out forwards",
+        "glow-text": "glow-text 2s ease-in-out infinite",
+        "bounce-in": "bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards",
+      },
+      backgroundImage: {
+        "gradient-gold": "var(--gradient-gold)",
+        "gradient-dark": "var(--gradient-dark)",
+        "gradient-glow": "var(--gradient-glow)",
+      },
+      boxShadow: {
+        gold: "var(--shadow-gold)",
+        glow: "var(--shadow-glow)",
+        "card-dark": "var(--shadow-card)",
       },
     },
   },

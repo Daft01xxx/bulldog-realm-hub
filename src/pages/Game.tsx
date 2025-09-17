@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, Zap, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 import bulldogSuit from "@/assets/bulldog-suit.jpeg";
 
 const Game = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile, updateProfile } = useProfile();
   const [grow, setGrow] = useState(0);
   const [grow1, setGrow1] = useState(1);
   const [bone, setBone] = useState(1000);
@@ -18,15 +20,21 @@ const Game = () => {
   const [showRules, setShowRules] = useState(false);
 
   useEffect(() => {
-    // Load game data
-    setGrow(Number(localStorage.getItem("bdog-grow")) || 0);
-    setGrow1(Number(localStorage.getItem("bdog-grow1")) || 1);
-    setBone(Number(localStorage.getItem("bdog-bone")) || 1000);
+    // Load game data from profile or localStorage
+    if (profile) {
+      setGrow(profile.grow);
+      setGrow1(profile.grow1);
+      setBone(profile.bone);
+    } else {
+      setGrow(Number(localStorage.getItem("bdog-grow")) || 0);
+      setGrow1(Number(localStorage.getItem("bdog-grow1")) || 1);
+      setBone(Number(localStorage.getItem("bdog-bone")) || 1000);
+    }
     
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [profile]);
 
   const calculateTimeLeft = () => {
     const now = new Date();
@@ -58,6 +66,12 @@ const Game = () => {
     setGrow(newGrow);
     setBone(newBone);
     
+    // Update profile in database
+    updateProfile({
+      grow: newGrow,
+      bone: newBone
+    });
+    
     localStorage.setItem("bdog-grow", newGrow.toString());
     localStorage.setItem("bdog-bone", newBone.toString());
 
@@ -75,7 +89,7 @@ const Game = () => {
   };
 
   const buyBooster = () => {
-    const balance = Number(localStorage.getItem("bdog-balance")) || 0;
+    const balance = profile?.balance || Number(localStorage.getItem("bdog-balance")) || 0;
     if (balance < 500) {
       toast({
         title: "Ошибка!",
@@ -87,6 +101,12 @@ const Game = () => {
 
     const newBalance = balance - 500;
     const newGrow1 = grow1 * 2;
+    
+    // Update profile in database
+    updateProfile({
+      balance: newBalance,
+      grow1: newGrow1
+    });
     
     localStorage.setItem("bdog-balance", newBalance.toString());
     localStorage.setItem("bdog-grow1", newGrow1.toString());
@@ -102,6 +122,7 @@ const Game = () => {
     // Reset after 1 hour
     setTimeout(() => {
       const resetGrow1 = Math.max(1, newGrow1 / 2);
+      updateProfile({ grow1: resetGrow1 });
       localStorage.setItem("bdog-grow1", resetGrow1.toString());
       setGrow1(resetGrow1);
       toast({

@@ -3,21 +3,28 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Wallet, Gamepad2, Info, Users, Megaphone } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
 
 const Menu = () => {
   const navigate = useNavigate();
+  const { profile } = useProfile();
   const [reg, setReg] = useState("");
   const [balance2, setBalance2] = useState("0");
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    // Load user data
-    setReg(localStorage.getItem("bdog-reg") || "");
-    setBalance2(localStorage.getItem("bdog-balance2") || "0");
+    // Load user data from profile or localStorage
+    if (profile) {
+      setReg(profile.reg || "");
+      setBalance2(profile.balance2?.toString() || "0");
+    } else {
+      setReg(localStorage.getItem("bdog-reg") || "");
+      setBalance2(localStorage.getItem("bdog-balance2") || "0");
+    }
     
     // Trigger animations
     setAnimate(true);
-  }, []);
+  }, [profile]);
 
   const menuItems = [
     {

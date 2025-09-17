@@ -1,1 +1,4 @@
 project_id = "rsmgzhcniugipmektztq"
+
+[functions.tonviewer-api]
+verify_jwt = false

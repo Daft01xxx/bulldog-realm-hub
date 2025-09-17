@@ -4,16 +4,44 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 
 const Wallet = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { updateProfile } = useProfile();
   const [walletAddress, setWalletAddress] = useState("");
   const [showInput, setShowInput] = useState(false);
 
-  const handleConnect = () => {
-    if (walletAddress.trim()) {
+  const handleConnect = async () => {
+    if (!walletAddress.trim()) {
+      toast({
+        title: "Ошибка",
+        description: "Введите адрес кошелька",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Update profile with wallet address
+      await updateProfile({ wallet_address: walletAddress.trim() });
+      
       localStorage.setItem("bdog-api", walletAddress.trim());
+      
+      toast({
+        title: "Успешно!",
+        description: "Кошелек подключен",
+      });
+      
       navigate("/connected-wallet");
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось подключить кошелек",
+        variant: "destructive",
+      });
     }
   };
 

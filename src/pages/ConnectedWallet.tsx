@@ -4,55 +4,43 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, RefreshCw, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile, fetchWalletBalance } = useProfile();
   const [walletAddress, setWalletAddress] = useState("");
   const [balance, setBalance] = useState("0");
   const [nftList, setNftList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const address = localStorage.getItem("bdog-api");
+    const address = profile?.wallet_address || localStorage.getItem("bdog-api");
     if (!address) {
       navigate("/wallet");
       return;
     }
     setWalletAddress(address);
+    setBalance(profile?.balance2?.toString() || "0");
     fetchWalletData(address);
 
     // Auto-refresh every 5 seconds
     const interval = setInterval(() => fetchWalletData(address), 5000);
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, [navigate, profile, fetchWalletBalance]);
 
   const fetchWalletData = async (address: string) => {
     setIsLoading(true);
     try {
-      // Simulate API call to TonViewer (in real app, you would call the actual API)
-      // For demo, we'll use mock data
-      const mockBalance = (Math.random() * 10000).toFixed(2);
-      const mockNFTs = [
-        { id: 1, name: "Bulldog Sticker #1", image: "/api/placeholder/100/100" },
-        { id: 2, name: "Bulldog Coin Gold", image: "/api/placeholder/100/100" },
-        { id: 3, name: "BDOG NFT Rare", image: "/api/placeholder/100/100" },
-      ];
-
-      setBalance(mockBalance);
-      setNftList(mockNFTs);
-      localStorage.setItem("bdog-balance2", mockBalance);
+      const data = await fetchWalletBalance(address);
       
-      toast({
-        title: "Баланс обновлен",
-        description: `Текущий баланс: ${mockBalance} BDOG`,
-      });
+      if (data) {
+        setBalance(data.bdogBalance || data.tonBalance || "0");
+        setNftList(data.nftData || []);
+      }
     } catch (error) {
-      toast({
-        title: "Ошибка",
-        description: "Не удалось загрузить данные кошелька",
-        variant: "destructive",
-      });
+      console.error('Error fetching wallet data:', error);
     } finally {
       setIsLoading(false);
     }

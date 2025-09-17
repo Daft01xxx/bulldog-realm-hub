@@ -1,17 +1,21 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 
 const Welcome = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile, loading } = useProfile();
 
   useEffect(() => {
+    if (loading) return;
+    
     // Check if user has visited before using IP simulation (localStorage for demo)
     const hasVisited = localStorage.getItem("bdog-visited");
     const userIP = localStorage.getItem("bdog-user-ip") || "demo-ip";
     
-    if (hasVisited && localStorage.getItem("bdog-user-ip") === userIP) {
+    if (hasVisited && localStorage.getItem("bdog-user-ip") === userIP && profile) {
       // Existing user
       toast({
         title: "Успешный вход!",
@@ -31,7 +35,7 @@ const Welcome = () => {
       
       setTimeout(() => navigate("/menu"), 3000);
     }
-  }, [navigate, toast]);
+  }, [navigate, toast, profile, loading]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">

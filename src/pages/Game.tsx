@@ -170,7 +170,7 @@ const Game = () => {
             <img 
               src={bulldogSuit}
               alt="BDOG"
-              className="w-48 h-48 mx-auto rounded-full object-cover group-hover:scale-110 transition-transform duration-300 animate-float"
+              className="w-48 h-48 mx-auto rounded-full object-cover group-hover:scale-110 transition-transform duration-300"
             />
             
             {/* Click effects */}

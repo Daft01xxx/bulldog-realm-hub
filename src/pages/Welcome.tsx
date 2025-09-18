@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
+import { Button } from "@/components/ui/button";
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -14,6 +15,10 @@ const Welcome = () => {
     // Check if user has visited before using IP simulation (localStorage for demo)
     const hasVisited = localStorage.getItem("bdog-visited");
     const userIP = localStorage.getItem("bdog-user-ip") || "demo-ip";
+    
+    // Check for referral code in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('ref');
     
     if (hasVisited && localStorage.getItem("bdog-user-ip") === userIP && profile) {
       // Existing user
@@ -32,6 +37,11 @@ const Welcome = () => {
       localStorage.setItem("bdog-grow", "0");
       localStorage.setItem("bdog-grow1", "1");
       localStorage.setItem("bdog-bone", "1000");
+      
+      // Store referral code if present (will be processed when profile is created)
+      if (referralCode) {
+        localStorage.setItem("bdog-referral-code", referralCode);
+      }
       
       setTimeout(() => navigate("/menu"), 3000);
     }
@@ -64,10 +74,13 @@ const Welcome = () => {
           <h1 className="text-6xl md:text-8xl font-bold text-gradient animate-glow-text mb-8">
             BDOG APP
           </h1>
-          <div className="animate-pulse-gold">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gradient-gold rounded-full flex items-center justify-center shadow-gold">
-              <span className="text-2xl">🐕</span>
-            </div>
+          <div>
+            <Button 
+              className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-8 py-3 rounded-full shadow-gold animate-pulse-gold"
+              onClick={() => navigate("/menu")}
+            >
+              Вход в аккаунт
+            </Button>
           </div>
           <p className="text-xl md:text-2xl text-white-glow animate-fade-in-up opacity-80">
             Добро пожаловать в экосистему Bulldog

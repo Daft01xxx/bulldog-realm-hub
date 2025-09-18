@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, Copy, Users, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
 
 const Referral = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { profile } = useProfile();
   const [referralLink, setReferralLink] = useState("");
   const [referredCount, setReferredCount] = useState(0);
   const [earnedVBDOG, setEarnedVBDOG] = useState(0);
@@ -23,15 +25,20 @@ const Referral = () => {
   ];
 
   useEffect(() => {
-    // Generate unique referral link
-    const userId = localStorage.getItem("bdog-reg") || "user";
-    const link = `${window.location.origin}?ref=${userId}`;
-    setReferralLink(link);
-
-    // Load referral data
-    setReferredCount(Number(localStorage.getItem("bdog-referrals")) || 0);
-    setEarnedVBDOG(Number(localStorage.getItem("bdog-vbdog-earned")) || 0);
-  }, []);
+    // Generate unique referral link and load data from profile
+    if (profile) {
+      const link = `${window.location.origin}?ref=${profile.reg}`;
+      setReferralLink(link);
+      setReferredCount(profile.referrals || 0);
+      setEarnedVBDOG(Number(localStorage.getItem("bdog-vbdog-earned")) || 0);
+    } else {
+      const userId = localStorage.getItem("bdog-reg") || "user";
+      const link = `${window.location.origin}?ref=${userId}`;
+      setReferralLink(link);
+      setReferredCount(Number(localStorage.getItem("bdog-referrals")) || 0);
+      setEarnedVBDOG(Number(localStorage.getItem("bdog-vbdog-earned")) || 0);
+    }
+  }, [profile]);
 
   const copyLink = async () => {
     try {

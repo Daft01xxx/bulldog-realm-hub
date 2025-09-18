@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, Zap, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
 import bulldogSuit from "@/assets/bulldog-suit.jpeg";
 
 const Game = () => {
@@ -18,6 +19,7 @@ const Game = () => {
   const [clickEffect, setClickEffect] = useState<{id: number, x: number, y: number}[]>([]);
   const [showBooster, setShowBooster] = useState(false);
   const [showRules, setShowRules] = useState(false);
+  const [topPlayers, setTopPlayers] = useState<{name: string, grow: number}[]>([]);
 
   useEffect(() => {
     // Load game data from profile or localStorage
@@ -31,10 +33,38 @@ const Game = () => {
       setBone(Number(localStorage.getItem("bdog-bone")) || 1000);
     }
     
+    // Load top players
+    loadTopPlayers();
+    
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
   }, [profile]);
+
+  const loadTopPlayers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('reg, grow')
+        .order('grow', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error loading top players:', error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const players = data.map(player => ({
+          name: player.reg || 'Anonymous',
+          grow: player.grow || 0
+        }));
+        setTopPlayers(players);
+      }
+    } catch (error) {
+      console.error('Error loading top players:', error);
+    }
+  };
 
   const calculateTimeLeft = () => {
     const now = new Date();
@@ -132,12 +162,6 @@ const Game = () => {
     }, 3600000); // 1 hour
   };
 
-  const topPlayers = [
-    { name: "Player1", grow: 15000 },
-    { name: "Player2", grow: 12000 },
-    { name: "Player3", grow: 10500 },
-    { name: "You", grow: grow },
-  ].sort((a, b) => b.grow - a.grow);
 
   return (
     <div className="min-h-screen bg-background px-4 py-12">
@@ -250,32 +274,32 @@ const Game = () => {
       </Card>
 
       {/* Top players */}
-      <div className="max-w-md mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
-        <h3 className="text-xl font-bold text-foreground mb-4 text-center">
-          Топ роста
-        </h3>
-        
-        <Card className="card-glow p-4">
-          <div className="space-y-2">
-            {topPlayers.map((player, index) => (
-              <div 
-                key={player.name} 
-                className={`flex justify-between items-center p-2 rounded ${
-                  player.name === 'You' ? 'bg-gold/20' : ''
-                }`}
-              >
-                <span className="flex items-center">
-                  <span className="text-gold font-bold mr-2">#{index + 1}</span>
-                  <span className="text-foreground">{player.name}</span>
-                </span>
-                <span className="text-gold font-semibold">
-                  {player.grow.toLocaleString()}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+      {topPlayers.length > 0 && (
+        <div className="max-w-md mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
+          <h3 className="text-xl font-bold text-foreground mb-4 text-center">
+            Топ роста
+          </h3>
+          
+          <Card className="card-glow p-4">
+            <div className="space-y-2">
+              {topPlayers.map((player, index) => (
+                <div 
+                  key={player.name + index} 
+                  className="flex justify-between items-center p-2 rounded"
+                >
+                  <span className="flex items-center">
+                    <span className="text-gold font-bold mr-2">#{index + 1}</span>
+                    <span className="text-foreground">{player.name}</span>
+                  </span>
+                  <span className="text-gold font-semibold">
+                    {player.grow.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Modals */}
       {showBooster && (

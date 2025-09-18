@@ -119,8 +119,8 @@ const Game = () => {
   };
 
   const buyBooster = () => {
-    const balance = profile?.balance || Number(localStorage.getItem("bdog-balance")) || 0;
-    if (balance < 500) {
+    const currentBone = profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone;
+    if (currentBone < 500) {
       toast({
         title: "Ошибка!",
         description: "У вас недостаточно косточек",
@@ -129,17 +129,18 @@ const Game = () => {
       return;
     }
 
-    const newBalance = balance - 500;
+    const newBone = currentBone - 500;
     const newGrow1 = grow1 * 2;
     
     // Update profile in database
     updateProfile({
-      balance: newBalance,
+      bone: newBone,
       grow1: newGrow1
     });
     
-    localStorage.setItem("bdog-balance", newBalance.toString());
+    localStorage.setItem("bdog-bone", newBone.toString());
     localStorage.setItem("bdog-grow1", newGrow1.toString());
+    setBone(newBone);
     setGrow1(newGrow1);
     
     setShowBooster(false);

@@ -2,46 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useProfile } from "@/hooks/useProfile";
+import { useBdogTonWallet } from "@/hooks/useTonWallet";
 
 const Wallet = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { updateProfile } = useProfile();
-  const [walletAddress, setWalletAddress] = useState("");
-  const [showInput, setShowInput] = useState(false);
+  const { isConnected, walletAddress, connectWallet } = useBdogTonWallet();
 
   const handleConnect = async () => {
-    if (!walletAddress.trim()) {
-      toast({
-        title: "Ошибка",
-        description: "Введите адрес кошелька",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      // Update profile with wallet address
-      await updateProfile({ wallet_address: walletAddress.trim() });
-      
-      localStorage.setItem("bdog-api", walletAddress.trim());
-      
-      toast({
-        title: "Успешно!",
-        description: "Кошелек подключен",
-      });
-      
+    if (isConnected && walletAddress) {
       navigate("/connected-wallet");
-    } catch (error) {
-      toast({
-        title: "Ошибка",
-        description: "Не удалось подключить кошелек",
-        variant: "destructive",
-      });
+    } else {
+      await connectWallet();
     }
   };
 
@@ -88,35 +60,19 @@ const Wallet = () => {
               Интегрировать кошелек
             </h2>
             <p className="text-muted-foreground">
-              Подключите ваш TON кошелек для просмотра баланса BDOG и NFT
+              {isConnected 
+                ? `Кошелек подключен: ${walletAddress?.slice(0, 8)}...${walletAddress?.slice(-6)}`
+                : "Подключите ваш TON кошелек для просмотра баланса BDOG и NFT"
+              }
             </p>
           </div>
 
-          {!showInput ? (
-            <Button
-              onClick={() => setShowInput(true)}
-              className="button-gold w-full text-lg py-6 animate-bounce-in"
-            >
-              Интегрировать кошелек
-            </Button>
-          ) : (
-            <div className="space-y-4 animate-slide-in-right">
-              <Input
-                type="text"
-                placeholder="Введите адрес TON кошелька"
-                value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
-                className="text-lg py-6 bg-secondary border-gold/30 focus:border-gold text-foreground"
-              />
-              <Button
-                onClick={handleConnect}
-                disabled={!walletAddress.trim()}
-                className="button-gold w-full text-lg py-6"
-              >
-                Подключить
-              </Button>
-            </div>
-          )}
+          <Button
+            onClick={handleConnect}
+            className="button-gold w-full text-lg py-6 animate-bounce-in"
+          >
+            {isConnected ? "Перейти к кошельку" : "Подключить TON кошелек"}
+          </Button>
         </Card>
 
         {/* Quick purchase buttons */}

@@ -10,7 +10,7 @@ const Info = () => {
     {
       name: "Telegram",
       icon: "📱",
-      url: "https://t.me/smarty_crypt",
+      url: "https://t.me/smarty_crypto",
       color: "from-blue-500 to-blue-600"
     },
     {

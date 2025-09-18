@@ -14,7 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          balance: number | null
+          balance2: number | null
+          bone: number | null
+          created_at: string
+          grow: number | null
+          grow1: number | null
+          id: string
+          ip_address: unknown | null
+          referrals: number | null
+          referred_by: string | null
+          reg: string | null
+          updated_at: string
+          user_id: string
+          wallet_address: string | null
+        }
+        Insert: {
+          balance?: number | null
+          balance2?: number | null
+          bone?: number | null
+          created_at?: string
+          grow?: number | null
+          grow1?: number | null
+          id?: string
+          ip_address?: unknown | null
+          referrals?: number | null
+          referred_by?: string | null
+          reg?: string | null
+          updated_at?: string
+          user_id: string
+          wallet_address?: string | null
+        }
+        Update: {
+          balance?: number | null
+          balance2?: number | null
+          bone?: number | null
+          created_at?: string
+          grow?: number | null
+          grow1?: number | null
+          id?: string
+          ip_address?: unknown | null
+          referrals?: number | null
+          referred_by?: string | null
+          reg?: string | null
+          updated_at?: string
+          user_id?: string
+          wallet_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      wallet_data: {
+        Row: {
+          balance: number | null
+          id: string
+          last_updated: string
+          nft_data: Json | null
+          wallet_address: string
+        }
+        Insert: {
+          balance?: number | null
+          id?: string
+          last_updated?: string
+          nft_data?: Json | null
+          wallet_address: string
+        }
+        Update: {
+          balance?: number | null
+          id?: string
+          last_updated?: string
+          nft_data?: Json | null
+          wallet_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

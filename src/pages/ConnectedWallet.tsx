@@ -1,50 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, RefreshCw, ExternalLink } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useProfile } from "@/hooks/useProfile";
+import { useBdogTonWallet } from "@/hooks/useTonWallet";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { profile, fetchWalletBalance } = useProfile();
-  const [walletAddress, setWalletAddress] = useState("");
-  const [balance, setBalance] = useState("0");
-  const [nftList, setNftList] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const { 
+    isConnected, 
+    walletAddress, 
+    walletData, 
+    loading, 
+    refreshWalletData, 
+    disconnectWallet 
+  } = useBdogTonWallet();
 
   useEffect(() => {
-    const address = profile?.wallet_address || localStorage.getItem("bdog-api");
-    if (!address) {
+    if (!isConnected) {
       navigate("/wallet");
-      return;
     }
-    setWalletAddress(address);
-    setBalance(profile?.balance2?.toString() || "0");
-    fetchWalletData(address);
-
-    // Auto-refresh every 5 seconds
-    const interval = setInterval(() => fetchWalletData(address), 5000);
-    return () => clearInterval(interval);
-  }, [navigate, profile, fetchWalletBalance]);
-
-  const fetchWalletData = async (address: string) => {
-    setIsLoading(true);
-    try {
-      const data = await fetchWalletBalance(address);
-      
-      if (data) {
-        setBalance(data.bdogBalance || data.tonBalance || "0");
-        setNftList(data.nftData || []);
-      }
-    } catch (error) {
-      console.error('Error fetching wallet data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [isConnected, navigate]);
 
   return (
     <div className="min-h-screen bg-background px-4 py-12">
@@ -77,23 +53,44 @@ const ConnectedWallet = () => {
             <span className="text-2xl">💰</span>
           </div>
           <Button
-            onClick={() => fetchWalletData(walletAddress)}
-            disabled={isLoading}
+            onClick={refreshWalletData}
+            disabled={loading}
             variant="outline"
             size="sm"
             className="button-outline-gold"
           >
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
         
         <h2 className="text-2xl font-bold text-foreground mb-2">Баланс кошелька</h2>
-        <p className="text-3xl font-bold text-gradient animate-glow-text">
-          {balance} BDOG
-        </p>
+        
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <p className="text-sm text-muted-foreground">TON</p>
+            <p className="text-xl font-bold text-foreground">
+              {loading ? "..." : (walletData?.tonBalance || "0")}
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">BDOG</p>
+            <p className="text-xl font-bold text-gold">
+              {loading ? "..." : (walletData?.bdogBalance || "0")}
+            </p>
+          </div>
+        </div>
+        
         <p className="text-sm text-muted-foreground mt-2 break-all">
-          {walletAddress}
+          {walletAddress ? `${walletAddress.slice(0, 8)}...${walletAddress.slice(-8)}` : ''}
         </p>
+        
+        <Button
+          variant="outline"
+          onClick={disconnectWallet}
+          className="button-outline-gold mt-4"
+        >
+          Отключить кошелек
+        </Button>
       </Card>
 
       {/* Purchase buttons */}
@@ -125,28 +122,43 @@ const ConnectedWallet = () => {
           Ваши NFT
         </h3>
         
-        {nftList.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {nftList.map((nft, index) => (
-              <Card 
-                key={nft.id} 
-                className="card-glow p-4 hover-lift cursor-pointer animate-bounce-in"
-                style={{animationDelay: `${0.1 * index}s`}}
-              >
-                <div className="aspect-square bg-gradient-dark rounded-lg mb-3 flex items-center justify-center">
-                  <span className="text-4xl">🖼️</span>
+        <Card className="card-glow p-6">
+          {loading ? (
+            <p className="text-center text-muted-foreground">Загрузка NFT...</p>
+          ) : walletData?.nfts && walletData.nfts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {walletData.nfts.map((nft, index) => (
+                <div 
+                  key={nft.id} 
+                  className="bg-secondary/20 rounded-lg p-3 hover:bg-secondary/30 transition-colors animate-bounce-in"
+                  style={{animationDelay: `${0.1 * index}s`}}
+                >
+                  {nft.image ? (
+                    <img 
+                      src={nft.image} 
+                      alt={nft.name}
+                      className="w-full aspect-square rounded-lg object-cover mb-2"
+                    />
+                  ) : (
+                    <div className="w-full aspect-square bg-gradient-gold rounded-lg flex items-center justify-center mb-2">
+                      <span className="text-4xl">🖼️</span>
+                    </div>
+                  )}
+                  <h4 className="text-sm font-semibold text-foreground text-center">
+                    {nft.name}
+                  </h4>
+                  <p className="text-xs text-muted-foreground text-center">
+                    {nft.collection}
+                  </p>
                 </div>
-                <h4 className="text-sm font-semibold text-foreground text-center">
-                  {nft.name}
-                </h4>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card className="card-glow p-8 text-center">
-            <p className="text-muted-foreground">NFT не найдены</p>
-          </Card>
-        )}
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground">
+              NFT не найдены в вашем кошельке
+            </p>
+          )}
+        </Card>
       </div>
     </div>
   );

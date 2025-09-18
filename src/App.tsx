@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -17,24 +18,25 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/wallet" element={<Wallet />} />
-          <Route path="/connected-wallet" element={<ConnectedWallet />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/info" element={<Info />} />
-          <Route path="/referral" element={<Referral />} />
-          <Route path="/promotion" element={<Promotion />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <TonConnectUIProvider manifestUrl="https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/wallet" element={<Wallet />} />
+            <Route path="/connected-wallet" element={<ConnectedWallet />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/info" element={<Info />} />
+            <Route path="/referral" element={<Referral />} />
+            <Route path="/promotion" element={<Promotion />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </TonConnectUIProvider>
   </QueryClientProvider>
 );
 

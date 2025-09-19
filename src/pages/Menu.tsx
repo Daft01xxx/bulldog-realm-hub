@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Gamepad2, Info, Users, Megaphone } from "lucide-react";
+import { Wallet, Info, Users, Megaphone } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import FallingCoins3D from "@/components/FallingCoin3D";
 import bdogBackground from "@/assets/bdog-background.png";
+import bdogSilverLogo from "@/assets/bdog-silver-logo.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const Menu = () => {
     },
     {
       title: "BDOG GAME",
-      icon: Gamepad2,
+      icon: "bdog-silver",
       path: "/game",
       description: "Играйте и зарабатывайте",
       delay: "0.2s"
@@ -136,7 +137,7 @@ const Menu = () => {
       <div className="max-w-4xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {menuItems.map((item, index) => {
-            const IconComponent = item.icon;
+            const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
             return (
               <Card
                 key={item.title}
@@ -148,7 +149,11 @@ const Menu = () => {
               >
                 <div className="flex items-center space-x-4">
                   <div className="p-3 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
-                    <IconComponent className="w-8 h-8 text-black" />
+                    {item.icon === "bdog-silver" ? (
+                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-8 h-8 rounded-full object-contain" />
+                    ) : (
+                      <IconComponent className="w-8 h-8 text-black" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-gold transition-colors">

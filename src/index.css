@@ -39,23 +39,24 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Custom BDOG variables - Golden theme with shine */
-    --gold: 43 96% 56%;
-    --gold-light: 45 100% 70%;
-    --gold-dark: 40 100% 40%;
-    --gold-shine: 45 100% 85%;
+    /* Custom BDOG variables - Ultra golden theme with intense shine */
+    --gold: 42 100% 50%;
+    --gold-light: 44 100% 65%;
+    --gold-dark: 38 100% 35%;
+    --gold-shine: 46 100% 80%;
+    --gold-bright: 45 100% 90%;
     --white-glow: 0 0% 100%;
     --black-card: 0 0% 8%;
     --gray-subtle: 0 0% 25%;
 
-    /* Gradients - Enhanced golden shine */
-    --gradient-gold: linear-gradient(135deg, hsl(40 100% 40%), hsl(45 100% 70%), hsl(45 100% 85%));
+    /* Gradients - Ultra intense golden shine */
+    --gradient-gold: linear-gradient(135deg, hsl(38 100% 35%), hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%));
     --gradient-dark: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 15%));
-    --gradient-glow: linear-gradient(135deg, hsl(43 96% 56% / 0.2), hsl(45 100% 70% / 0.4));
+    --gradient-glow: linear-gradient(135deg, hsl(42 100% 50% / 0.3), hsl(44 100% 65% / 0.5));
 
-    /* Shadows - Enhanced golden glow */
-    --shadow-gold: 0 0 25px hsl(43 96% 56% / 0.6), 0 0 50px hsl(45 100% 70% / 0.4);
-    --shadow-glow: 0 0 50px hsl(43 96% 56% / 0.5), 0 0 100px hsl(45 100% 70% / 0.2);
+    /* Shadows - Ultra intense golden glow */
+    --shadow-gold: 0 0 30px hsl(42 100% 50% / 0.8), 0 0 60px hsl(44 100% 65% / 0.5), 0 0 90px hsl(46 100% 80% / 0.3);
+    --shadow-glow: 0 0 60px hsl(42 100% 50% / 0.7), 0 0 120px hsl(44 100% 65% / 0.4), 0 0 180px hsl(46 100% 80% / 0.2);
     --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.8);
 
     /* Animations */
@@ -90,12 +91,12 @@ All colors MUST be HSL.
 
   @keyframes pulse-gold {
     0%, 100% { 
-      box-shadow: 0 0 25px hsl(43 96% 56% / 0.4), 0 0 50px hsl(45 100% 70% / 0.2);
+      box-shadow: 0 0 30px hsl(42 100% 50% / 0.5), 0 0 60px hsl(44 100% 65% / 0.3);
       transform: scale(1);
     }
     50% { 
-      box-shadow: 0 0 40px hsl(43 96% 56% / 0.7), 0 0 80px hsl(45 100% 70% / 0.4);
-      transform: scale(1.03);
+      box-shadow: 0 0 50px hsl(42 100% 50% / 0.9), 0 0 100px hsl(44 100% 65% / 0.6), 0 0 150px hsl(46 100% 80% / 0.3);
+      transform: scale(1.04);
     }
   }
 
@@ -123,10 +124,10 @@ All colors MUST be HSL.
 
   @keyframes glow-text {
     0%, 100% {
-      text-shadow: 0 0 15px hsl(43 96% 56% / 0.6), 0 0 30px hsl(45 100% 70% / 0.4);
+      text-shadow: 0 0 20px hsl(42 100% 50% / 0.8), 0 0 40px hsl(44 100% 65% / 0.6), 0 0 60px hsl(46 100% 80% / 0.4);
     }
     50% {
-      text-shadow: 0 0 25px hsl(43 96% 56% / 0.9), 0 0 50px hsl(45 100% 70% / 0.6), 0 0 75px hsl(45 100% 85% / 0.3);
+      text-shadow: 0 0 30px hsl(42 100% 50% / 1), 0 0 60px hsl(44 100% 65% / 0.8), 0 0 90px hsl(46 100% 80% / 0.6), 0 0 120px hsl(45 100% 90% / 0.3);
     }
   }
 
@@ -217,7 +218,7 @@ All colors MUST be HSL.
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(40 100% 40%), hsl(43 96% 56%), hsl(45 100% 70%), hsl(45 100% 85%));
+    background: linear-gradient(135deg, hsl(38 100% 35%), hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%), hsl(45 100% 90%));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -225,40 +226,41 @@ All colors MUST be HSL.
 
   .card-glow {
     background: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%));
-    border: 1px solid hsl(43 96% 56% / 0.3);
-    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5), inset 0 1px 0 hsl(43 96% 56% / 0.1), 0 0 20px hsl(43 96% 56% / 0.1);
+    border: 1px solid hsl(42 100% 50% / 0.4);
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5), inset 0 1px 0 hsl(42 100% 50% / 0.2), 0 0 25px hsl(42 100% 50% / 0.2);
   }
 
   .button-gold {
-    background: linear-gradient(135deg, hsl(40 100% 40%), hsl(43 96% 56%), hsl(45 100% 70%));
+    background: linear-gradient(135deg, hsl(38 100% 35%), hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%));
     border: none;
     color: hsl(0 0% 0%);
-    font-weight: 600;
-    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+    font-weight: 700;
+    text-shadow: 0 2px 4px hsl(0 0% 0% / 0.5);
     transition: var(--transition-smooth);
-    box-shadow: 0 4px 15px hsl(43 96% 56% / 0.3);
+    box-shadow: 0 6px 20px hsl(42 100% 50% / 0.4), 0 0 30px hsl(44 100% 65% / 0.2);
   }
 
   .button-gold:hover {
-    background: linear-gradient(135deg, hsl(43 96% 56%), hsl(45 100% 70%), hsl(45 100% 85%));
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 30px hsl(43 96% 56% / 0.6), 0 0 40px hsl(45 100% 70% / 0.4);
+    background: linear-gradient(135deg, hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%), hsl(45 100% 90%));
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 15px 40px hsl(42 100% 50% / 0.8), 0 0 60px hsl(44 100% 65% / 0.6), 0 0 90px hsl(46 100% 80% / 0.3);
   }
 
   .button-outline-gold {
     background: transparent;
-    border: 2px solid hsl(43 96% 56%);
-    color: hsl(43 96% 56%);
+    border: 2px solid hsl(42 100% 50%);
+    color: hsl(42 100% 50%);
     transition: var(--transition-smooth);
-    box-shadow: 0 0 15px hsl(43 96% 56% / 0.2);
+    box-shadow: 0 0 20px hsl(42 100% 50% / 0.3);
+    text-shadow: 0 0 10px hsl(42 100% 50% / 0.5);
   }
 
   .button-outline-gold:hover {
-    background: linear-gradient(135deg, hsl(43 96% 56%), hsl(45 100% 70%));
+    background: linear-gradient(135deg, hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%));
     color: hsl(0 0% 0%);
-    border-color: hsl(45 100% 70%);
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 12px 30px hsl(43 96% 56% / 0.6), 0 0 40px hsl(45 100% 70% / 0.4);
-    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.3);
+    border-color: hsl(44 100% 65%);
+    transform: translateY(-4px) scale(1.06);
+    box-shadow: 0 15px 40px hsl(42 100% 50% / 0.8), 0 0 60px hsl(44 100% 65% / 0.6);
+    text-shadow: 0 2px 4px hsl(0 0% 0% / 0.5);
   }
 }

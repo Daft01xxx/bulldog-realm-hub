@@ -47,12 +47,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom BDOG colors - Enhanced golden shine
+        // Custom BDOG colors - Ultra intense golden shine
         gold: {
           DEFAULT: "hsl(var(--gold))",
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
           shine: "hsl(var(--gold-shine))",
+          bright: "hsl(var(--gold-bright))",
         },
         "white-glow": "hsl(var(--white-glow))",
         "black-card": "hsl(var(--black-card))",
@@ -86,12 +87,12 @@ export default {
         },
         "pulse-gold": {
           "0%, 100%": { 
-            boxShadow: "0 0 25px hsl(43 96% 56% / 0.4), 0 0 50px hsl(45 100% 70% / 0.2)",
+            boxShadow: "0 0 30px hsl(42 100% 50% / 0.5), 0 0 60px hsl(44 100% 65% / 0.3)",
             transform: "scale(1)"
           },
           "50%": { 
-            boxShadow: "0 0 40px hsl(43 96% 56% / 0.7), 0 0 80px hsl(45 100% 70% / 0.4)",
-            transform: "scale(1.03)"
+            boxShadow: "0 0 50px hsl(42 100% 50% / 0.9), 0 0 100px hsl(44 100% 65% / 0.6), 0 0 150px hsl(46 100% 80% / 0.3)",
+            transform: "scale(1.04)"
           },
         },
         "fade-in-up": {
@@ -116,10 +117,10 @@ export default {
         },
         "glow-text": {
           "0%, 100%": {
-            textShadow: "0 0 15px hsl(43 96% 56% / 0.6), 0 0 30px hsl(45 100% 70% / 0.4)",
+            textShadow: "0 0 20px hsl(42 100% 50% / 0.8), 0 0 40px hsl(44 100% 65% / 0.6), 0 0 60px hsl(46 100% 80% / 0.4)",
           },
           "50%": {
-            textShadow: "0 0 25px hsl(43 96% 56% / 0.9), 0 0 50px hsl(45 100% 70% / 0.6), 0 0 75px hsl(45 100% 85% / 0.3)",
+            textShadow: "0 0 30px hsl(42 100% 50% / 1), 0 0 60px hsl(44 100% 65% / 0.8), 0 0 90px hsl(46 100% 80% / 0.6), 0 0 120px hsl(45 100% 90% / 0.3)",
           },
         },
         "bounce-in": {

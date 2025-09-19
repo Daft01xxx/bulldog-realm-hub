@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, RefreshCw, ExternalLink, Unplug, Image, Gamepad2 } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
-import tonLogo from "@/assets/ton-logo.svg";
+import tonCustomLogo from "@/assets/ton-custom-logo.png";
 import bdogLogo from "@/assets/bdog-logo.png";
 
 const ConnectedWallet = () => {
@@ -157,7 +157,15 @@ const ConnectedWallet = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <img src={tonLogo} alt="TON" className="w-8 h-8 rounded-full" />
+                    <img 
+                      src={tonCustomLogo} 
+                      alt="TON" 
+                      className="w-8 h-8 rounded-full"
+                      style={{
+                        backgroundColor: 'transparent',
+                        mixBlendMode: 'multiply'
+                      }}
+                    />
                   </div>
                 </div>
                 

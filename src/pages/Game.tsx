@@ -167,7 +167,7 @@ const Game = () => {
   };
 
   const buyBooster = () => {
-    const currentBone = profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone;
+    const currentBone = Math.min(1000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
     if (currentBone < 500) {
       toast({
         title: "Ошибка!",

@@ -163,23 +163,7 @@ export const useBdogTonWallet = () => {
     }
   };
 
-  // Return null if connection is not restored yet
-  if (!connectionRestored) {
-    return {
-      isConnected: false,
-      walletAddress: null,
-      walletData: null,
-      loading: false,
-      autoRefresh: true,
-      profile: null,
-      connectWallet: () => Promise.resolve(),
-      disconnectWallet: () => Promise.resolve(),
-      refreshWalletData: () => {},
-      setAutoRefresh: () => {},
-      connectionRestored: false,
-    };
-  }
-
+  // Always return the same object structure
   return {
     // Connection state
     isConnected: !!wallet?.account,

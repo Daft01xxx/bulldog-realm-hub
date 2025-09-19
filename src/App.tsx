@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TonConnectUIProvider 
-      manifestUrl="/tonconnect-manifest.json"
+      manifestUrl={`${window.location.origin}/tonconnect-manifest.json`}
     >
       <TooltipProvider>
         <Toaster />

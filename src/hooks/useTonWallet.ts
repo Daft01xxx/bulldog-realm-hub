@@ -67,11 +67,11 @@ export const useBdogTonWallet = () => {
 
   const connectWallet = async () => {
     try {
-      console.log('Opening TON Connect modal...');
+      console.log('Opening wallet modal...');
       await tonConnectUI.openModal();
       
       toast({
-        title: "Кошелек подключается",
+        title: "Подключение кошелька",
         description: "Выберите кошелек для подключения",
       });
     } catch (error) {
@@ -137,11 +137,6 @@ export const useBdogTonWallet = () => {
           wallet_address: address
         });
       }
-      
-      toast({
-        title: "Данные обновлены",
-        description: `Баланс: ${tonBalance} TON, ${bdogBalance} BDOG`,
-      });
 
     } catch (error) {
       console.error('Error fetching wallet data:', error);
@@ -160,6 +155,23 @@ export const useBdogTonWallet = () => {
       fetchWalletData(wallet.account.address);
     }
   };
+
+  // Return null if connection is not restored yet
+  if (!connectionRestored) {
+    return {
+      isConnected: false,
+      walletAddress: null,
+      walletData: null,
+      loading: false,
+      autoRefresh: true,
+      profile: null,
+      connectWallet: () => Promise.resolve(),
+      disconnectWallet: () => Promise.resolve(),
+      refreshWalletData: () => {},
+      setAutoRefresh: () => {},
+      connectionRestored: false,
+    };
+  }
 
   return {
     // Connection state

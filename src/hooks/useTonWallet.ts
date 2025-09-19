@@ -62,16 +62,44 @@ export const useBdogTonWallet = () => {
 
   const connectWallet = async () => {
     try {
-      console.log('Attempting to connect wallet...');
+      console.log('=== WALLET CONNECTION START ===');
       console.log('TonConnect UI state:', tonConnectUI);
+      console.log('Current wallet state:', wallet);
+      console.log('Manifest URL:', 'https://746a55f0-1982-4167-ae0e-5312b0711d07.lovableproject.com/tonconnect-manifest.json');
+      
+      // Test manifest accessibility
+      try {
+        const manifestResponse = await fetch('/tonconnect-manifest.json');
+        console.log('Manifest fetch response:', manifestResponse.status, manifestResponse.statusText);
+        if (manifestResponse.ok) {
+          const manifestData = await manifestResponse.json();
+          console.log('Manifest data:', manifestData);
+        } else {
+          console.error('Manifest not accessible:', manifestResponse.status);
+        }
+      } catch (manifestError) {
+        console.error('Error fetching manifest:', manifestError);
+      }
+      
+      console.log('Calling tonConnectUI.connectWallet()...');
       await tonConnectUI.connectWallet();
       console.log('Wallet connection successful');
+      
+      toast({
+        title: "Кошелек подключен",
+        description: "Кошелек успешно подключен к приложению",
+      });
     } catch (error) {
+      console.error('=== WALLET CONNECTION ERROR ===');
       console.error('Wallet connection failed:', error);
       console.log('Error details:', JSON.stringify(error, null, 2));
+      console.log('Error name:', error?.name);
+      console.log('Error message:', error?.message);
+      console.log('Error stack:', error?.stack);
+      
       toast({
         title: "Ошибка подключения",
-        description: "Не удалось подключить кошелек. Попробуйте снова.",
+        description: `Не удалось подключить кошелек: ${error?.message || 'Неизвестная ошибка'}`,
         variant: "destructive",
       });
     }

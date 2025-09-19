@@ -9,18 +9,6 @@ const Wallet = () => {
   const navigate = useNavigate();
   const { isConnected, walletAddress, connectWallet, connectionRestored } = useBdogTonWallet();
 
-  // Show loading while connection is being restored
-  if (!connectionRestored) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="text-foreground mt-4">Инициализация кошелька...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Monitor wallet connection and auto-redirect
   useEffect(() => {
     console.log('Wallet connection status changed:', { isConnected, walletAddress, connectionRestored });
@@ -32,6 +20,18 @@ const Wallet = () => {
       }, 1000); // Small delay to ensure everything is loaded
     }
   }, [isConnected, walletAddress, connectionRestored, navigate]);
+
+  // Show loading while connection is being restored
+  if (!connectionRestored) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="text-foreground mt-4">Инициализация кошелька...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleConnect = async () => {
     console.log('handleConnect called, isConnected:', isConnected, 'walletAddress:', walletAddress);

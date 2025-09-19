@@ -21,6 +21,7 @@ export type Database = {
           bdog_balance: number | null
           bone: number | null
           created_at: string
+          device_fingerprint: string | null
           grow: number | null
           grow1: number | null
           id: string
@@ -39,6 +40,7 @@ export type Database = {
           bdog_balance?: number | null
           bone?: number | null
           created_at?: string
+          device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
           id?: string
@@ -57,6 +59,7 @@ export type Database = {
           bdog_balance?: number | null
           bone?: number | null
           created_at?: string
+          device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
           id?: string

@@ -2,3 +2,6 @@ project_id = "vvkmdaesochqkahscezp"
 
 [functions.tonviewer-api]
 verify_jwt = false
+
+[functions.get-device-info]
+verify_jwt = false

@@ -17,8 +17,15 @@ interface UserProfile {
   referrals: number;
   referred_by?: string;
   ip_address?: string | null;
+  device_fingerprint?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+interface DeviceInfo {
+  ip_address: string;
+  device_fingerprint: string;
+  user_agent: string;
 }
 
 export const useProfile = () => {
@@ -26,26 +33,45 @@ export const useProfile = () => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  // Generate or get user ID from localStorage (simple approach for demo)
-  const getUserId = useCallback(() => {
-    let userId = localStorage.getItem('bdog-user-id');
-    if (!userId) {
-      userId = crypto.randomUUID();
-      localStorage.setItem('bdog-user-id', userId);
+  // Get device info (IP + fingerprint) for unique account identification
+  const getDeviceInfo = useCallback(async (): Promise<DeviceInfo> => {
+    try {
+      const { data, error } = await supabase.functions.invoke('get-device-info');
+      
+      if (error) {
+        console.error('Error getting device info:', error);
+        // Fallback to basic fingerprint
+        return {
+          ip_address: '127.0.0.1',
+          device_fingerprint: `fallback-${Date.now()}`,
+          user_agent: navigator.userAgent || 'unknown'
+        };
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in getDeviceInfo:', error);
+      return {
+        ip_address: '127.0.0.1',
+        device_fingerprint: `fallback-${Date.now()}`,
+        user_agent: navigator.userAgent || 'unknown'
+      };
     }
-    return userId;
   }, []);
 
   const loadProfile = useCallback(async () => {
     setLoading(true);
     try {
-      const userId = getUserId();
+      const deviceInfo = await getDeviceInfo();
       
-      // Try to get existing profile
+      console.log('Looking for profile with:', deviceInfo);
+      
+      // Try to get existing profile by IP + device fingerprint
       const { data: existingProfile, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', userId)
+        .eq('ip_address', deviceInfo.ip_address)
+        .eq('device_fingerprint', deviceInfo.device_fingerprint)
         .maybeSingle();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -54,10 +80,14 @@ export const useProfile = () => {
       }
 
       if (existingProfile) {
+        console.log('Found existing profile:', existingProfile.id);
         setProfile({
           ...existingProfile,
-          ip_address: existingProfile.ip_address as string | null
+          ip_address: existingProfile.ip_address as string | null,
+          device_fingerprint: existingProfile.device_fingerprint as string | null
         });
+        // Store user_id in localStorage for backwards compatibility
+        localStorage.setItem('bdog-user-id', existingProfile.user_id);
         // Sync with localStorage
         localStorage.setItem('bdog-balance', existingProfile.balance.toString());
         localStorage.setItem('bdog-balance2', existingProfile.balance2.toString());
@@ -77,6 +107,7 @@ export const useProfile = () => {
           localStorage.setItem('bdog-reg', existingProfile.reg);
         }
       } else {
+        console.log('Creating new profile for device:', deviceInfo);
         // Create new profile with referral processing
         const referralCode = localStorage.getItem("bdog-referral-code");
         let referred_by = null;
@@ -134,6 +165,9 @@ export const useProfile = () => {
           localStorage.removeItem("bdog-referral-code");
         }
 
+        // Generate unique user ID for new profile
+        const userId = crypto.randomUUID();
+        
         const newProfile = {
           user_id: userId,
           reg: `User${Date.now()}`,
@@ -147,6 +181,8 @@ export const useProfile = () => {
           referrals: 0,
           referred_by,
           wallet_address: localStorage.getItem('bdog-api') || null,
+          ip_address: deviceInfo.ip_address,
+          device_fingerprint: deviceInfo.device_fingerprint,
         };
 
         const { data: createdProfile, error: createError } = await supabase
@@ -162,8 +198,11 @@ export const useProfile = () => {
 
         setProfile({
           ...createdProfile,
-          ip_address: createdProfile.ip_address as string | null
+          ip_address: createdProfile.ip_address as string | null,
+          device_fingerprint: createdProfile.device_fingerprint as string | null
         });
+        // Store user_id in localStorage for backwards compatibility
+        localStorage.setItem('bdog-user-id', createdProfile.user_id);
         localStorage.setItem('bdog-reg', createdProfile.reg);
       }
     } catch (error) {
@@ -171,7 +210,7 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [getUserId]);
+  }, [getDeviceInfo]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
@@ -191,7 +230,8 @@ export const useProfile = () => {
 
       setProfile({
         ...updatedProfile,
-        ip_address: updatedProfile.ip_address as string | null
+        ip_address: updatedProfile.ip_address as string | null,
+        device_fingerprint: updatedProfile.device_fingerprint as string | null
       });
 
       // Sync with localStorage

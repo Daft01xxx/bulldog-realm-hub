@@ -6,6 +6,7 @@ import { Wallet, Gamepad2, Info, Users, Megaphone } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import FallingCoins3D from "@/components/FallingCoin3D";
+import bdogBackground from "@/assets/bdog-background.png";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -80,6 +81,15 @@ const Menu = () => {
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
       {/* 3D Falling Coins */}
       <FallingCoins3D count={15} />
+      
+      {/* Огромная фоновая монета BDOG */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+        <img 
+          src={bdogBackground} 
+          alt="BDOG Background" 
+          className="w-[120vw] h-[120vw] max-w-none object-contain animate-slow-spin"
+        />
+      </div>
 
       {/* Header with title */}
       <div className="text-center mb-12 pt-8 relative z-10">

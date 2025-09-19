@@ -1,14 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, RefreshCw, ExternalLink, Unplug, Image, Gamepad2 } from "lucide-react";
+import { ArrowLeft, Home, RefreshCw, ExternalLink, Unplug, Image } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import FallingCoins3D from "@/components/FallingCoin3D";
+import WalletNavigation from "@/components/WalletNavigation";
 import tonCustomLogo from "@/assets/ton-custom-logo.png";
 import bdogLogo from "@/assets/bdog-logo.png";
+import bdogSilverLogo from "@/assets/bdog-silver-logo.jpeg";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
+  const walletRef = useRef<HTMLDivElement>(null);
+  const balancesRef = useRef<HTMLDivElement>(null);
+  const nftsRef = useRef<HTMLDivElement>(null);
+  const transactionsRef = useRef<HTMLDivElement>(null);
+  const [currentSection, setCurrentSection] = useState('wallet');
+  
   const { 
     isConnected, 
     walletAddress, 
@@ -27,10 +36,34 @@ const ConnectedWallet = () => {
     }
   }, [isConnected, navigate]);
 
+  const scrollToSection = (section: string) => {
+    setCurrentSection(section);
+    const refs = {
+      wallet: walletRef,
+      balances: balancesRef,
+      nfts: nftsRef,
+      transactions: transactionsRef
+    };
+    
+    const targetRef = refs[section as keyof typeof refs];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  useEffect(() => {
+    if (!isConnected) {
+      navigate("/wallet");
+    }
+  }, [isConnected, navigate]);
+
   return (
-    <div className="min-h-screen bg-background px-4 py-12">
+    <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
+      <FallingCoins3D count={20} />
+      <WalletNavigation onNavigateToSection={scrollToSection} currentSection={currentSection} />
+      
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-8 pt-8">
+      <div className="flex justify-between items-center mb-8 pt-8 relative z-10">
         <Button
           variant="outline"
           size="sm"
@@ -52,18 +85,17 @@ const ConnectedWallet = () => {
       </div>
 
       {/* Title */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 relative z-10">
         <h1 className="text-4xl md:text-5xl font-bold text-gradient animate-glow-text mb-4">
           Подключенный кошелёк
         </h1>
       </div>
 
-      {/* Wallet Info Section */}
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Wallet Address Card */}
+      {/* Balance card - moved to top */}
+      <div className="max-w-2xl mx-auto mb-6 relative z-10" ref={balancesRef}>
         <Card className="card-glow p-6 animate-fade-in-up">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gradient">Информация о кошельке</h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gradient">Балансы</h2>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <Button
                 variant="outline"
@@ -86,63 +118,11 @@ const ConnectedWallet = () => {
             </div>
           </div>
           
-          <div className="space-y-4">
-            <div className="p-4 bg-muted/20 rounded-lg">
-              <p className="text-sm text-muted-foreground mb-1">Адрес кошелька:</p>
-              <p className="font-mono text-sm break-all">{walletAddress}</p>
-              {walletData?.walletInfo && (
-                <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <p className="text-muted-foreground">Статус:</p>
-                    <p className={walletData.walletInfo.isActive ? "text-green-400" : "text-gold"}>
-                      {walletData.walletInfo.isActive ? "Активный" : "Неактивный"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">NFT:</p>
-                    <p className="text-foreground">{walletData.walletInfo.nftCount}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Последняя синхронизация:</p>
-                    <p className="text-foreground">
-                      {walletData.walletInfo.lastSync ? 
-                        new Date(walletData.walletInfo.lastSync).toLocaleTimeString('ru-RU') : 
-                        '-'
-                      }
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Короткий адрес:</p>
-                    <p className="font-mono text-foreground">{walletData.walletInfo.shortAddress}</p>
-                  </div>
-                </div>
-              )}
-              
-              <div className="mt-4 pt-4 border-t border-muted/20">
-                <Button
-                  onClick={disconnectWallet}
-                  variant="destructive"
-                  size="sm"
-                  className="hover-lift"
-                >
-                  <Unplug className="w-4 h-4 mr-2" />
-                  Отключить кошелек
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Balance card */}
-        <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gradient">Балансы</h2>
-            {walletData?.lastUpdated && (
-              <p className="text-sm text-muted-foreground">
-                Обновлено: {new Date(walletData.lastUpdated).toLocaleString('ru-RU')}
-              </p>
-            )}
-          </div>
+          {walletData?.lastUpdated && (
+            <p className="text-sm text-muted-foreground mb-4">
+              Обновлено: {new Date(walletData.lastUpdated).toLocaleString('ru-RU')}
+            </p>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Current wallet balances */}
@@ -163,7 +143,8 @@ const ConnectedWallet = () => {
                       className="w-8 h-8 rounded-full"
                       style={{
                         backgroundColor: 'transparent',
-                        mixBlendMode: 'multiply'
+                        mixBlendMode: 'multiply',
+                        filter: 'brightness(3) contrast(1.8) saturate(1.5)'
                       }}
                     />
                   </div>
@@ -196,7 +177,7 @@ const ConnectedWallet = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <Gamepad2 className="w-6 h-6 text-purple-400" />
+                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-8 h-8 rounded-full object-contain" />
                     </div>
                   </div>
                 </div>
@@ -204,6 +185,64 @@ const ConnectedWallet = () => {
             )}
           </div>
         </Card>
+      </div>
+
+      {/* Wallet Info Section */}
+      <div className="max-w-2xl mx-auto space-y-6 relative z-10">
+        {/* Wallet Address Card */}
+        <div ref={walletRef}>
+          <Card className="card-glow p-6 animate-fade-in-up">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gradient">Информация о кошельке</h2>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-muted/20 rounded-lg">
+                <p className="text-sm text-muted-foreground mb-1">Адрес кошелька:</p>
+                <p className="font-mono text-sm break-all">{walletAddress}</p>
+                {walletData?.walletInfo && (
+                  <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">Статус:</p>
+                      <p className={walletData.walletInfo.isActive ? "text-green-400" : "text-gold"}>
+                        {walletData.walletInfo.isActive ? "Активный" : "Неактивный"}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">NFT:</p>
+                      <p className="text-foreground">{walletData.walletInfo.nftCount}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Последняя синхронизация:</p>
+                      <p className="text-foreground">
+                        {walletData.walletInfo.lastSync ? 
+                          new Date(walletData.walletInfo.lastSync).toLocaleTimeString('ru-RU') : 
+                          '-'
+                        }
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Короткий адрес:</p>
+                      <p className="font-mono text-foreground">{walletData.walletInfo.shortAddress}</p>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="mt-4 pt-4 border-t border-muted/20">
+                  <Button
+                    onClick={disconnectWallet}
+                    variant="destructive"
+                    size="sm"
+                    className="hover-lift"
+                  >
+                    <Unplug className="w-4 h-4 mr-2" />
+                    Отключить кошелек
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
 
         {/* Purchase buttons */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
@@ -229,98 +268,102 @@ const ConnectedWallet = () => {
         </div>
 
         {/* Transaction History */}
-        <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gradient">История транзакций</h2>
-          </div>
-          
-          <div className="text-center py-8">
-            <p className="text-sm text-muted-foreground">
-              Скоро здесь будут отображаться ваши последние транзакции в сети TON
-            </p>
-          </div>
-        </Card>
+        <div ref={transactionsRef}>
+          <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gradient">История транзакций</h2>
+            </div>
+            
+            <div className="text-center py-8">
+              <p className="text-sm text-muted-foreground">
+                Скоро здесь будут отображаться ваши последние транзакции в сети TON
+              </p>
+            </div>
+          </Card>
+        </div>
 
         {/* NFT Collection */}
-        <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gradient">NFT Коллекция</h2>
-            <div className="flex items-center gap-2">
-              {walletData?.nfts && (
-                <span className="text-sm text-muted-foreground">
-                  {walletData.nfts.length} NFT найдено
-                </span>
-              )}
-            </div>
-          </div>
-          
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="p-4 bg-muted/20 rounded-lg animate-pulse">
-                  <div className="w-full h-32 bg-muted/40 rounded mb-3"></div>
-                  <div className="h-4 bg-muted/40 rounded mb-2"></div>
-                  <div className="h-3 bg-muted/40 rounded w-2/3"></div>
-                </div>
-              ))}
-            </div>
-          ) : walletData?.nfts && walletData.nfts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {walletData.nfts.map((nft) => (
-                 <div key={nft.id} className="p-4 bg-muted/20 rounded-lg hover-lift transition-all duration-300">
-                   <div className="w-full h-32 bg-muted/40 rounded mb-3 flex items-center justify-center relative">
-                     {nft.image ? (
-                       <img 
-                         src={nft.image} 
-                         alt={nft.name} 
-                         className="w-full h-full object-contain rounded"
-                         onError={(e) => {
-                           const target = e.target as HTMLImageElement;
-                           target.style.display = 'none';
-                           const placeholder = target.nextElementSibling as HTMLElement;
-                           if (placeholder) {
-                             placeholder.style.display = 'flex';
-                           }
-                         }}
-                       />
-                     ) : (
-                       <div className="text-4xl flex items-center justify-center">
-                         <Image className="w-16 h-16 text-white" />
-                       </div>
-                     )}
-                   </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-semibold text-foreground break-words min-w-0">{nft.name}</h3>
-                        {nft.verified && <span className="text-xs flex-shrink-0">✅</span>}
-                      </div>
-                      <p className="text-sm text-muted-foreground break-words">{nft.collection}</p>
-                      {nft.description && (
-                        <p className="text-xs text-muted-foreground break-words">{nft.description}</p>
-                      )}
-                    </div>
-                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="flex justify-center mb-4">
-                <Image className="w-16 h-16 text-white" />
+        <div ref={nftsRef}>
+          <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gradient">NFT Коллекция</h2>
+              <div className="flex items-center gap-2">
+                {walletData?.nfts && (
+                  <span className="text-sm text-muted-foreground">
+                    {walletData.nfts.length} NFT найдено
+                  </span>
+                )}
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">NFT не найдены</h3>
-              <p className="text-muted-foreground mb-6">
-                В вашем кошельке пока нет NFT
-              </p>
-              <Button
-                onClick={() => window.open("https://getgems.io/collection/EQBBQyriB8oloKQbrumUgvmyQF5iFweNInGHPio0PB_kbVDQ", "_blank")}
-                className="button-gold hover-lift"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Купить первый NFT
-              </Button>
             </div>
-          )}
-        </Card>
+            
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="p-4 bg-muted/20 rounded-lg animate-pulse">
+                    <div className="w-full h-32 bg-muted/40 rounded mb-3"></div>
+                    <div className="h-4 bg-muted/40 rounded mb-2"></div>
+                    <div className="h-3 bg-muted/40 rounded w-2/3"></div>
+                  </div>
+                ))}
+              </div>
+            ) : walletData?.nfts && walletData.nfts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {walletData.nfts.map((nft) => (
+                   <div key={nft.id} className="p-4 bg-muted/20 rounded-lg hover-lift transition-all duration-300">
+                     <div className="w-full h-32 bg-muted/40 rounded mb-3 flex items-center justify-center relative">
+                       {nft.image ? (
+                         <img 
+                           src={nft.image} 
+                           alt={nft.name} 
+                           className="w-full h-full object-contain rounded"
+                           onError={(e) => {
+                             const target = e.target as HTMLImageElement;
+                             target.style.display = 'none';
+                             const placeholder = target.nextElementSibling as HTMLElement;
+                             if (placeholder) {
+                               placeholder.style.display = 'flex';
+                             }
+                           }}
+                         />
+                       ) : (
+                         <div className="text-4xl flex items-center justify-center">
+                           <Image className="w-16 h-16 text-white" />
+                         </div>
+                       )}
+                     </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-semibold text-foreground break-words min-w-0">{nft.name}</h3>
+                          {nft.verified && <span className="text-xs flex-shrink-0">✅</span>}
+                        </div>
+                        <p className="text-sm text-muted-foreground break-words">{nft.collection}</p>
+                        {nft.description && (
+                          <p className="text-xs text-muted-foreground break-words">{nft.description}</p>
+                        )}
+                      </div>
+                   </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="flex justify-center mb-4">
+                  <Image className="w-16 h-16 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">NFT не найдены</h3>
+                <p className="text-muted-foreground mb-6">
+                  В вашем кошельке пока нет NFT
+                </p>
+                <Button
+                  onClick={() => window.open("https://getgems.io/collection/EQBBQyriB8oloKQbrumUgvmyQF5iFweNInGHPio0PB_kbVDQ", "_blank")}
+                  className="button-gold hover-lift"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Купить первый NFT
+                </Button>
+              </div>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );

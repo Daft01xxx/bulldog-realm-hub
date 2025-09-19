@@ -203,8 +203,8 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (apiError) {
-    console.error('API Error:', apiError);
+  } catch (error) {
+    console.error('API Error:', error);
     
     // Return mock data if API fails
     const mockBalance = (Math.random() * 10000).toFixed(2);
@@ -223,16 +223,6 @@ serve(async (req) => {
       lastUpdated: new Date().toISOString(),
       note: "Using mock data due to API error"
     }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Function error:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      success: false 
-    }), {
-      status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }

@@ -83,14 +83,6 @@ const Menu = () => {
       {/* 3D Falling Coins */}
       <FallingCoins3D count={15} />
       
-      {/* Огромная фоновая монета BDOG */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
-        <img 
-          src={bdogBackground} 
-          alt="BDOG Background" 
-          className="w-[120vw] h-[120vw] max-w-none object-contain animate-super-slow-spin"
-        />
-      </div>
 
       {/* Header with title */}
       <div className="text-center mb-12 pt-8 relative z-10">

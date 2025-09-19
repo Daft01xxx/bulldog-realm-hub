@@ -20,6 +20,8 @@ const Game = () => {
   const [showBooster, setShowBooster] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [topPlayers, setTopPlayers] = useState<{name: string, grow: number}[]>([]);
+  const [boosterEndTime, setBoosterEndTime] = useState<number | null>(null);
+  const [boosterTimeLeft, setBoosterTimeLeft] = useState("");
 
   useEffect(() => {
     // Load game data from profile or localStorage
@@ -33,11 +35,25 @@ const Game = () => {
       setBone(Number(localStorage.getItem("bdog-bone")) || 1000);
     }
     
+    // Load booster end time from localStorage
+    const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
+    if (savedBoosterEndTime) {
+      const endTime = parseInt(savedBoosterEndTime);
+      if (endTime > Date.now()) {
+        setBoosterEndTime(endTime);
+      } else {
+        localStorage.removeItem("bdog-booster-end");
+      }
+    }
+    
     // Load top players
     loadTopPlayers();
     
     calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
+    const timer = setInterval(() => {
+      calculateTimeLeft();
+      calculateBoosterTimeLeft();
+    }, 1000);
     return () => clearInterval(timer);
   }, [profile]);
 
@@ -78,6 +94,38 @@ const Game = () => {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
     
     setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+  };
+
+  const calculateBoosterTimeLeft = () => {
+    if (!boosterEndTime) {
+      setBoosterTimeLeft("");
+      return;
+    }
+
+    const now = Date.now();
+    if (now >= boosterEndTime) {
+      // Booster expired, reset grow1
+      const resetGrow1 = Math.max(1, grow1 / 2);
+      setGrow1(resetGrow1);
+      updateProfile({ grow1: resetGrow1 });
+      localStorage.setItem("bdog-grow1", resetGrow1.toString());
+      localStorage.removeItem("bdog-booster-end");
+      setBoosterEndTime(null);
+      setBoosterTimeLeft("");
+      
+      toast({
+        title: "Ускоритель закончился",
+        description: "Рост вернулся к нормальному значению",
+      });
+      return;
+    }
+
+    const diff = boosterEndTime - now;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    setBoosterTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
   };
 
   const handleClick = (event: React.MouseEvent) => {
@@ -131,6 +179,7 @@ const Game = () => {
 
     const newBone = currentBone - 500;
     const newGrow1 = grow1 * 2;
+    const endTime = Date.now() + (60 * 60 * 1000); // 1 hour from now
     
     // Update profile in database
     updateProfile({
@@ -140,8 +189,11 @@ const Game = () => {
     
     localStorage.setItem("bdog-bone", newBone.toString());
     localStorage.setItem("bdog-grow1", newGrow1.toString());
+    localStorage.setItem("bdog-booster-end", endTime.toString());
+    
     setBone(newBone);
     setGrow1(newGrow1);
+    setBoosterEndTime(endTime);
     
     setShowBooster(false);
     
@@ -149,18 +201,6 @@ const Game = () => {
       title: "Ускоритель активирован!",
       description: "Рост удвоен на 1 час",
     });
-
-    // Reset after 1 hour
-    setTimeout(() => {
-      const resetGrow1 = Math.max(1, newGrow1 / 2);
-      updateProfile({ grow1: resetGrow1 });
-      localStorage.setItem("bdog-grow1", resetGrow1.toString());
-      setGrow1(resetGrow1);
-      toast({
-        title: "Ускоритель закончился",
-        description: "Рост вернулся к нормальному значению",
-      });
-    }, 3600000); // 1 hour
   };
 
 
@@ -243,13 +283,20 @@ const Game = () => {
 
       {/* Action buttons */}
       <div className="flex justify-center gap-4 mb-8">
-        <Button
-          onClick={() => setShowBooster(true)}
-          className="button-gold group"
-        >
-          <Zap className="w-4 h-4 mr-2 group-hover:animate-pulse" />
-          Ускорить
-        </Button>
+        {boosterEndTime && boosterTimeLeft ? (
+          <div className="bg-primary/20 border border-primary/30 rounded-md px-4 py-2 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-primary animate-pulse" />
+            <span className="text-primary font-semibold">{boosterTimeLeft}</span>
+          </div>
+        ) : (
+          <Button
+            onClick={() => setShowBooster(true)}
+            className="button-gold group"
+          >
+            <Zap className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+            Ускорить
+          </Button>
+        )}
         
         <Button
           onClick={() => setShowRules(true)}

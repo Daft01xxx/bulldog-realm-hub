@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, ExternalLink } from "lucide-react";
+import { ArrowLeft, Home, ExternalLink, Wallet as WalletIcon } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 
 const Wallet = () => {
@@ -66,7 +66,7 @@ const Wallet = () => {
         <Card className="card-glow p-8 text-center animate-fade-in-up">
           <div className="mb-6">
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-gold rounded-full flex items-center justify-center animate-pulse-gold">
-              <span className="text-3xl">👛</span>
+              <WalletIcon className="w-10 h-10 text-black" />
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-2">
               Интегрировать кошелек

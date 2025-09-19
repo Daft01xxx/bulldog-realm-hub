@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, RefreshCw, ExternalLink } from "lucide-react";
+import { ArrowLeft, Home, RefreshCw, ExternalLink, Unplug, Power, ToggleLeft, ToggleRight, Wallet, Gem, Dog, Image, Gamepad2, DollarSign } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 
 const ConnectedWallet = () => {
@@ -143,7 +143,7 @@ const ConnectedWallet = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl">💎</span>
+                    <Gem className="w-8 h-8 text-blue-400" />
                   </div>
                 </div>
                 
@@ -155,7 +155,7 @@ const ConnectedWallet = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl">🐕</span>
+                    <Dog className="w-8 h-8 text-yellow-400" />
                   </div>
                 </div>
               </div>
@@ -174,7 +174,7 @@ const ConnectedWallet = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-xl">🎮</span>
+                      <Gamepad2 className="w-6 h-6 text-purple-400" />
                     </div>
                   </div>
                   
@@ -186,7 +186,7 @@ const ConnectedWallet = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <span className="text-xl">💰</span>
+                      <DollarSign className="w-6 h-6 text-green-400" />
                     </div>
                   </div>
                 </div>
@@ -258,41 +258,46 @@ const ConnectedWallet = () => {
           ) : walletData?.nfts && walletData.nfts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {walletData.nfts.map((nft) => (
-                <div key={nft.id} className="p-4 bg-muted/20 rounded-lg hover-lift transition-all duration-300">
-                  <div className="w-full h-32 bg-muted/40 rounded mb-3 flex items-center justify-center relative">
-                    {nft.image ? (
-                      <img 
-                        src={nft.image} 
-                        alt={nft.name} 
-                        className="w-full h-full object-cover rounded"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const placeholder = target.nextElementSibling as HTMLElement;
-                          if (placeholder) {
-                            placeholder.style.display = 'flex';
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <div className="text-4xl" style={{display: nft.image ? 'none' : 'flex'}}>🖼️</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-foreground truncate">{nft.name}</h3>
-                      {nft.verified && <span className="text-xs">✅</span>}
-                    </div>
-                    <p className="text-sm text-muted-foreground truncate">{nft.collection}</p>
-                    {nft.description && (
-                      <p className="text-xs text-muted-foreground line-clamp-2">{nft.description}</p>
-                    )}
-                  </div>
-                </div>
+                 <div key={nft.id} className="p-4 bg-muted/20 rounded-lg hover-lift transition-all duration-300">
+                   <div className="w-full h-32 bg-muted/40 rounded mb-3 flex items-center justify-center relative">
+                     {nft.image ? (
+                       <img 
+                         src={nft.image} 
+                         alt={nft.name} 
+                         className="w-full h-full object-cover rounded"
+                         onError={(e) => {
+                           const target = e.target as HTMLImageElement;
+                           target.style.display = 'none';
+                           const placeholder = target.nextElementSibling as HTMLElement;
+                           if (placeholder) {
+                             placeholder.style.display = 'flex';
+                           }
+                         }}
+                       />
+                     ) : (
+                       <div className="text-4xl flex items-center justify-center">
+                         <Image className="w-16 h-16 text-white" />
+                       </div>
+                     )}
+                   </div>
+                   <div className="space-y-1">
+                     <div className="flex items-center gap-2">
+                       <h3 className="font-semibold text-foreground truncate">{nft.name}</h3>
+                       {nft.verified && <span className="text-xs">✅</span>}
+                     </div>
+                     <p className="text-sm text-muted-foreground truncate">{nft.collection}</p>
+                     {nft.description && (
+                       <p className="text-xs text-muted-foreground line-clamp-2">{nft.description}</p>
+                     )}
+                   </div>
+                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">🖼️</div>
+              <div className="flex justify-center mb-4">
+                <Image className="w-16 h-16 text-white" />
+              </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">NFT не найдены</h3>
               <p className="text-muted-foreground mb-6">
                 В вашем кошельке пока нет NFT

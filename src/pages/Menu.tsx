@@ -77,11 +77,9 @@ const Menu = () => {
       {/* Animated falling coins with 3D rotation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         {[...Array(8)].map((_, i) => {
-          const baseSize = Math.min(window.innerWidth, window.innerHeight) * 0.25; // 25% of smaller screen dimension
-          const sizeVariation = baseSize * (0.8 + Math.random() * 0.4); // ±20% variation
           const zIndex = Math.floor(Math.random() * 10);
           const scale = 0.7 + (zIndex * 0.03); // Closer coins are larger
-          const opacity = 0.2 + (zIndex * 0.03); // Closer coins are more visible
+          const brightness = 1.2 + (zIndex * 0.1); // Closer coins are brighter
           
           return (
             <div
@@ -92,16 +90,19 @@ const Menu = () => {
                 zIndex: zIndex,
                 transform: `scale(${scale})`,
                 animationDelay: `${i * 0.6}s`,
-                animationDuration: `${5 + (Math.random() * 4)}s`
+                animationDuration: `${5 + (Math.random() * 4)}s`,
+                filter: `brightness(${brightness}) drop-shadow(0 4px 8px rgba(0,0,0,0.3))`
               }}
             >
               <img
                 src={bulldogCoin}
                 alt="BDOG Coin"
+                className="rounded-full"
                 style={{
                   width: `min(25vw, 25vh)`,
                   height: `min(25vw, 25vh)`,
-                  opacity: opacity
+                  opacity: 0.9,
+                  filter: 'contrast(1.3) saturate(1.4)'
                 }}
               />
             </div>

@@ -75,7 +75,7 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
       {/* 3D Falling Coins */}
-      <FallingCoins3D count={8} />
+      <FallingCoins3D count={5} />
 
       {/* Header with title */}
       <div className="text-center mb-12 pt-8 relative z-10">

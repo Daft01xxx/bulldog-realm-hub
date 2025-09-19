@@ -24,9 +24,9 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
       const adjustedTime = time - animationDelay;
       
       if (adjustedTime > 0) {
-        // Falling animation
+        // Falling animation from top to bottom of screen
         const fallProgress = ((adjustedTime % animationDuration) / animationDuration);
-        meshRef.current.position.y = position[1] + (1 - fallProgress) * 15 - 7.5;
+        meshRef.current.position.y = 12 - (fallProgress * 24); // From +12 to -12
         
         // 3D rotation around all axes
         meshRef.current.rotation.x = adjustedTime * 2;
@@ -36,9 +36,9 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
         // Opacity fade in/out
         const material = meshRef.current.material as THREE.MeshStandardMaterial;
         if (fallProgress < 0.1) {
-          material.opacity = fallProgress * 10;
+          material.opacity = fallProgress * 7; // Fade in
         } else if (fallProgress > 0.9) {
-          material.opacity = (1 - fallProgress) * 10;
+          material.opacity = (1 - fallProgress) * 7; // Fade out
         } else {
           material.opacity = 0.7; // Darker opacity
         }
@@ -69,17 +69,17 @@ interface FallingCoins3DProps {
   count?: number;
 }
 
-export default function FallingCoins3D({ count = 8 }: FallingCoins3DProps) {
+export default function FallingCoins3D({ count = 5 }: FallingCoins3DProps) {
   const coins = Array.from({ length: count }, (_, i) => ({
     id: i,
     position: [
-      (Math.random() - 0.5) * 12, // x position
-      Math.random() * 8 + 2, // y position  
-      (Math.random() - 0.5) * 8 // z position
+      (Math.random() - 0.5) * 14, // x position - wider spread
+      12, // start from top
+      (Math.random() - 0.5) * 10 // z position - deeper spread
     ] as [number, number, number],
-    animationDelay: i * 0.6,
-    animationDuration: 5 + Math.random() * 4,
-    scale: 1.5 + Math.random() * 0.5 // Larger coins
+    animationDelay: i * 1.2, // More delay between coins
+    animationDuration: 6 + Math.random() * 3, // Slower falling
+    scale: 2.5 + Math.random() * 1 // Much larger coins
   }));
 
   return (

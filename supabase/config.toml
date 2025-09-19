@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.get-device-info]
 verify_jwt = false
+
+[functions.daily-weekly-reset]
+verify_jwt = false

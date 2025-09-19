@@ -28,11 +28,11 @@ const Game = () => {
     if (profile) {
       setGrow(profile.grow);
       setGrow1(profile.grow1);
-      setBone(profile.bone);
+      setBone(Math.min(1000, profile.bone)); // Ensure bone doesn't exceed 1000
     } else {
       setGrow(Number(localStorage.getItem("bdog-grow")) || 0);
       setGrow1(Number(localStorage.getItem("bdog-grow1")) || 1);
-      setBone(Number(localStorage.getItem("bdog-bone")) || 1000);
+      setBone(Math.min(1000, Number(localStorage.getItem("bdog-bone")) || 1000)); // Ensure bone doesn't exceed 1000
     }
     
     // Load booster end time from localStorage
@@ -139,7 +139,7 @@ const Game = () => {
     }
 
     const newGrow = grow + grow1;
-    const newBone = bone - 1;
+    const newBone = Math.max(0, bone - 1); // Ensure bone doesn't go below 0
     
     setGrow(newGrow);
     setBone(newBone);
@@ -177,7 +177,7 @@ const Game = () => {
       return;
     }
 
-    const newBone = currentBone - 500;
+    const newBone = Math.min(1000, currentBone - 500); // Ensure bone doesn't exceed 1000
     const newGrow1 = grow1 * 2;
     const endTime = Date.now() + (60 * 60 * 1000); // 1 hour from now
     

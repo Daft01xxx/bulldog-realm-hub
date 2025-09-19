@@ -3,22 +3,5 @@
   "name": "BDOG Crypto Game",
   "iconUrl": "https://746a55f0-1982-4167-ae0e-5312b0711d07.lovableproject.com/favicon.ico",
   "termsOfUseUrl": "https://bdog.com/terms",
-  "privacyPolicyUrl": "https://bdog.com/privacy",
-  "features": [
-    "SendTransaction"
-  ],
-  "permissions": [
-    "read_balance",
-    "send_transactions", 
-    "request_payments"
-  ],
-  "description": "BDOG Crypto Game позволяет использовать средства вашего TON кошелька для покупки внутриигровых предметов, токенов BDOG, NFT и других товаров и услуг в экосистеме BDOG.",
-  "paymentDescription": "Приложение может запрашивать платежи из вашего кошелька для:",
-  "paymentFeatures": [
-    "Покупка токенов BDOG",
-    "Покупка NFT коллекций", 
-    "Внутриигровые покупки",
-    "Премиум функции",
-    "Участие в играх и лотереях"
-  ]
+  "privacyPolicyUrl": "https://bdog.com/privacy"
 }

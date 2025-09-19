@@ -47,7 +47,7 @@ export const useBdogTonWallet = () => {
   useEffect(() => {
     if (wallet?.account?.address && connectionRestored) {
       fetchWalletData(wallet.account.address);
-    } else if (!wallet) {
+    } else if (!wallet && connectionRestored) {
       setWalletData(null);
     }
   }, [wallet?.account?.address, connectionRestored]);
@@ -57,7 +57,9 @@ export const useBdogTonWallet = () => {
     if (!wallet?.account?.address || !autoRefresh) return;
 
     const interval = setInterval(() => {
-      fetchWalletData(wallet.account.address);
+      if (wallet?.account?.address) {
+        fetchWalletData(wallet.account.address);
+      }
     }, 30000); // 30 seconds
 
     return () => clearInterval(interval);
@@ -65,20 +67,19 @@ export const useBdogTonWallet = () => {
 
   const connectWallet = async () => {
     try {
-      console.log('Connecting wallet...');
-      await tonConnectUI.connectWallet();
-      console.log('Wallet connected successfully');
+      console.log('Opening TON Connect modal...');
+      await tonConnectUI.openModal();
       
       toast({
-        title: "Кошелек подключен",
-        description: "Кошелек успешно подключен к приложению",
+        title: "Кошелек подключается",
+        description: "Выберите кошелек для подключения",
       });
     } catch (error) {
-      console.error('Wallet connection failed:', error);
+      console.error('Failed to open wallet modal:', error);
       
       toast({
         title: "Ошибка подключения",
-        description: `Не удалось подключить кошелек: ${error?.message || 'Неизвестная ошибка'}`,
+        description: `Не удалось открыть диалог подключения кошелька`,
         variant: "destructive",
       });
     }
@@ -160,15 +161,11 @@ export const useBdogTonWallet = () => {
     }
   };
 
-  // Don't return anything until connection is restored
-  if (!connectionRestored) {
-    return null;
-  }
-
   return {
-    // Wallet connection state
+    // Connection state
     isConnected: !!wallet?.account,
-    walletAddress: userFriendlyAddress || rawAddress,
+    walletAddress: userFriendlyAddress || rawAddress || wallet?.account?.address,
+    connectionRestored,
     
     // Wallet data
     walletData,

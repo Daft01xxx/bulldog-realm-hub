@@ -4,22 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import { CustomTonConnectButton } from "@/components/TonConnectButton";
 
 const Wallet = () => {
   const navigate = useNavigate();
-  const { isConnected, walletAddress, connectWallet } = useBdogTonWallet();
+  const walletHook = useBdogTonWallet();
 
-  // Don't render anything until connection is restored
-  if (isConnected === null) {
+  // Show loading while connection is being restored
+  if (!walletHook?.connectionRestored) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="text-foreground mt-4">Подключение к кошельку...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="text-foreground mt-4">Инициализация кошелька...</p>
         </div>
       </div>
     );
   }
+
+  const { isConnected, walletAddress, connectWallet } = walletHook;
 
   const handleConnect = async () => {
     if (isConnected && walletAddress) {
@@ -81,10 +84,20 @@ const Wallet = () => {
 
           <Button
             onClick={handleConnect}
-            className="button-gold w-full text-lg py-6 animate-bounce-in"
+            className="button-gold w-full text-lg py-6 animate-bounce-in mb-4"
           >
             {isConnected ? "Перейти к кошельку" : "Подключить TON кошелек"}
           </Button>
+          
+          {/* Alternative connection method */}
+          {!isConnected && (
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground mb-2">Или используйте официальную кнопку:</p>
+              <div className="flex justify-center">
+                <CustomTonConnectButton className="!w-full !max-w-none" />
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Quick purchase buttons */}

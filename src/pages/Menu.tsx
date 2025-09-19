@@ -108,9 +108,6 @@ const Menu = () => {
             <div className="space-y-2">
               <p className="text-xl text-foreground">
                 BDOG токены: <span className="text-gradient font-bold">{bdogBalance}</span>
-                {isConnected && (
-                  <span className="text-sm text-muted-foreground ml-2">(подключенный кошелек)</span>
-                )}
               </p>
               <p className="text-xl text-foreground">
                 V-BDOG баланс: <span className="text-gradient font-bold">{vBdogBalance}</span>

@@ -24,9 +24,9 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
       const adjustedTime = time - animationDelay;
       
       if (adjustedTime > 0) {
-        // Falling animation from top to bottom
+        // Infinite falling animation - reset when coin reaches bottom
         const fallProgress = ((adjustedTime % animationDuration) / animationDuration);
-        const currentY = 12 - (fallProgress * 24); // From +12 to -12
+        const currentY = 12 - (fallProgress * 28); // From +12 to -16 (below screen)
         meshRef.current.position.y = currentY;
         
         // 3D rotation around all axes
@@ -34,12 +34,12 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
         meshRef.current.rotation.y = adjustedTime * 1.125;
         meshRef.current.rotation.z = adjustedTime * 0.6;
         
-        // Simple opacity fade in/out only at beginning and end
+        // Opacity management - visible throughout most of fall
         const material = meshRef.current.material as THREE.MeshStandardMaterial;
-        if (fallProgress < 0.1) {
-          material.opacity = fallProgress * 7; // Fade in at start
-        } else if (fallProgress > 0.9) {
-          material.opacity = (1 - fallProgress) * 7; // Fade out at end
+        if (fallProgress < 0.05) {
+          material.opacity = fallProgress * 14; // Quick fade in at start
+        } else if (fallProgress > 0.92) {
+          material.opacity = (1 - fallProgress) * 12.5; // Quick fade out at end
         } else {
           material.opacity = 0.7; // Stay visible throughout middle
         }
@@ -70,17 +70,17 @@ interface FallingCoins3DProps {
   count?: number;
 }
 
-export default function FallingCoins3D({ count = 5 }: FallingCoins3DProps) {
+export default function FallingCoins3D({ count = 15 }: FallingCoins3DProps) {
   const coins = Array.from({ length: count }, (_, i) => ({
     id: i,
     position: [
-      (Math.random() - 0.5) * 16, // x position - even wider spread to avoid collision
-      12, // start from top
-      (Math.random() - 0.5) * 12 // z position - deeper spread to avoid collision
+      (Math.random() - 0.5) * 20, // x position - wider spread across screen
+      12 + Math.random() * 8, // start from different heights
+      (Math.random() - 0.5) * 16 // z position - deeper spread
     ] as [number, number, number],
-    animationDelay: i * 1.5, // 2.5x bigger delay between coins to avoid collision
-    animationDuration: 8 + Math.random() * 4,
-    scale: 1.25 + Math.random() * 0.5 // 2x smaller coins (was 2.5+1, now 1.25+0.5)
+    animationDelay: Math.random() * 10, // random delay up to 10 seconds  
+    animationDuration: 6 + Math.random() * 8, // 6-14 seconds fall time
+    scale: 0.8 + Math.random() * 0.6 // varied coin sizes
   }));
 
   return (

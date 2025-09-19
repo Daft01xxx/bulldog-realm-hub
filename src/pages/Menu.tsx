@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Wallet, Gamepad2, Info, Users, Megaphone } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
+import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import FallingCoins3D from "@/components/FallingCoin3D";
 
 const Menu = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
+  const { isConnected, walletData } = useBdogTonWallet();
   const [reg, setReg] = useState("");
   const [bdogBalance, setBdogBalance] = useState("0");
   const [vBdogBalance, setVBdogBalance] = useState("0");
@@ -18,8 +20,10 @@ const Menu = () => {
     // Load user data from profile or localStorage
     if (profile) {
       setReg(profile.reg || "");
-      // BDOG token balance (from wallet)
-      setBdogBalance((profile.bdog_balance || 0).toString());
+      // BDOG token balance from wallet (if connected) or profile
+      const walletBdogBalance = isConnected ? parseFloat(walletData?.bdogBalance || '0') : 0;
+      const profileBdogBalance = profile.bdog_balance || 0;
+      setBdogBalance(Math.max(walletBdogBalance, profileBdogBalance).toString());
       // V-BDOG balance (internal game balance + referral rewards)
       const totalVBdog = (profile.balance2 || 0) + (profile.v_bdog_earned || 0);
       setVBdogBalance(totalVBdog.toString());
@@ -32,7 +36,7 @@ const Menu = () => {
     
     // Trigger animations
     setAnimate(true);
-  }, [profile]);
+  }, [profile, isConnected, walletData]);
 
   const menuItems = [
     {
@@ -75,7 +79,7 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
       {/* 3D Falling Coins */}
-      <FallingCoins3D count={5} />
+      <FallingCoins3D count={15} />
 
       {/* Header with title */}
       <div className="text-center mb-12 pt-8 relative z-10">
@@ -96,11 +100,14 @@ const Menu = () => {
         >
           <div className="space-y-3">
             <p className="text-lg text-muted-foreground">
-              Пользователь: <span className="text-gold font-semibold">{reg}</span>
+              <span className="text-gold font-semibold">{reg}</span>
             </p>
             <div className="space-y-2">
               <p className="text-xl text-foreground">
                 BDOG токены: <span className="text-gradient font-bold">{bdogBalance}</span>
+                {isConnected && (
+                  <span className="text-sm text-muted-foreground ml-2">(подключенный кошелек)</span>
+                )}
               </p>
               <p className="text-xl text-foreground">
                 V-BDOG баланс: <span className="text-gradient font-bold">{vBdogBalance}</span>

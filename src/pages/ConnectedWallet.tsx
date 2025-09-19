@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, RefreshCw, ExternalLink, Unplug, Power, ToggleLeft, ToggleRight, Wallet, Gem, Dog, Image, Gamepad2, DollarSign } from "lucide-react";
+import { ArrowLeft, Home, RefreshCw, ExternalLink, Unplug, Image, Gamepad2 } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import tonLogo from "@/assets/ton-logo.svg";
+import bdogLogo from "@/assets/bdog-logo.png";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
@@ -62,12 +64,12 @@ const ConnectedWallet = () => {
         <Card className="card-glow p-6 animate-fade-in-up">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gradient">Информация о кошельке</h2>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setAutoRefresh(!autoRefresh)}
-                className={autoRefresh ? "button-gold" : "button-outline-gold"}
+                className={`${autoRefresh ? "button-gold" : "button-outline-gold"} text-xs sm:text-sm whitespace-nowrap`}
               >
                 Авто-обновление {autoRefresh ? "ВКЛ" : "ВЫКЛ"}
               </Button>
@@ -76,7 +78,7 @@ const ConnectedWallet = () => {
                 size="sm"
                 onClick={refreshWalletData}
                 disabled={loading}
-                className="button-outline-gold"
+                className="button-outline-gold text-xs sm:text-sm whitespace-nowrap"
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Обновить
@@ -115,6 +117,18 @@ const ConnectedWallet = () => {
                   </div>
                 </div>
               )}
+              
+              <div className="mt-4 pt-4 border-t border-muted/20">
+                <Button
+                  onClick={disconnectWallet}
+                  variant="destructive"
+                  size="sm"
+                  className="hover-lift"
+                >
+                  <Unplug className="w-4 h-4 mr-2" />
+                  Отключить кошелек
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
@@ -143,7 +157,7 @@ const ConnectedWallet = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <Gem className="w-8 h-8 text-blue-400" />
+                    <img src={tonLogo} alt="TON" className="w-8 h-8" />
                   </div>
                 </div>
                 
@@ -155,7 +169,7 @@ const ConnectedWallet = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <Dog className="w-8 h-8 text-yellow-400" />
+                    <img src={bdogLogo} alt="BDOG" className="w-8 h-8 rounded-full" />
                   </div>
                 </div>
               </div>
@@ -177,35 +191,9 @@ const ConnectedWallet = () => {
                       <Gamepad2 className="w-6 h-6 text-purple-400" />
                     </div>
                   </div>
-                  
-                  <div className="flex justify-between items-center p-4 bg-muted/20 rounded-lg">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Общий баланс</p>
-                      <p className="text-xl font-bold text-foreground">
-                        {((profile.balance2 || 0) + parseFloat(walletData?.bdogBalance || '0')).toLocaleString()} BDOG
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <DollarSign className="w-6 h-6 text-green-400" />
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
-          </div>
-        </Card>
-
-        {/* Disconnect button */}
-        <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Управление кошельком</h3>
-            <Button
-              onClick={disconnectWallet}
-              variant="destructive"
-              className="text-lg py-6 px-8 hover-lift"
-            >
-              Отключить кошелек
-            </Button>
           </div>
         </Card>
 
@@ -232,8 +220,24 @@ const ConnectedWallet = () => {
           </Card>
         </div>
 
-        {/* NFT Collection */}
+        {/* Transaction History */}
         <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gradient">История транзакций</h2>
+          </div>
+          
+          <div className="text-center py-8">
+            <p className="text-muted-foreground mb-4">
+              История транзакций в разработке
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Скоро здесь будут отображаться ваши последние транзакции в сети TON
+            </p>
+          </div>
+        </Card>
+
+        {/* NFT Collection */}
+        <Card className="card-glow p-6 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gradient">NFT Коллекция</h2>
             <div className="flex items-center gap-2">
@@ -264,7 +268,7 @@ const ConnectedWallet = () => {
                        <img 
                          src={nft.image} 
                          alt={nft.name} 
-                         className="w-full h-full object-cover rounded"
+                         className="w-full h-full object-contain rounded"
                          onError={(e) => {
                            const target = e.target as HTMLImageElement;
                            target.style.display = 'none';

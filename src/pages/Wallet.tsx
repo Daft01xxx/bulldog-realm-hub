@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
-import { TonConnectButton } from '@tonconnect/ui-react';
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -80,30 +79,12 @@ const Wallet = () => {
             </p>
           </div>
 
-          {isConnected ? (
-            <Button
-              onClick={handleConnect}
-              className="button-gold w-full text-lg py-6 animate-bounce-in"
-            >
-              Перейти к кошельку
-            </Button>
-          ) : (
-            <div className="space-y-4">
-              <Button
-                onClick={handleConnect}
-                className="button-gold w-full text-lg py-6 animate-bounce-in"
-              >
-                Подключить TON кошелек
-              </Button>
-              
-              <div className="text-center">
-                <p className="text-xs text-muted-foreground mb-2">Или используйте официальную кнопку:</p>
-                <div className="flex justify-center">
-                  <TonConnectButton className="!w-full !bg-gradient-to-r !from-yellow-400 !to-yellow-600 !text-black !rounded-lg !px-8 !py-4 !font-bold !text-lg !shadow-lg hover:!shadow-xl !transition-all !duration-300" />
-                </div>
-              </div>
-            </div>
-          )}
+          <Button
+            onClick={handleConnect}
+            className="button-gold w-full text-lg py-6 animate-bounce-in"
+          >
+            {isConnected ? "Перейти к кошельку" : "Подключить TON кошелек"}
+          </Button>
         </Card>
 
         {/* Quick purchase buttons */}

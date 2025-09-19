@@ -16,18 +16,10 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const manifestUrl = {
-  url: "https://746a55f0-1982-4167-ae0e-5312b0711d07.lovableproject.com",
-  name: "BDOG Crypto Game",
-  iconUrl: "https://746a55f0-1982-4167-ae0e-5312b0711d07.lovableproject.com/favicon.ico",
-  termsOfUseUrl: "https://746a55f0-1982-4167-ae0e-5312b0711d07.lovableproject.com",
-  privacyPolicyUrl: "https://746a55f0-1982-4167-ae0e-5312b0711d07.lovableproject.com"
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TonConnectUIProvider 
-      manifestUrl={`data:application/json,${encodeURIComponent(JSON.stringify(manifestUrl))}`}
+      manifestUrl="https://raw.githubusercontent.com/ton-community/tutorials/main/03-client/test/public/tonconnect-manifest.json"
     >
       <TooltipProvider>
         <Toaster />

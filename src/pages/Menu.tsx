@@ -76,30 +76,31 @@ const Menu = () => {
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
       {/* Animated falling coins with 3D rotation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {[...Array(15)].map((_, i) => {
-          const size = 32 + (Math.random() * 24); // 32px to 56px
+        {[...Array(8)].map((_, i) => {
+          const baseSize = Math.min(window.innerWidth, window.innerHeight) * 0.25; // 25% of smaller screen dimension
+          const sizeVariation = baseSize * (0.8 + Math.random() * 0.4); // ±20% variation
           const zIndex = Math.floor(Math.random() * 10);
-          const scale = 0.8 + (zIndex * 0.02); // Closer coins are larger
-          const opacity = 0.3 + (zIndex * 0.02); // Closer coins are more visible
+          const scale = 0.7 + (zIndex * 0.03); // Closer coins are larger
+          const opacity = 0.2 + (zIndex * 0.03); // Closer coins are more visible
           
           return (
             <div
               key={i}
               className="absolute animate-fall-coin"
               style={{
-                left: `${Math.random() * 85 + 5}%`,
+                left: `${Math.random() * 70 + 15}%`, // More centered distribution
                 zIndex: zIndex,
                 transform: `scale(${scale})`,
-                animationDelay: `${i * 0.4}s`,
-                animationDuration: `${4 + (Math.random() * 3)}s`
+                animationDelay: `${i * 0.6}s`,
+                animationDuration: `${5 + (Math.random() * 4)}s`
               }}
             >
               <img
                 src={bulldogCoin}
                 alt="BDOG Coin"
                 style={{
-                  width: `${size}px`,
-                  height: `${size}px`,
+                  width: `min(25vw, 25vh)`,
+                  height: `min(25vw, 25vh)`,
                   opacity: opacity
                 }}
               />

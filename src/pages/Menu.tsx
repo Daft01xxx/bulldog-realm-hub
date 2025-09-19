@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Wallet, Gamepad2, Info, Users, Megaphone } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
-import bulldogCoin from "@/assets/bulldog-coin.png";
+import FallingCoins3D from "@/components/FallingCoin3D";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -74,41 +74,8 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
-      {/* Animated falling coins with 3D rotation */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {[...Array(8)].map((_, i) => {
-          const zIndex = Math.floor(Math.random() * 10);
-          const scale = 0.7 + (zIndex * 0.03); // Closer coins are larger
-          const brightness = 1.2 + (zIndex * 0.1); // Closer coins are brighter
-          
-          return (
-            <div
-              key={i}
-              className="absolute animate-fall-coin"
-              style={{
-                left: `${Math.random() * 70 + 15}%`, // More centered distribution
-                zIndex: zIndex,
-                transform: `scale(${scale})`,
-                animationDelay: `${i * 0.6}s`,
-                animationDuration: `${5 + (Math.random() * 4)}s`,
-                filter: `brightness(${brightness}) drop-shadow(0 4px 8px rgba(0,0,0,0.3))`
-              }}
-            >
-              <img
-                src={bulldogCoin}
-                alt="BDOG Coin"
-                className="rounded-full"
-                style={{
-                  width: `min(25vw, 25vh)`,
-                  height: `min(25vw, 25vh)`,
-                  opacity: 0.9,
-                  filter: 'contrast(1.3) saturate(1.4)'
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
+      {/* 3D Falling Coins */}
+      <FallingCoins3D count={8} />
 
       {/* Header with title */}
       <div className="text-center mb-12 pt-8 relative z-10">

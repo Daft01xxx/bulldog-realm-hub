@@ -37,9 +37,13 @@ export const useBdogTonWallet = () => {
 
   const connectWallet = async () => {
     try {
+      console.log('Attempting to connect wallet...');
+      console.log('TonConnect UI state:', tonConnectUI);
       await tonConnectUI.connectWallet();
+      console.log('Wallet connection successful');
     } catch (error) {
       console.error('Wallet connection failed:', error);
+      console.log('Error details:', JSON.stringify(error, null, 2));
       toast({
         title: "Ошибка подключения",
         description: "Не удалось подключить кошелек. Попробуйте снова.",

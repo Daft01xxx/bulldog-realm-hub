@@ -24,23 +24,28 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
       const adjustedTime = time - animationDelay;
       
       if (adjustedTime > 0) {
-        // Falling animation from top to bottom of page (to "пиши нам")
+        // Falling animation from top to BDOG title level
         const fallProgress = ((adjustedTime % animationDuration) / animationDuration);
-        meshRef.current.position.y = 12 - (fallProgress * 24); // From +12 to -12 (full page)
+        const currentY = 12 - (fallProgress * 24); // From +12 to -12
+        meshRef.current.position.y = currentY;
         
         // 3D rotation around all axes - 1.5x faster than before
         meshRef.current.rotation.x = adjustedTime * 1.5;
         meshRef.current.rotation.y = adjustedTime * 1.125;
         meshRef.current.rotation.z = adjustedTime * 0.6;
         
-        // Opacity fade in/out
+        // Opacity fade in/out and hide when reaching BDOG level
         const material = meshRef.current.material as THREE.MeshStandardMaterial;
-        if (fallProgress < 0.1) {
+        if (currentY < 3) {
+          // Hide completely when reaching BDOG title level
+          material.opacity = 0;
+        } else if (fallProgress < 0.1) {
           material.opacity = fallProgress * 7; // Fade in
-        } else if (fallProgress > 0.9) {
-          material.opacity = (1 - fallProgress) * 7; // Fade out
+        } else if (currentY < 4) {
+          // Start fading out when approaching BDOG title
+          material.opacity = (currentY - 3) * 0.7; // Gradual fade from Y=4 to Y=3
         } else {
-          material.opacity = 0.7; // Darker opacity
+          material.opacity = 0.7; // Normal opacity
         }
       } else {
         const material = meshRef.current.material as THREE.MeshStandardMaterial;

@@ -280,16 +280,16 @@ const ConnectedWallet = () => {
                        </div>
                      )}
                    </div>
-                   <div className="space-y-1">
-                     <div className="flex items-center gap-2">
-                       <h3 className="font-semibold text-foreground truncate">{nft.name}</h3>
-                       {nft.verified && <span className="text-xs">✅</span>}
-                     </div>
-                     <p className="text-sm text-muted-foreground truncate">{nft.collection}</p>
-                     {nft.description && (
-                       <p className="text-xs text-muted-foreground line-clamp-2">{nft.description}</p>
-                     )}
-                   </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-foreground break-words min-w-0">{nft.name}</h3>
+                        {nft.verified && <span className="text-xs flex-shrink-0">✅</span>}
+                      </div>
+                      <p className="text-sm text-muted-foreground break-words">{nft.collection}</p>
+                      {nft.description && (
+                        <p className="text-xs text-muted-foreground break-words">{nft.description}</p>
+                      )}
+                    </div>
                  </div>
               ))}
             </div>

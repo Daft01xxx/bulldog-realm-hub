@@ -74,30 +74,38 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
-      {/* Animated falling coins */}
+      {/* Animated falling coins with 3D rotation */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {[...Array(12)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-fall-coin"
-            style={{
-              left: `${Math.random() * 90 + 5}%`,
-              top: `${Math.random() * 80 + 10}%`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${3 + (Math.random() * 2)}s`
-            }}
-          >
-            <img
-              src={bulldogCoin}
-              alt="BDOG Coin"
-              className="w-20 h-20 animate-spin opacity-50"
+        {[...Array(15)].map((_, i) => {
+          const size = 32 + (Math.random() * 24); // 32px to 56px
+          const zIndex = Math.floor(Math.random() * 10);
+          const scale = 0.8 + (zIndex * 0.02); // Closer coins are larger
+          const opacity = 0.3 + (zIndex * 0.02); // Closer coins are more visible
+          
+          return (
+            <div
+              key={i}
+              className="absolute animate-fall-coin"
               style={{
-                animationDuration: `${1.5 + (Math.random() * 2)}s`,
-                animationDirection: i % 2 === 0 ? 'normal' : 'reverse'
+                left: `${Math.random() * 85 + 5}%`,
+                zIndex: zIndex,
+                transform: `scale(${scale})`,
+                animationDelay: `${i * 0.4}s`,
+                animationDuration: `${4 + (Math.random() * 3)}s`
               }}
-            />
-          </div>
-        ))}
+            >
+              <img
+                src={bulldogCoin}
+                alt="BDOG Coin"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                  opacity: opacity
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
 
       {/* Header with title */}

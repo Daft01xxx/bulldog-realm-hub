@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TonConnectUIProvider 
-      manifestUrl="https://bulldog-realm-hub.lovable.app/tonconnect-manifest.json"
+      manifestUrl="/tonconnect-manifest.json"
     >
       <TooltipProvider>
         <Toaster />

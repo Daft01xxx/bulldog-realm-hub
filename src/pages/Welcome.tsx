@@ -98,48 +98,5 @@ const Welcome = () => {
   );
 };
 
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-dark"></div>
-      
-      {/* Floating particles effect */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute w-2 h-2 bg-gold rounded-full animate-float opacity-30`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
-            }}
-          ></div>
-        ))}
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 text-center px-6">
-        <div className="animate-bounce-in">
-          <h1 className="text-6xl md:text-8xl font-bold text-gradient animate-glow-text mb-8">
-            BDOG APP
-          </h1>
-          <div>
-            <Button 
-              className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-8 py-3 rounded-full shadow-gold animate-pulse-gold"
-              onClick={() => navigate("/menu")}
-            >
-              Вход в аккаунт
-            </Button>
-          </div>
-          <p className="text-xl md:text-2xl text-white-glow animate-fade-in-up opacity-80">
-            Добро пожаловать в экосистему Bulldog
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default Welcome;

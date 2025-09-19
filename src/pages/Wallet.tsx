@@ -3,34 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
-import { useBdogTonWallet } from "@/hooks/useTonWallet";
-import { CustomTonConnectButton } from "@/components/TonConnectButton";
+import { SimpleWalletConnector } from "@/components/SimpleWalletConnector";
 
 const Wallet = () => {
   const navigate = useNavigate();
-  const walletHook = useBdogTonWallet();
-
-  // Show loading while connection is being restored
-  if (!walletHook?.connectionRestored) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="text-foreground mt-4">Инициализация кошелька...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const { isConnected, walletAddress, connectWallet } = walletHook;
-
-  const handleConnect = async () => {
-    if (isConnected && walletAddress) {
-      navigate("/connected-wallet");
-    } else {
-      await connectWallet();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background px-4 py-12">
@@ -74,30 +50,12 @@ const Wallet = () => {
             <h2 className="text-2xl font-bold text-foreground mb-2">
               Интегрировать кошелек
             </h2>
-            <p className="text-muted-foreground">
-              {isConnected 
-                ? `Кошелек подключен: ${walletAddress?.slice(0, 8)}...${walletAddress?.slice(-6)}`
-                : "Подключите ваш TON кошелек для просмотра баланса BDOG и NFT"
-              }
+            <p className="text-muted-foreground mb-6">
+              Подключите ваш TON кошелек для просмотра баланса BDOG и NFT
             </p>
           </div>
 
-          <Button
-            onClick={handleConnect}
-            className="button-gold w-full text-lg py-6 animate-bounce-in mb-4"
-          >
-            {isConnected ? "Перейти к кошельку" : "Подключить TON кошелек"}
-          </Button>
-          
-          {/* Alternative connection method */}
-          {!isConnected && (
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-2">Или используйте официальную кнопку:</p>
-              <div className="flex justify-center">
-                <CustomTonConnectButton className="!w-full !max-w-none" />
-              </div>
-            </div>
-          )}
+          <SimpleWalletConnector />
         </Card>
 
         {/* Quick purchase buttons */}

@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TonConnectUIProvider 
-      manifestUrl="/tonconnect-manifest.json"
+      manifestUrl="https://ton-connect.github.io/demo-dapp-with-react-ui/tonconnect-manifest.json"
     >
       <TooltipProvider>
         <Toaster />

@@ -175,6 +175,15 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes super-slow-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
   /* Utility Classes */
   .animate-float {
     animation: float 3s ease-in-out infinite;
@@ -206,6 +215,10 @@ All colors MUST be HSL.
 
   .animate-slow-spin {
     animation: slow-spin 8s linear infinite;
+  }
+
+  .animate-super-slow-spin {
+    animation: super-slow-spin 24s linear infinite;
   }
 
   .hover-lift {

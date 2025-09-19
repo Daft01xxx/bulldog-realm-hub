@@ -88,7 +88,7 @@ const Menu = () => {
         <img 
           src={bdogBackground} 
           alt="BDOG Background" 
-          className="w-[120vw] h-[120vw] max-w-none object-contain animate-slow-spin"
+          className="w-[120vw] h-[120vw] max-w-none object-contain animate-super-slow-spin"
         />
       </div>
 

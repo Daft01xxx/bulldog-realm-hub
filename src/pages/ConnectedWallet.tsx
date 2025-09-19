@@ -143,7 +143,7 @@ const ConnectedWallet = () => {
                       className="w-8 h-8 rounded-full"
                       style={{
                         backgroundColor: 'transparent',
-                        filter: 'brightness(5) contrast(2.5) saturate(2) drop-shadow(0 0 10px rgba(255,255,255,0.8))'
+                        filter: 'brightness(1.8) contrast(1.2) saturate(1.3)'
                       }}
                     />
                   </div>

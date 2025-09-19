@@ -42,7 +42,7 @@ export const useBdogTonWallet = () => {
       console.error('Wallet connection failed:', error);
       toast({
         title: "Ошибка подключения",
-        description: "Не удалось подключить кошелек",
+        description: "Не удалось подключить кошелек. Попробуйте снова.",
         variant: "destructive",
       });
     }

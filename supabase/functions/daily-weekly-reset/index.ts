@@ -1,0 +1,159 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
+interface Database {
+  public: {
+    Tables: {
+      profiles: {
+        Row: {
+          id: string
+          reg: string | null
+          grow: number
+          bone: number
+          v_bdog_earned: number
+        }
+        Update: {
+          grow?: number
+          bone?: number
+          v_bdog_earned?: number
+        }
+      }
+    }
+  }
+}
+
+Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabaseClient = createClient<Database>(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    const { searchParams } = new URL(req.url)
+    const resetType = searchParams.get('type') // 'daily' or 'weekly'
+
+    console.log(`Starting ${resetType} reset at ${new Date().toISOString()}`)
+
+    if (resetType === 'daily') {
+      // Daily reset: set all bone values to 1000
+      const { error: dailyError } = await supabaseClient
+        .from('profiles')
+        .update({ bone: 1000 })
+        .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
+
+      if (dailyError) {
+        console.error('Daily reset error:', dailyError)
+        throw dailyError
+      }
+
+      console.log('Daily reset completed: All bones reset to 1000')
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Daily reset completed: All bones reset to 1000',
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      )
+
+    } else if (resetType === 'weekly') {
+      // Weekly reset: reward top 5 players and reset grow to 1
+      
+      // 1. Get top 5 players by grow
+      const { data: topPlayers, error: topPlayersError } = await supabaseClient
+        .from('profiles')
+        .select('id, reg, grow, v_bdog_earned')
+        .order('grow', { ascending: false })
+        .limit(5)
+
+      if (topPlayersError) {
+        console.error('Error fetching top players:', topPlayersError)
+        throw topPlayersError
+      }
+
+      console.log('Top 5 players:', topPlayers)
+
+      // 2. Award V-BDOG tokens to top 5 players
+      if (topPlayers && topPlayers.length > 0) {
+        for (const player of topPlayers) {
+          const newVBdogBalance = (player.v_bdog_earned || 0) + 5000000
+          
+          const { error: rewardError } = await supabaseClient
+            .from('profiles')
+            .update({ v_bdog_earned: newVBdogBalance })
+            .eq('id', player.id)
+
+          if (rewardError) {
+            console.error(`Error rewarding player ${player.id}:`, rewardError)
+          } else {
+            console.log(`Rewarded player ${player.reg || 'Anonymous'} (ID: ${player.id}) with 5,000,000 V-BDOG tokens`)
+          }
+        }
+      }
+
+      // 3. Reset all grow values to 1
+      const { error: resetGrowError } = await supabaseClient
+        .from('profiles')
+        .update({ grow: 1 })
+        .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
+
+      if (resetGrowError) {
+        console.error('Weekly grow reset error:', resetGrowError)
+        throw resetGrowError
+      }
+
+      console.log('Weekly reset completed: All grow reset to 1, top 5 players rewarded')
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Weekly reset completed: All grow reset to 1, top 5 players rewarded',
+          topPlayers: topPlayers?.map(p => ({ name: p.reg || 'Anonymous', grow: p.grow })),
+          timestamp: new Date().toISOString()
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      )
+
+    } else {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid reset type. Use ?type=daily or ?type=weekly' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      )
+    }
+
+  } catch (error) {
+    console.error('Reset function error:', error)
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
+      }
+    )
+  }
+})

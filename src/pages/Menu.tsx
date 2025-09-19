@@ -149,7 +149,7 @@ const Menu = () => {
 
         {/* Advertising space */}
         <Card 
-          className={`card-glow p-6 text-center ${
+          className={`card-glow p-6 text-center relative z-10 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.6s' }}

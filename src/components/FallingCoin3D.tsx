@@ -73,18 +73,18 @@ export default function FallingCoins3D({ count = 5 }: FallingCoins3DProps) {
   const coins = Array.from({ length: count }, (_, i) => ({
     id: i,
     position: [
-      (Math.random() - 0.5) * 14, // x position - wider spread
+      (Math.random() - 0.5) * 16, // x position - even wider spread to avoid collision
       12, // start from top
-      (Math.random() - 0.5) * 10 // z position - deeper spread
+      (Math.random() - 0.5) * 12 // z position - deeper spread to avoid collision
     ] as [number, number, number],
-    animationDelay: i * 0.6, // 2x smaller delay between coins (was 1.2, now 0.6)
-    animationDuration: 8 + Math.random() * 4, // 1.5x faster than previous (was 12+6, now 8+4)
-    scale: 2.5 + Math.random() * 1 // Much larger coins
+    animationDelay: i * 1.5, // 2.5x bigger delay between coins to avoid collision
+    animationDuration: 8 + Math.random() * 4,
+    scale: 1.25 + Math.random() * 0.5 // 2x smaller coins (was 2.5+1, now 1.25+0.5)
   }));
 
   return (
     <Canvas
-      className="fixed inset-0 pointer-events-none z-0"
+      className="fixed inset-0 pointer-events-none z-5"
       camera={{ position: [0, 0, 10], fov: 50 }}
       style={{ background: 'transparent' }}
     >

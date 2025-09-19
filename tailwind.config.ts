@@ -138,6 +138,24 @@ export default {
             transform: "scale(1)",
           },
         },
+        "fall-coin": {
+          "0%": {
+            transform: "translateY(-100vh) rotate(0deg)",
+            opacity: "0.8",
+          },
+          "100%": {
+            transform: "translateY(100vh) rotate(360deg)",
+            opacity: "0",
+          },
+        },
+        "slow-spin": {
+          "0%": {
+            transform: "rotate(0deg)",
+          },
+          "100%": {
+            transform: "rotate(360deg)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -148,6 +166,8 @@ export default {
         "slide-in-right": "slide-in-right 0.6s ease-out forwards",
         "glow-text": "glow-text 2s ease-in-out infinite",
         "bounce-in": "bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards",
+        "fall-coin": "fall-coin linear infinite",
+        "slow-spin": "slow-spin 8s linear infinite",
       },
       backgroundImage: {
         "gradient-gold": "var(--gradient-gold)",

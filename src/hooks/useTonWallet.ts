@@ -45,7 +45,14 @@ export const useBdogTonWallet = () => {
 
   // Auto-fetch wallet data when wallet connects
   useEffect(() => {
+    console.log('Wallet state changed:', { 
+      address: wallet?.account?.address, 
+      connectionRestored,
+      isConnected: !!wallet?.account 
+    });
+    
     if (wallet?.account?.address && connectionRestored) {
+      console.log('Fetching wallet data for:', wallet.account.address);
       fetchWalletData(wallet.account.address);
     } else if (!wallet && connectionRestored) {
       setWalletData(null);

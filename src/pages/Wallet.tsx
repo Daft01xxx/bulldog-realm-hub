@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,10 +21,26 @@ const Wallet = () => {
     );
   }
 
+  // Monitor wallet connection and auto-redirect
+  useEffect(() => {
+    console.log('Wallet connection status changed:', { isConnected, walletAddress, connectionRestored });
+    
+    if (isConnected && walletAddress && connectionRestored) {
+      console.log('Auto-redirecting to connected wallet page');
+      setTimeout(() => {
+        navigate("/connected-wallet");
+      }, 1000); // Small delay to ensure everything is loaded
+    }
+  }, [isConnected, walletAddress, connectionRestored, navigate]);
+
   const handleConnect = async () => {
+    console.log('handleConnect called, isConnected:', isConnected, 'walletAddress:', walletAddress);
+    
     if (isConnected && walletAddress) {
+      console.log('Navigating to connected-wallet');
       navigate("/connected-wallet");
     } else {
+      console.log('Opening wallet modal');
       await connectWallet();
     }
   };

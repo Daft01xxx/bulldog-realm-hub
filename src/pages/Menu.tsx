@@ -16,10 +16,15 @@ const Menu = () => {
     // Load user data from profile or localStorage
     if (profile) {
       setReg(profile.reg || "");
-      setBalance2(profile.balance2?.toString() || "0");
+      // Show BDOG balance from wallet (balance2) + internal game balance (balance)
+      const totalBalance = (profile.balance2 || 0) + (profile.balance || 0);
+      setBalance2(totalBalance.toString());
     } else {
       setReg(localStorage.getItem("bdog-reg") || "");
-      setBalance2(localStorage.getItem("bdog-balance2") || "0");
+      const localBalance2 = localStorage.getItem("bdog-balance2") || "0";
+      const localBalance = localStorage.getItem("bdog-balance") || "0";
+      const totalBalance = parseInt(localBalance2) + parseInt(localBalance);
+      setBalance2(totalBalance.toString());
     }
     
     // Trigger animations
@@ -88,8 +93,13 @@ const Menu = () => {
               Пользователь: <span className="text-gold font-semibold">{reg}</span>
             </p>
             <p className="text-xl text-foreground">
-              Баланс: <span className="text-gradient font-bold">{balance2} BDOG</span>
+              Общий баланс: <span className="text-gradient font-bold">{balance2} BDOG</span>
             </p>
+            {profile && profile.balance2 > 0 && (
+              <p className="text-sm text-muted-foreground">
+                (включая {profile.balance2} BDOG из кошелька)
+              </p>
+            )}
           </div>
         </Card>
       </div>

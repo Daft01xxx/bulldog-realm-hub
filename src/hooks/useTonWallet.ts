@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useProfile } from '@/hooks/useProfile';
 
 interface WalletData {
   address: string;
@@ -22,6 +23,7 @@ export const useBdogTonWallet = () => {
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
   const { toast } = useToast();
+  const { profile, updateProfile, fetchWalletBalance } = useProfile();
   
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -92,9 +94,21 @@ export const useBdogTonWallet = () => {
 
       setWalletData(walletInfo);
       
+      // Save wallet balance to profile
+      const bdogBalance = parseFloat(walletInfo.bdogBalance);
+      const tonBalance = parseFloat(walletInfo.tonBalance);
+      
+      if (profile) {
+        await updateProfile({
+          balance: Math.round(tonBalance * 1000000000), // Convert to nanotons for storage
+          balance2: Math.round(bdogBalance),
+          wallet_address: address
+        });
+      }
+      
       toast({
         title: "Данные обновлены",
-        description: `Баланс BDOG: ${walletInfo.bdogBalance}`,
+        description: `Баланс: ${tonBalance} TON, ${bdogBalance} BDOG`,
       });
 
     } catch (error) {
@@ -123,6 +137,9 @@ export const useBdogTonWallet = () => {
     // Wallet data
     walletData,
     loading,
+    
+    // Profile data
+    profile,
     
     // Actions
     connectWallet,

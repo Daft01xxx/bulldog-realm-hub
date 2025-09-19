@@ -12,8 +12,9 @@ const ConnectedWallet = () => {
     walletAddress, 
     walletData, 
     loading, 
-    refreshWalletData, 
-    disconnectWallet 
+    disconnectWallet, 
+    refreshWalletData,
+    profile 
   } = useBdogTonWallet();
 
   useEffect(() => {
@@ -63,21 +64,48 @@ const ConnectedWallet = () => {
           </Button>
         </div>
         
-        <h2 className="text-2xl font-bold text-foreground mb-2">Баланс кошелька</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-4">Баланс кошелька</h2>
         
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <p className="text-sm text-muted-foreground">TON</p>
-            <p className="text-xl font-bold text-foreground">
-              {loading ? "..." : (walletData?.tonBalance || "0")}
-            </p>
+        <div className="space-y-4">
+          {/* Live wallet balance */}
+          <div className="bg-background/50 rounded-lg p-4 border">
+            <p className="text-sm text-muted-foreground mb-2">Текущий баланс кошелька</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">TON</p>
+                <p className="text-xl font-bold text-foreground">
+                  {loading ? "..." : (walletData?.tonBalance || "0")}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">BDOG</p>
+                <p className="text-xl font-bold text-gold">
+                  {loading ? "..." : (walletData?.bdogBalance || "0")}
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-muted-foreground">BDOG</p>
-            <p className="text-xl font-bold text-gold">
-              {loading ? "..." : (walletData?.bdogBalance || "0")}
-            </p>
-          </div>
+          
+          {/* Saved profile balance */}
+          {profile && (
+            <div className="bg-background/50 rounded-lg p-4 border">
+              <p className="text-sm text-muted-foreground mb-2">Сохраненный баланс</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">TON</p>
+                  <p className="text-xl font-bold text-foreground">
+                    {(profile.balance / 1000000000).toFixed(2)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">BDOG</p>
+                  <p className="text-xl font-bold text-gold">
+                    {profile.balance2}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         
         <p className="text-sm text-muted-foreground mt-2 break-all">

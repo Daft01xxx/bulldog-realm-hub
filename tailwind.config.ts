@@ -47,11 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom BDOG colors
+        // Custom BDOG colors - Enhanced golden shine
         gold: {
           DEFAULT: "hsl(var(--gold))",
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
+          shine: "hsl(var(--gold-shine))",
         },
         "white-glow": "hsl(var(--white-glow))",
         "black-card": "hsl(var(--black-card))",
@@ -85,12 +86,12 @@ export default {
         },
         "pulse-gold": {
           "0%, 100%": { 
-            boxShadow: "0 0 20px hsl(45 100% 50% / 0.3)",
+            boxShadow: "0 0 25px hsl(43 96% 56% / 0.4), 0 0 50px hsl(45 100% 70% / 0.2)",
             transform: "scale(1)"
           },
           "50%": { 
-            boxShadow: "0 0 40px hsl(45 100% 50% / 0.6)",
-            transform: "scale(1.02)"
+            boxShadow: "0 0 40px hsl(43 96% 56% / 0.7), 0 0 80px hsl(45 100% 70% / 0.4)",
+            transform: "scale(1.03)"
           },
         },
         "fade-in-up": {
@@ -115,10 +116,10 @@ export default {
         },
         "glow-text": {
           "0%, 100%": {
-            textShadow: "0 0 10px hsl(45 100% 50% / 0.5)",
+            textShadow: "0 0 15px hsl(43 96% 56% / 0.6), 0 0 30px hsl(45 100% 70% / 0.4)",
           },
           "50%": {
-            textShadow: "0 0 20px hsl(45 100% 50% / 0.8), 0 0 30px hsl(45 100% 50% / 0.6)",
+            textShadow: "0 0 25px hsl(43 96% 56% / 0.9), 0 0 50px hsl(45 100% 70% / 0.6), 0 0 75px hsl(45 100% 85% / 0.3)",
           },
         },
         "bounce-in": {

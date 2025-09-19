@@ -94,7 +94,7 @@ const ConnectedWallet = () => {
                 <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">Статус:</p>
-                    <p className={walletData.walletInfo.isActive ? "text-green-400" : "text-yellow-400"}>
+                    <p className={walletData.walletInfo.isActive ? "text-green-400" : "text-gold"}>
                       {walletData.walletInfo.isActive ? "Активный" : "Неактивный"}
                     </p>
                   </div>
@@ -157,7 +157,7 @@ const ConnectedWallet = () => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <img src={tonLogo} alt="TON" className="w-8 h-8" />
+                    <img src={tonLogo} alt="TON" className="w-8 h-8 rounded-full" />
                   </div>
                 </div>
                 
@@ -227,9 +227,6 @@ const ConnectedWallet = () => {
           </div>
           
           <div className="text-center py-8">
-            <p className="text-muted-foreground mb-4">
-              История транзакций в разработке
-            </p>
             <p className="text-sm text-muted-foreground">
               Скоро здесь будут отображаться ваши последние транзакции в сети TON
             </p>

@@ -26,7 +26,7 @@ const Promotion = () => {
       description: "Создайте вирусное видео о BDOG с миллионом просмотров",
       reward: "5,000,000 V-BDOG",
       icon: TrendingUp,
-      color: "from-yellow-500 to-orange-500"
+      color: "from-gold to-gold-light"
     }
   ];
 

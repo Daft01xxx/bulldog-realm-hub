@@ -92,6 +92,22 @@ serve(async (req) => {
       tonBalance = "0.0000";
     }
 
+    // Fetch BDOG token balance using contract address
+    try {
+      const jettonResponse = await fetch(`https://tonapi.io/v2/accounts/${walletAddress}/jettons/EQAH_hgvmWWW5jcILPIIec3TJcU4olZZmOLe9ImwIvz7s4--`);
+      if (jettonResponse.ok) {
+        const jettonData = await jettonResponse.json();
+        if (jettonData.balance) {
+          // Convert from nano-BDOG to BDOG
+          bdogBalance = (parseFloat(jettonData.balance) / 1000000000).toFixed(2);
+          console.log(`BDOG Balance: ${bdogBalance}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching BDOG balance:', error);
+      bdogBalance = "0.00";
+    }
+
     try {
       // Fetch NFTs from TonAPI with retry logic
       let nftResult = null;
@@ -156,12 +172,15 @@ serve(async (req) => {
       .eq('wallet_address', walletAddress)
       .single();
     
-    if (existingWallet && existingWallet.balance > 0) {
-      // Use existing balance to maintain consistency
-      bdogBalance = existingWallet.balance.toFixed(2);
-    } else {
-      // Set a fixed demo balance for new wallets instead of random
-      bdogBalance = "2500.00";
+    // If no blockchain BDOG balance and no existing database record, set demo balance
+    if (bdogBalance === "0.00") {
+      if (existingWallet && existingWallet.balance > 0) {
+        // Use existing balance to maintain consistency
+        bdogBalance = existingWallet.balance.toFixed(2);
+      } else {
+        // Set a fixed demo balance for new wallets instead of random
+        bdogBalance = "2500.00";
+      }
     }
 
     // Store/update wallet data in database

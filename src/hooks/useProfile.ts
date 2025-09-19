@@ -61,6 +61,12 @@ export const useProfile = () => {
         // Sync with localStorage
         localStorage.setItem('bdog-balance', existingProfile.balance.toString());
         localStorage.setItem('bdog-balance2', existingProfile.balance2.toString());
+        if (existingProfile.bdog_balance) {
+          localStorage.setItem('bdog-balance-token', existingProfile.bdog_balance.toString());
+        }
+        if (existingProfile.v_bdog_earned) {
+          localStorage.setItem('bdog-v-earned', existingProfile.v_bdog_earned.toString());
+        }
         localStorage.setItem('bdog-grow', existingProfile.grow.toString());
         localStorage.setItem('bdog-grow1', existingProfile.grow1.toString());
         localStorage.setItem('bdog-bone', existingProfile.bone.toString());
@@ -132,7 +138,9 @@ export const useProfile = () => {
           user_id: userId,
           reg: `User${Date.now()}`,
           balance: Number(localStorage.getItem('bdog-balance')) || 0,
-          balance2: Number(localStorage.getItem('bdog-balance2')) || 0,
+          balance2: 1000, // Start with 1000 V-BDOG
+          bdog_balance: 0, // No BDOG tokens initially  
+          v_bdog_earned: 0, // No referral rewards initially
           grow: Number(localStorage.getItem('bdog-grow')) || 0,
           grow1: Number(localStorage.getItem('bdog-grow1')) || 1,
           bone: Number(localStorage.getItem('bdog-bone')) || 1000,
@@ -202,6 +210,9 @@ export const useProfile = () => {
       if (updates.bone !== undefined) {
         localStorage.setItem('bdog-bone', updates.bone.toString());
       }
+      if (updates.v_bdog_earned !== undefined) {
+        localStorage.setItem('bdog-v-earned', updates.v_bdog_earned.toString());
+      }
       if (updates.wallet_address !== undefined) {
         if (updates.wallet_address) {
           localStorage.setItem('bdog-api', updates.wallet_address);
@@ -235,7 +246,7 @@ export const useProfile = () => {
       
       // Update profile with new balance
       await updateProfile({
-        balance2,
+        bdog_balance: balance2, // BDOG tokens from blockchain
         wallet_address: walletAddress
       });
 

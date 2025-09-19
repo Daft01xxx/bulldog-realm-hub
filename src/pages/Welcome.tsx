@@ -9,48 +9,34 @@ const Welcome = () => {
   const { toast } = useToast();
   const { profile, loading, updateProfile } = useProfile();
 
+  useEffect(() => {
+    // Check for referral code in URL and store it
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralCode = urlParams.get('ref');
+    
+    if (referralCode) {
+      localStorage.setItem("bdog-referral-code", referralCode);
+      toast({
+        title: "Реферальный код получен!",
+        description: `Код: ${referralCode}`,
+      });
+    }
+  }, [toast]);
+
   const handleLogin = async () => {
     if (loading) return;
     
-    // Generate unique user IP simulation
-    const userIP = localStorage.getItem("bdog-user-ip") || `ip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem("bdog-user-ip", userIP);
-    
-    // Check if user exists
-    const hasAccount = localStorage.getItem("bdog-visited") && profile;
-    
-    if (hasAccount) {
-      // Existing user login
+    try {
+      // Always redirect to menu
+      navigate("/menu");
+    } catch (error) {
+      console.error('Login error:', error);
       toast({
-        title: "Успешный вход!",
-        description: "Добро пожаловать обратно в BDOG APP",
-      });
-    } else {
-      // New user - create account
-      localStorage.setItem("bdog-visited", "true");
-      localStorage.setItem("bdog-reg", `user_${Date.now()}`);
-      localStorage.setItem("bdog-balance", "0");
-      localStorage.setItem("bdog-balance2", "0");
-      localStorage.setItem("bdog-grow", "0");
-      localStorage.setItem("bdog-grow1", "1");
-      localStorage.setItem("bdog-bone", "1000");
-      
-      // Check for referral code and process it
-      const urlParams = new URLSearchParams(window.location.search);
-      const referralCode = urlParams.get('ref');
-      
-      if (referralCode) {
-        localStorage.setItem("bdog-referral-code", referralCode);
-      }
-      
-      toast({
-        title: "Аккаунт создан!",
-        description: "Добро пожаловать в экосистему BDOG",
+        title: "Ошибка",
+        description: "Произошла ошибка при входе",
+        variant: "destructive",
       });
     }
-    
-    // Always redirect to menu after 1 second
-    setTimeout(() => navigate("/menu"), 1000);
   };
 
   return (
@@ -97,6 +83,5 @@ const Welcome = () => {
     </div>
   );
 };
-
 
 export default Welcome;

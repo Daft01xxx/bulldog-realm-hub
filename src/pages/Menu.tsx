@@ -75,21 +75,26 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
       {/* Animated falling coins */}
-      <div className="fixed inset-0 pointer-events-none">
-        {[...Array(8)].map((_, i) => (
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        {[...Array(12)].map((_, i) => (
           <div
             key={i}
             className="absolute animate-fall-coin"
             style={{
-              left: `${10 + (i * 12)}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: '4s'
+              left: `${Math.random() * 90 + 5}%`,
+              top: `${Math.random() * 80 + 10}%`,
+              animationDelay: `${i * 0.3}s`,
+              animationDuration: `${3 + (Math.random() * 2)}s`
             }}
           >
             <img
               src={bulldogCoin}
               alt="BDOG Coin"
-              className="w-8 h-8 animate-slow-spin opacity-60"
+              className="w-20 h-20 animate-spin opacity-50"
+              style={{
+                animationDuration: `${1.5 + (Math.random() * 2)}s`,
+                animationDirection: i % 2 === 0 ? 'normal' : 'reverse'
+              }}
             />
           </div>
         ))}

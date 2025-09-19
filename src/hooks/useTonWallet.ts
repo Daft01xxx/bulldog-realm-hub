@@ -10,6 +10,15 @@ interface WalletData {
   bdogBalance: string;
   nfts: NFT[];
   lastUpdated: string;
+  walletInfo?: {
+    address: string;
+    shortAddress: string;
+    tonBalance: string;
+    bdogBalance: string;
+    nftCount: number;
+    lastSync: string;
+    isActive: boolean;
+  };
 }
 
 interface NFT {
@@ -17,6 +26,8 @@ interface NFT {
   name: string;
   image: string | null;
   collection: string;
+  description?: string | null;
+  verified?: boolean;
 }
 
 export const useBdogTonWallet = () => {
@@ -27,6 +38,7 @@ export const useBdogTonWallet = () => {
   
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Auto-fetch wallet data when wallet connects
   useEffect(() => {
@@ -36,6 +48,17 @@ export const useBdogTonWallet = () => {
       setWalletData(null);
     }
   }, [wallet?.account?.address]);
+
+  // Auto-refresh wallet data every 30 seconds when connected
+  useEffect(() => {
+    if (!wallet?.account?.address || !autoRefresh) return;
+
+    const interval = setInterval(() => {
+      fetchWalletData(wallet.account.address);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [wallet?.account?.address, autoRefresh]);
 
   const connectWallet = async () => {
     try {
@@ -89,7 +112,8 @@ export const useBdogTonWallet = () => {
         tonBalance: data.tonBalance || "0",
         bdogBalance: data.bdogBalance || "0",
         nfts: data.nftData || [],
-        lastUpdated: data.lastUpdated || new Date().toISOString()
+        lastUpdated: data.lastUpdated || new Date().toISOString(),
+        walletInfo: data.walletInfo || null
       };
 
       setWalletData(walletInfo);
@@ -137,6 +161,7 @@ export const useBdogTonWallet = () => {
     // Wallet data
     walletData,
     loading,
+    autoRefresh,
     
     // Profile data
     profile,
@@ -145,5 +170,6 @@ export const useBdogTonWallet = () => {
     connectWallet,
     disconnectWallet,
     refreshWalletData,
+    setAutoRefresh,
   };
 };

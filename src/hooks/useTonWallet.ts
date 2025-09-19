@@ -141,6 +141,7 @@ export const useBdogTonWallet = () => {
         await updateProfile({
           balance: Math.round(tonBalance * 1000000000), // Convert to nanotons for storage
           balance2: Math.round(bdogBalance),
+          bdog_balance: bdogBalance, // Store BDOG token balance
           wallet_address: address
         });
       }

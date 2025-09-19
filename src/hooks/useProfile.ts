@@ -9,6 +9,8 @@ interface UserProfile {
   reg?: string;
   balance: number;
   balance2: number;
+  bdog_balance?: number;
+  v_bdog_earned?: number;
   grow: number;
   grow1: number;
   bone: number;
@@ -87,7 +89,7 @@ export const useProfile = () => {
             // Increment referrer's referral count and calculate reward
             const { data: currentReferrer } = await supabase
               .from('profiles')
-              .select('referrals, balance')
+              .select('referrals, v_bdog_earned')
               .eq('user_id', referrerProfile.user_id)
               .maybeSingle();
               
@@ -116,7 +118,7 @@ export const useProfile = () => {
                 .from('profiles')
                 .update({ 
                   referrals: newReferralCount,
-                  balance: (currentReferrer.balance || 0) + balanceIncrease 
+                  v_bdog_earned: (currentReferrer.v_bdog_earned || 0) + balanceIncrease 
                 })
                 .eq('user_id', referrerProfile.user_id);
             }

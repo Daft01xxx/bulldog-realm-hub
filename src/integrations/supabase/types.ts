@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           balance: number | null
           balance2: number | null
+          bdog_balance: number | null
           bone: number | null
           created_at: string
           grow: number | null
@@ -29,11 +30,13 @@ export type Database = {
           reg: string | null
           updated_at: string
           user_id: string
+          v_bdog_earned: number | null
           wallet_address: string | null
         }
         Insert: {
           balance?: number | null
           balance2?: number | null
+          bdog_balance?: number | null
           bone?: number | null
           created_at?: string
           grow?: number | null
@@ -45,11 +48,13 @@ export type Database = {
           reg?: string | null
           updated_at?: string
           user_id: string
+          v_bdog_earned?: number | null
           wallet_address?: string | null
         }
         Update: {
           balance?: number | null
           balance2?: number | null
+          bdog_balance?: number | null
           bone?: number | null
           created_at?: string
           grow?: number | null
@@ -61,6 +66,7 @@ export type Database = {
           reg?: string | null
           updated_at?: string
           user_id?: string
+          v_bdog_earned?: number | null
           wallet_address?: string | null
         }
         Relationships: [

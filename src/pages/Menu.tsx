@@ -4,27 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Wallet, Gamepad2, Info, Users, Megaphone } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
+import bulldogCoin from "@/assets/bulldog-coin.png";
 
 const Menu = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const [reg, setReg] = useState("");
-  const [balance2, setBalance2] = useState("0");
+  const [bdogBalance, setBdogBalance] = useState("0");
+  const [vBdogBalance, setVBdogBalance] = useState("0");
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     // Load user data from profile or localStorage
     if (profile) {
       setReg(profile.reg || "");
-      // Show BDOG balance from wallet (balance2) + internal game balance (balance)
-      const totalBalance = (profile.balance2 || 0) + (profile.balance || 0);
-      setBalance2(totalBalance.toString());
+      // BDOG token balance (from wallet)
+      setBdogBalance((profile.bdog_balance || 0).toString());
+      // V-BDOG balance (internal game balance + referral rewards)
+      const totalVBdog = (profile.balance2 || 0) + (profile.v_bdog_earned || 0);
+      setVBdogBalance(totalVBdog.toString());
     } else {
       setReg(localStorage.getItem("bdog-reg") || "");
+      setBdogBalance("0");
       const localBalance2 = localStorage.getItem("bdog-balance2") || "0";
-      const localBalance = localStorage.getItem("bdog-balance") || "0";
-      const totalBalance = parseInt(localBalance2) + parseInt(localBalance);
-      setBalance2(totalBalance.toString());
+      setVBdogBalance(localBalance2);
     }
     
     // Trigger animations
@@ -70,9 +73,30 @@ const Menu = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background px-4 py-12">
+    <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
+      {/* Animated falling coins */}
+      <div className="fixed inset-0 pointer-events-none">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-fall-coin"
+            style={{
+              left: `${10 + (i * 12)}%`,
+              animationDelay: `${i * 0.5}s`,
+              animationDuration: '4s'
+            }}
+          >
+            <img
+              src={bulldogCoin}
+              alt="BDOG Coin"
+              className="w-8 h-8 animate-slow-spin opacity-60"
+            />
+          </div>
+        ))}
+      </div>
+
       {/* Header with title */}
-      <div className="text-center mb-12 pt-8">
+      <div className="text-center mb-12 pt-8 relative z-10">
         <h1 
           className={`text-5xl md:text-7xl font-bold text-gradient animate-glow-text mb-8 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
@@ -92,20 +116,25 @@ const Menu = () => {
             <p className="text-lg text-muted-foreground">
               Пользователь: <span className="text-gold font-semibold">{reg}</span>
             </p>
-            <p className="text-xl text-foreground">
-              Общий баланс: <span className="text-gradient font-bold">{balance2} BDOG</span>
-            </p>
-            {profile && profile.balance2 > 0 && (
-              <p className="text-sm text-muted-foreground">
-                (включая {profile.balance2} BDOG из кошелька)
+            <div className="space-y-2">
+              <p className="text-xl text-foreground">
+                BDOG токены: <span className="text-gradient font-bold">{bdogBalance}</span>
               </p>
-            )}
+              <p className="text-xl text-foreground">
+                V-BDOG баланс: <span className="text-gradient font-bold">{vBdogBalance}</span>
+              </p>
+              {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
+                <p className="text-sm text-gold">
+                  (включая {profile.v_bdog_earned} V-BDOG за рефералов)
+                </p>
+              )}
+            </div>
           </div>
         </Card>
       </div>
 
       {/* Menu grid */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;

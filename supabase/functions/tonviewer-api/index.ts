@@ -76,8 +76,20 @@ serve(async (req) => {
       console.error('Error fetching NFTs:', nftError);
     }
 
-    // Mock BDOG balance for now - in production you'd need the actual BDOG jetton contract address
-    bdogBalance = (Math.random() * 5000 + 1000).toFixed(2);
+    // Check if we have existing BDOG balance in database to maintain consistency
+    const { data: existingWallet } = await supabase
+      .from('wallet_data')
+      .select('balance')
+      .eq('wallet_address', walletAddress)
+      .single();
+    
+    if (existingWallet && existingWallet.balance > 0) {
+      // Use existing balance to maintain consistency
+      bdogBalance = existingWallet.balance.toFixed(2);
+    } else {
+      // Set a fixed demo balance for new wallets instead of random
+      bdogBalance = "2500.00";
+    }
 
     // Store/update wallet data in database
     const { error: upsertError } = await supabase

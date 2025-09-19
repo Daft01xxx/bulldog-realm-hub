@@ -24,14 +24,14 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
       const adjustedTime = time - animationDelay;
       
       if (adjustedTime > 0) {
-        // Falling animation from top to BDOG title level
+        // Falling animation from top to bottom of page (to "пиши нам")
         const fallProgress = ((adjustedTime % animationDuration) / animationDuration);
-        meshRef.current.position.y = 12 - (fallProgress * 14); // From +12 to -2 (stops at BDOG level)
+        meshRef.current.position.y = 12 - (fallProgress * 24); // From +12 to -12 (full page)
         
-        // 3D rotation around all axes - 2x slower
-        meshRef.current.rotation.x = adjustedTime * 1;
-        meshRef.current.rotation.y = adjustedTime * 0.75;
-        meshRef.current.rotation.z = adjustedTime * 0.4;
+        // 3D rotation around all axes - 1.5x faster than before
+        meshRef.current.rotation.x = adjustedTime * 1.5;
+        meshRef.current.rotation.y = adjustedTime * 1.125;
+        meshRef.current.rotation.z = adjustedTime * 0.6;
         
         // Opacity fade in/out
         const material = meshRef.current.material as THREE.MeshStandardMaterial;
@@ -77,8 +77,8 @@ export default function FallingCoins3D({ count = 5 }: FallingCoins3DProps) {
       12, // start from top
       (Math.random() - 0.5) * 10 // z position - deeper spread
     ] as [number, number, number],
-    animationDelay: i * 1.2, // More delay between coins
-    animationDuration: 12 + Math.random() * 6, // 2x slower falling (was 6+3, now 12+6)
+    animationDelay: i * 0.6, // 2x smaller delay between coins (was 1.2, now 0.6)
+    animationDuration: 8 + Math.random() * 4, // 1.5x faster than previous (was 12+6, now 8+4)
     scale: 2.5 + Math.random() * 1 // Much larger coins
   }));
 

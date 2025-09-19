@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTonConnectUI, useTonWallet } from '@tonconnect/ui-react';
+import { useTonConnectUI, useTonWallet, useTonAddress, useIsConnectionRestored } from '@tonconnect/ui-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfile } from '@/hooks/useProfile';
@@ -33,8 +33,11 @@ interface NFT {
 export const useBdogTonWallet = () => {
   const [tonConnectUI] = useTonConnectUI();
   const wallet = useTonWallet();
+  const userFriendlyAddress = useTonAddress();
+  const rawAddress = useTonAddress(false);
+  const connectionRestored = useIsConnectionRestored();
   const { toast } = useToast();
-  const { profile, updateProfile, fetchWalletBalance } = useProfile();
+  const { profile, updateProfile } = useProfile();
   
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,12 +45,12 @@ export const useBdogTonWallet = () => {
 
   // Auto-fetch wallet data when wallet connects
   useEffect(() => {
-    if (wallet?.account?.address) {
+    if (wallet?.account?.address && connectionRestored) {
       fetchWalletData(wallet.account.address);
-    } else {
+    } else if (!wallet) {
       setWalletData(null);
     }
-  }, [wallet?.account?.address]);
+  }, [wallet?.account?.address, connectionRestored]);
 
   // Auto-refresh wallet data every 30 seconds when connected
   useEffect(() => {
@@ -157,10 +160,15 @@ export const useBdogTonWallet = () => {
     }
   };
 
+  // Don't return anything until connection is restored
+  if (!connectionRestored) {
+    return null;
+  }
+
   return {
     // Wallet connection state
     isConnected: !!wallet?.account,
-    walletAddress: wallet?.account?.address,
+    walletAddress: userFriendlyAddress || rawAddress,
     
     // Wallet data
     walletData,

@@ -9,6 +9,18 @@ const Wallet = () => {
   const navigate = useNavigate();
   const { isConnected, walletAddress, connectWallet } = useBdogTonWallet();
 
+  // Don't render anything until connection is restored
+  if (isConnected === null) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="text-foreground mt-4">Подключение к кошельку...</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleConnect = async () => {
     if (isConnected && walletAddress) {
       navigate("/connected-wallet");

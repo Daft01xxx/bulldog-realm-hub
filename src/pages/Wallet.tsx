@@ -21,18 +21,6 @@ const Wallet = () => {
     }
   }, [isConnected, walletAddress, connectionRestored, navigate]);
 
-  // Show loading while connection is being restored
-  if (!connectionRestored) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="text-foreground mt-4">Инициализация кошелька...</p>
-        </div>
-      </div>
-    );
-  }
-
   const handleConnect = async () => {
     console.log('handleConnect called, isConnected:', isConnected, 'walletAddress:', walletAddress);
     
@@ -44,6 +32,18 @@ const Wallet = () => {
       await connectWallet();
     }
   };
+
+  // Show loading while connection is being restored
+  if (!connectionRestored) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="text-foreground mt-4">Инициализация кошелька...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background px-4 py-12">

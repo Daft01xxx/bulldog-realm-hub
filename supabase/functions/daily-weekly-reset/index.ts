@@ -110,10 +110,10 @@ Deno.serve(async (req) => {
         }
       }
 
-      // 3. Reset all grow values to 1
+      // 3. Reset all grow values to 0
       const { error: resetGrowError } = await supabaseClient
         .from('profiles')
-        .update({ grow: 1 })
+        .update({ grow: 0 })
         .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
 
       if (resetGrowError) {
@@ -121,12 +121,12 @@ Deno.serve(async (req) => {
         throw resetGrowError
       }
 
-      console.log('Weekly reset completed: All grow reset to 1, top 5 players rewarded')
+      console.log('Weekly reset completed: All grow reset to 0, top 5 players rewarded')
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'Weekly reset completed: All grow reset to 1, top 5 players rewarded',
+          message: 'Weekly reset completed: All grow reset to 0, top 5 players rewarded',
           topPlayers: topPlayers?.map(p => ({ name: p.reg || 'Anonymous', grow: p.grow })),
           timestamp: new Date().toISOString()
         }),

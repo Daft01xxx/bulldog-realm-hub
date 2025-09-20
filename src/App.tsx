@@ -26,7 +26,8 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Welcome />} />
+            <Route path="/" element={<Menu />} />
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/wallet" element={<Wallet />} />
             <Route path="/connected-wallet" element={<ConnectedWallet />} />

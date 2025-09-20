@@ -16,6 +16,7 @@ const Game = () => {
   const [grow1, setGrow1] = useState(1);
   const [bone, setBone] = useState(1000);
   const [timeLeft, setTimeLeft] = useState("");
+  const [weeklyTimeLeft, setWeeklyTimeLeft] = useState("");
   const [clickEffect, setClickEffect] = useState<{id: number, x: number, y: number}[]>([]);
   const [showBooster, setShowBooster] = useState(false);
   const [showRules, setShowRules] = useState(false);
@@ -52,6 +53,7 @@ const Game = () => {
     calculateTimeLeft();
     const timer = setInterval(() => {
       calculateTimeLeft();
+      calculateWeeklyTimeLeft();
       calculateBoosterTimeLeft();
     }, 1000);
     return () => clearInterval(timer);
@@ -94,6 +96,29 @@ const Game = () => {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
     
     setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+  };
+
+  const calculateWeeklyTimeLeft = () => {
+    const now = new Date();
+    const nextSunday = new Date(now);
+    
+    // Calculate days until Sunday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+    const daysUntilSunday = (7 - now.getDay()) % 7;
+    if (daysUntilSunday === 0 && now.getHours() >= 0) {
+      // If it's Sunday and past midnight, set to next Sunday
+      nextSunday.setDate(now.getDate() + 7);
+    } else {
+      nextSunday.setDate(now.getDate() + daysUntilSunday);
+    }
+    nextSunday.setHours(0, 0, 0, 0);
+    
+    const diff = nextSunday.getTime() - now.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    
+    setWeeklyTimeLeft(`${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
   };
 
   const calculateBoosterTimeLeft = () => {
@@ -325,18 +350,36 @@ const Game = () => {
       {topPlayers.length > 0 && (
         <div className="max-w-md mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
           <h3 className="text-xl font-bold text-foreground mb-4 text-center">
-            Топ роста
+            🏆 Топ роста
           </h3>
           
           <Card className="card-glow p-4">
+            <div className="text-center mb-4 border-b border-border pb-4">
+              <div className="text-sm text-muted-foreground mb-1">
+                Еженедельный сброс через:
+              </div>
+              <div className="text-lg font-bold text-gold">
+                {weeklyTimeLeft}
+              </div>
+              <div className="text-xs text-muted-foreground mt-2">
+                Топ-5 получат по 5,000,000 V-BDOG!
+              </div>
+            </div>
             <div className="space-y-2">
               {topPlayers.map((player, index) => (
                 <div 
                   key={player.name + index} 
-                  className="flex justify-between items-center p-2 rounded"
+                  className={`flex justify-between items-center p-2 rounded ${
+                    index === 0 ? 'bg-gold/20 border border-gold/30' : 
+                    index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
+                    index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
+                    'bg-muted/50'
+                  }`}
                 >
                   <span className="flex items-center">
-                    <span className="text-gold font-bold mr-2">#{index + 1}</span>
+                    <span className="font-bold mr-2">
+                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                    </span>
                     <span className="text-foreground">{player.name}</span>
                   </span>
                   <span className="text-gold font-semibold">

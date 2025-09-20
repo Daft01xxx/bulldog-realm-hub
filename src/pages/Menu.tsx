@@ -19,7 +19,6 @@ const Menu = () => {
   const [vBdogBalance, setVBdogBalance] = useState("0");
   const [animate, setAnimate] = useState(false);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
-  const [timeUntilNext, setTimeUntilNext] = useState("");
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -39,57 +38,14 @@ const Menu = () => {
       setVBdogBalance(localBalance2);
     }
     
-    // Check if daily gift can be claimed and update timer
-    const lastDailyGiftTime = localStorage.getItem("bdog-last-daily-gift-time");
-    if (lastDailyGiftTime) {
-      const lastGiftDate = new Date(parseInt(lastDailyGiftTime));
-      const now = new Date();
-      const nextGiftTime = new Date(lastGiftDate.getTime() + 24 * 60 * 60 * 1000);
-      
-      if (now < nextGiftTime) {
-        setCanClaimDaily(false);
-        updateTimer(nextGiftTime);
-        
-        // Set up interval to update timer
-        const interval = setInterval(() => {
-          const currentTime = new Date();
-          if (currentTime >= nextGiftTime) {
-            setCanClaimDaily(true);
-            setTimeUntilNext("");
-            clearInterval(interval);
-          } else {
-            updateTimer(nextGiftTime);
-          }
-        }, 1000);
-        
-        return () => clearInterval(interval);
-      } else {
-        setCanClaimDaily(true);
-        setTimeUntilNext("");
-      }
-    } else {
-      setCanClaimDaily(true);
-    }
+    // Check if daily gift can be claimed
+    const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
+    const today = new Date().toDateString();
+    setCanClaimDaily(!lastDailyGift || lastDailyGift !== today);
     
     // Trigger animations
     setAnimate(true);
   }, [profile, isConnected, walletData]);
-
-  const updateTimer = (nextGiftTime: Date) => {
-    const now = new Date();
-    const diff = nextGiftTime.getTime() - now.getTime();
-    
-    if (diff <= 0) {
-      setTimeUntilNext("");
-      return;
-    }
-    
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    setTimeUntilNext(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-  };
 
   const claimDailyGift = async () => {
     if (!canClaimDaily) {
@@ -134,26 +90,9 @@ const Menu = () => {
         }
       }
 
-      // Mark daily gift as claimed with timestamp
-      const now = new Date();
-      localStorage.setItem("bdog-last-daily-gift-time", now.getTime().toString());
+      // Mark daily gift as claimed
+      localStorage.setItem("bdog-last-daily-gift", new Date().toDateString());
       setCanClaimDaily(false);
-      
-      // Start timer for next gift
-      const nextGiftTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-      updateTimer(nextGiftTime);
-      
-      // Set up interval to update timer
-      const interval = setInterval(() => {
-        const currentTime = new Date();
-        if (currentTime >= nextGiftTime) {
-          setCanClaimDaily(true);
-          setTimeUntilNext("");
-          clearInterval(interval);
-        } else {
-          updateTimer(nextGiftTime);
-        }
-      }, 1000);
 
       toast({
         title: "Ежедневный подарок получен! 🎉",
@@ -262,14 +201,6 @@ const Menu = () => {
             <Gift className="w-5 h-5 mr-2" />
             {canClaimDaily ? "Получить ежедневный подарок" : "Подарок уже получен"}
           </Button>
-          {timeUntilNext && (
-            <p className="text-sm text-gold mt-2">
-              До следующего подарка: {timeUntilNext}
-            </p>
-          )}
-          <p className="text-xs text-muted-foreground mt-1 opacity-70">
-            Обновляется каждые 24 часа
-          </p>
         </div>
       </div>
 

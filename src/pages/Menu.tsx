@@ -267,6 +267,9 @@ const Menu = () => {
               До следующего подарка: {timeUntilNext}
             </p>
           )}
+          <p className="text-xs text-muted-foreground mt-1 opacity-70">
+            Обновляется каждые 24 часа
+          </p>
         </div>
       </div>
 

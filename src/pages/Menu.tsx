@@ -2,21 +2,23 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import { toast } from "@/hooks/use-toast";
 import FallingCoins3D from "@/components/FallingCoin3D";
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogSilverLogo from "@/assets/bdog-silver-logo.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
-  const { profile } = useProfile();
+  const { profile, updateProfile } = useProfile();
   const { isConnected, walletData } = useBdogTonWallet();
   const [reg, setReg] = useState("");
   const [bdogBalance, setBdogBalance] = useState("0");
   const [vBdogBalance, setVBdogBalance] = useState("0");
   const [animate, setAnimate] = useState(false);
+  const [canClaimDaily, setCanClaimDaily] = useState(false);
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -36,9 +38,74 @@ const Menu = () => {
       setVBdogBalance(localBalance2);
     }
     
+    // Check if daily gift can be claimed
+    const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
+    const today = new Date().toDateString();
+    setCanClaimDaily(!lastDailyGift || lastDailyGift !== today);
+    
     // Trigger animations
     setAnimate(true);
   }, [profile, isConnected, walletData]);
+
+  const claimDailyGift = async () => {
+    if (!canClaimDaily) {
+      toast({
+        title: "Ежедневный подарок",
+        description: "Подарок уже получен сегодня! Попробуйте завтра.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Random reward logic
+    const random = Math.floor(Math.random() * 100) + 1;
+    let reward = "";
+    let updateData: any = {};
+
+    if (random <= 10) {
+      // 10% chance for 10,000 V-BDOG
+      reward = "10,000 V-BDOG";
+      updateData.balance2 = (profile?.balance2 || 0) + 10000;
+    } else if (random <= 15) {
+      // 5% chance for 20,000 V-BDOG
+      reward = "20,000 V-BDOG";
+      updateData.balance2 = (profile?.balance2 || 0) + 20000;
+    } else if (random <= 65) {
+      // 50% chance for 100 bones
+      reward = "100 косточек";
+      updateData.bone = (profile?.bone || 1000) + 100;
+    } else {
+      // 35% chance for growth +100
+      reward = "Рост +100";
+      updateData.grow = (profile?.grow || 0) + 100;
+    }
+
+    try {
+      if (profile) {
+        await updateProfile(updateData);
+      } else {
+        // Update localStorage if no profile
+        if (updateData.balance2) {
+          localStorage.setItem("bdog-balance2", updateData.balance2.toString());
+        }
+      }
+
+      // Mark daily gift as claimed
+      localStorage.setItem("bdog-last-daily-gift", new Date().toDateString());
+      setCanClaimDaily(false);
+
+      toast({
+        title: "Ежедневный подарок получен! 🎉",
+        description: `Поздравляем! Вы получили: ${reward}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Ошибка",
+        description: "Не удалось получить ежедневный подарок. Попробуйте еще раз.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const menuItems = [
     {
@@ -120,6 +187,21 @@ const Menu = () => {
             </div>
           </div>
         </Card>
+
+        {/* Daily Gift Button */}
+        <div className="text-center mb-8">
+          <Button
+            onClick={claimDailyGift}
+            disabled={!canClaimDaily}
+            className={`button-gradient-gold px-8 py-3 text-lg font-semibold ${
+              animate ? 'animate-bounce-in' : 'opacity-0'
+            } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
+            style={{ animationDelay: '0.5s' }}
+          >
+            <Gift className="w-5 h-5 mr-2" />
+            {canClaimDaily ? "Получить ежедневный подарок" : "Подарок уже получен"}
+          </Button>
+        </div>
       </div>
 
       {/* Menu grid */}

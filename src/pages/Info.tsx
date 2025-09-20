@@ -220,6 +220,33 @@ const Info = () => {
             </div>
           </div>
         </Card>
+
+        <Card className="card-glow p-6">
+          <h2 className="text-2xl font-bold text-gradient mb-6">
+            Премиальные NFT
+          </h2>
+          
+          <div className="space-y-4 text-muted-foreground">
+            <p>
+              Премиальные NFT - это NFT при покупке которых вы будете получать 5% дохода от приложения 
+              (реклама, комиссия, донат).
+            </p>
+            <p>
+              Владельцы премиальных NFT становятся частью элитного сообщества и получают эксклюзивные 
+              возможности для заработка в экосистеме BDOG.
+            </p>
+            
+            <div className="flex justify-center mt-6">
+              <Button
+                onClick={() => window.open("https://getgems.io/collection/EQCuKGJDBPi4dGWuj2VP6B_o2ejoDNiey67NwOGkRjVdDI6b", "_blank")}
+                className="button-gradient-gold px-8 py-3 text-lg font-semibold hover-lift"
+              >
+                <ExternalLink className="w-5 h-5 mr-2" />
+                Купить премиальный NFT
+              </Button>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );

@@ -114,7 +114,7 @@ const Menu = () => {
               </p>
               {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
                 <p className="text-sm text-gold">
-                  (включая {profile.v_bdog_earned} V-BDOG за рефералов)
+                  (включая {profile.v_bdog_earned.toLocaleString()} V-BDOG за рефералов)
                 </p>
               )}
             </div>

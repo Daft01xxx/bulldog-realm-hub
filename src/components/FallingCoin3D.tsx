@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, Suspense } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { TextureLoader } from 'three';
 import * as THREE from 'three';
@@ -13,10 +13,18 @@ interface Coin3DProps {
 
 function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DProps) {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const texture = useLoader(TextureLoader, bulldogCoinImage);
   
-  // Set texture properties for better appearance
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  // Use try-catch pattern with fallback
+  let texture: THREE.Texture | null = null;
+  try {
+    texture = useLoader(TextureLoader, bulldogCoinImage);
+    // Set texture properties for better appearance
+    if (texture) {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    }
+  } catch (error) {
+    console.warn('Failed to load coin texture:', error);
+  }
   
   useFrame((state) => {
     if (meshRef.current) {
@@ -55,6 +63,7 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
       <cylinderGeometry args={[1, 1, 0.1, 32]} />
       <meshStandardMaterial 
         map={texture}
+        color={texture ? "#ffffff" : "#ffd700"} // Fallback golden color if texture fails
         transparent
         opacity={0.7}
         metalness={0.3}
@@ -66,11 +75,7 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
   );
 }
 
-interface FallingCoins3DProps {
-  count?: number;
-}
-
-export default function FallingCoins3D({ count = 15 }: FallingCoins3DProps) {
+function FallingCoinsScene({ count }: { count: number }) {
   const coins = Array.from({ length: count }, (_, i) => ({
     id: i,
     position: [
@@ -84,11 +89,7 @@ export default function FallingCoins3D({ count = 15 }: FallingCoins3DProps) {
   }));
 
   return (
-    <Canvas
-      className="fixed inset-0 pointer-events-none z-5"
-      camera={{ position: [0, 0, 10], fov: 50 }}
-      style={{ background: 'transparent' }}
-    >
+    <>
       <ambientLight intensity={0.3} />
       <directionalLight 
         position={[5, 5, 5]} 
@@ -110,6 +111,24 @@ export default function FallingCoins3D({ count = 15 }: FallingCoins3DProps) {
           scale={coin.scale}
         />
       ))}
+    </>
+  );
+}
+
+interface FallingCoins3DProps {
+  count?: number;
+}
+
+export default function FallingCoins3D({ count = 15 }: FallingCoins3DProps) {
+  return (
+    <Canvas
+      className="fixed inset-0 pointer-events-none z-5"
+      camera={{ position: [0, 0, 10], fov: 50 }}
+      style={{ background: 'transparent' }}
+    >
+      <Suspense fallback={null}>
+        <FallingCoinsScene count={count} />
+      </Suspense>
     </Canvas>
   );
 }

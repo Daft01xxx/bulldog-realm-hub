@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
 import { useToast } from '@/hooks/use-toast';
@@ -30,20 +31,29 @@ export default function Tasks() {
   const { profile, updateProfile } = useProfile();
   const { toast } = useToast();
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
+  const [tapCount, setTapCount] = useState(0);
+  const [dailyStreak, setDailyStreak] = useState(0);
 
-  // Load completed tasks from localStorage
+  // Load completed tasks from localStorage and setup real-time updates
   useEffect(() => {
     const completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
     setCompletedTasks(completed);
+    
+    // Update tap count and daily streak
+    const updateCounts = () => {
+      setTapCount(Number(localStorage.getItem('bdog-total-taps')) || 0);
+      setDailyStreak(Number(localStorage.getItem('bdog-daily-streak')) || 0);
+    };
+    
+    updateCounts();
+    
+    // Check every second for updates
+    const interval = setInterval(updateCounts, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const getTapCount = () => {
-    return Number(localStorage.getItem('bdog-total-taps')) || 0;
-  };
-
-  const getDailyStreak = () => {
-    return Number(localStorage.getItem('bdog-daily-streak')) || 0;
-  };
+  const getTapCount = () => tapCount;
+  const getDailyStreak = () => dailyStreak;
 
   const tasks: Task[] = [
     {
@@ -127,7 +137,7 @@ export default function Tasks() {
           >
             ← Назад
           </Button>
-          <h1 className="text-xl font-bold text-center">Задания</h1>
+          <h1 className="text-xl font-bold text-center text-gold">Задания</h1>
           <Button 
             variant="outline" 
             onClick={() => navigate('/menu')}
@@ -149,7 +159,9 @@ export default function Tasks() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-primary/10">
-                        {task.icon}
+                        {React.cloneElement(task.icon as React.ReactElement, { 
+                          className: "h-6 w-6 icon-gold" 
+                        })}
                       </div>
                       <div>
                         <CardTitle className="text-base">{task.title}</CardTitle>
@@ -177,7 +189,7 @@ export default function Tasks() {
                   {/* Reward and Action */}
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="gap-1">
-                      <Gift className="h-3 w-3" />
+                      <Gift className="h-3 w-3 icon-gold" />
                       +{task.reward.amount} {task.reward.type === 'v_bdog' ? 'V-BDOG' : 'косточек'}
                     </Badge>
                     
@@ -185,7 +197,7 @@ export default function Tasks() {
                       <Button 
                         size="sm" 
                         onClick={() => handleClaimReward(task)}
-                        className="button-gradient-gold"
+                        className="button-gradient-gold button-glow"
                       >
                         Забрать награду
                       </Button>

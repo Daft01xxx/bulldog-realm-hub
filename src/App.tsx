@@ -12,6 +12,7 @@ import Game from "./pages/Game";
 import Info from "./pages/Info";
 import Referral from "./pages/Referral";
 import Tasks from "./pages/Tasks";
+import BdogPay from "./pages/BdogPay";
 import Promotion from "./pages/Promotion";
 import Admin from "./pages/Admin";
 import Ban from "./pages/Ban";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/info" element={<Info />} />
             <Route path="/referral" element={<Referral />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/bdogpay" element={<BdogPay />} />
             <Route path="/promotion" element={<Promotion />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/ban" element={<Ban />} />

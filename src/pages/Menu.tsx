@@ -111,7 +111,7 @@ const Menu = () => {
     {
       title: "Кошелёк BDOG",
       icon: Wallet,
-      path: "/wallet",
+      path: isConnected ? "/connected-wallet" : "/wallet",
       description: "Управляйте своими токенами",
       delay: "0.1s"
     },
@@ -190,15 +190,15 @@ const Menu = () => {
 
         {/* Daily Gift Button */}
         <div className="text-center mb-8">
-          <Button
+            <Button
             onClick={claimDailyGift}
             disabled={!canClaimDaily}
-            className={`button-gradient-gold px-8 py-3 text-lg font-semibold ${
+            className={`button-gradient-gold button-glow px-8 py-3 text-lg font-semibold ${
               animate ? 'animate-bounce-in' : 'opacity-0'
             } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
             style={{ animationDelay: '0.5s' }}
           >
-            <Gift className="w-5 h-5 mr-2" />
+            <Gift className="w-5 h-5 mr-2 icon-gold" />
             {canClaimDaily ? "Получить ежедневный подарок" : "Подарок уже получен"}
           </Button>
           <p className="text-xs text-muted-foreground mt-2 opacity-70">
@@ -224,9 +224,9 @@ const Menu = () => {
                 <div className="flex items-center space-x-4">
                   <div className="p-3 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-8 h-8 rounded-full object-contain" />
+                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-8 h-8 rounded-full object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : (
-                      <IconComponent className="w-8 h-8 text-gold" />
+                      <IconComponent className="w-8 h-8 icon-gold" />
                     )}
                   </div>
                   <div className="flex-1">

@@ -332,6 +332,28 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-subtle);
   }
 
+  /* Golden glow effects for all icons and buttons */
+  .icon-gold {
+    color: hsl(var(--gold));
+    filter: drop-shadow(0 0 4px hsl(var(--gold) / 0.4));
+    transition: all 0.3s ease;
+  }
+
+  .icon-gold:hover {
+    filter: drop-shadow(0 0 8px hsl(var(--gold) / 0.7)) drop-shadow(0 0 16px hsl(var(--gold) / 0.3));
+    transform: scale(1.05);
+  }
+
+  .button-glow {
+    box-shadow: 0 0 10px hsl(var(--gold) / 0.3), inset 0 1px 0 hsl(var(--gold) / 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .button-glow:hover {
+    box-shadow: 0 0 20px hsl(var(--gold) / 0.5), 0 0 40px hsl(var(--gold) / 0.2), inset 0 1px 0 hsl(var(--gold) / 0.2);
+    transform: translateY(-2px) scale(1.02);
+  }
+
   .shadow-glow {
     box-shadow: var(--shadow-primary);
   }

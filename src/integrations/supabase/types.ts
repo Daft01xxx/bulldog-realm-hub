@@ -111,6 +111,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      find_referrer_safely: {
+        Args: { referral_code: string }
+        Returns: {
+          referrals: number
+          user_id: string
+          v_bdog_earned: number
+        }[]
+      }
       validate_referral_code: {
         Args: { referral_code: string }
         Returns: string

@@ -113,52 +113,42 @@ export const useProfile = () => {
         let referred_by = null;
         
         if (referralCode) {
-          // Find the referrer profile
-          const { data: referrerProfile } = await supabase
-            .from('profiles')
-            .select('user_id')
-            .eq('reg', referralCode)
-            .maybeSingle();
+          // Use secure function to find referrer and get their data safely
+          const { data: referrerData } = await supabase.rpc('find_referrer_safely', {
+            referral_code: referralCode
+          });
             
-          if (referrerProfile) {
-            referred_by = referrerProfile.user_id;
+          if (referrerData && referrerData.length > 0) {
+            const referrer = referrerData[0];
+            referred_by = referrer.user_id;
             
-            // Increment referrer's referral count and calculate reward
-            const { data: currentReferrer } = await supabase
-              .from('profiles')
-              .select('referrals, v_bdog_earned')
-              .eq('user_id', referrerProfile.user_id)
-              .maybeSingle();
-              
-            if (currentReferrer) {
-              const newReferralCount = (currentReferrer.referrals || 0) + 1;
-              
-              // Calculate reward based on referral count
-              const rewards = [
-                { count: 1, reward: 5000 },
-                { count: 2, reward: 6000 },
-                { count: 3, reward: 7000 },
-                { count: 10, reward: 10000 },
-                { count: 20, reward: 30000 },
-                { count: 50, reward: 100000 },
-                { count: 100, reward: 300000 },
-              ];
-              
-              const rewardTier = rewards.find(r => r.count === newReferralCount);
-              let balanceIncrease = 0;
-              if (rewardTier) {
-                balanceIncrease = rewardTier.reward;
-              }
-              
-              // Update referrer
-              await supabase
-                .from('profiles')
-                .update({ 
-                  referrals: newReferralCount,
-                  v_bdog_earned: (currentReferrer.v_bdog_earned || 0) + balanceIncrease 
-                })
-                .eq('user_id', referrerProfile.user_id);
+            const newReferralCount = (referrer.referrals || 0) + 1;
+            
+            // Calculate reward based on referral count
+            const rewards = [
+              { count: 1, reward: 5000 },
+              { count: 2, reward: 6000 },
+              { count: 3, reward: 7000 },
+              { count: 10, reward: 10000 },
+              { count: 20, reward: 30000 },
+              { count: 50, reward: 100000 },
+              { count: 100, reward: 300000 },
+            ];
+            
+            const rewardTier = rewards.find(r => r.count === newReferralCount);
+            let balanceIncrease = 0;
+            if (rewardTier) {
+              balanceIncrease = rewardTier.reward;
             }
+            
+            // Update referrer
+            await supabase
+              .from('profiles')
+              .update({ 
+                referrals: newReferralCount,
+                v_bdog_earned: (referrer.v_bdog_earned || 0) + balanceIncrease 
+              })
+              .eq('user_id', referrer.user_id);
           }
           
           // Clear the referral code from localStorage

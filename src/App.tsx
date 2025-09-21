@@ -12,6 +12,7 @@ import Game from "./pages/Game";
 import Info from "./pages/Info";
 import Referral from "./pages/Referral";
 import Promotion from "./pages/Promotion";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/info" element={<Info />} />
             <Route path="/referral" element={<Referral />} />
             <Route path="/promotion" element={<Promotion />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

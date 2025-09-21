@@ -36,14 +36,19 @@ const Game = () => {
       setBone(Math.min(1000, Number(localStorage.getItem("bdog-bone")) || 1000)); // Ensure bone doesn't exceed 1000
     }
     
-    // Load booster end time from localStorage
+    // Load booster end time from profile or localStorage
+    const profileBoosterExpires = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
     const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
-    if (savedBoosterEndTime) {
+    
+    if (profileBoosterExpires && profileBoosterExpires > Date.now()) {
+      setBoosterEndTime(profileBoosterExpires);
+    } else if (savedBoosterEndTime) {
       const endTime = parseInt(savedBoosterEndTime);
       if (endTime > Date.now()) {
         setBoosterEndTime(endTime);
       } else {
         localStorage.removeItem("bdog-booster-end");
+        localStorage.removeItem("bdog-booster-expires");
       }
     }
     
@@ -51,6 +56,7 @@ const Game = () => {
     loadTopPlayers();
     
     calculateTimeLeft();
+    calculateWeeklyTimeLeft(); // Make initial call
     const timer = setInterval(() => {
       calculateTimeLeft();
       calculateWeeklyTimeLeft();
@@ -98,43 +104,72 @@ const Game = () => {
     setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
   };
 
-  const calculateWeeklyTimeLeft = () => {
-    const now = new Date();
-    const nextSunday = new Date(now);
-    
-    // Calculate days until Sunday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-    const daysUntilSunday = (7 - now.getDay()) % 7;
-    if (daysUntilSunday === 0 && now.getHours() >= 0) {
-      // If it's Sunday and past midnight, set to next Sunday
-      nextSunday.setDate(now.getDate() + 7);
-    } else {
-      nextSunday.setDate(now.getDate() + daysUntilSunday);
+  const calculateWeeklyTimeLeft = async () => {
+    try {
+      // Get next Sunday 10:00 AM Moscow time from database function
+      const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset');
+      
+      if (error) {
+        console.error('Error getting next reset time:', error);
+        // Fallback to local calculation
+        const now = new Date();
+        const nextSunday = new Date(now);
+        const daysUntilSunday = (7 - now.getDay()) % 7;
+        if (daysUntilSunday === 0 && now.getHours() >= 10) {
+          nextSunday.setDate(now.getDate() + 7);
+        } else {
+          nextSunday.setDate(now.getDate() + daysUntilSunday);
+        }
+        nextSunday.setHours(10, 0, 0, 0); // 10:00 AM
+        
+        const diff = nextSunday.getTime() - now.getTime();
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        setWeeklyTimeLeft(`${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        return;
+      }
+      
+      const resetTime = new Date(nextReset);
+      const now = new Date();
+      const diff = resetTime.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setWeeklyTimeLeft("0д 00:00:00");
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setWeeklyTimeLeft(`${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    } catch (error) {
+      console.error('Error calculating weekly time left:', error);
+      setWeeklyTimeLeft("Ошибка расчета");
     }
-    nextSunday.setHours(0, 0, 0, 0);
-    
-    const diff = nextSunday.getTime() - now.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    
-    setWeeklyTimeLeft(`${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
   };
 
   const calculateBoosterTimeLeft = () => {
-    if (!boosterEndTime) {
+    // Check if user has active booster from profile
+    const expirationTime = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : boosterEndTime;
+    
+    if (!expirationTime) {
       setBoosterTimeLeft("");
       return;
     }
 
     const now = Date.now();
-    if (now >= boosterEndTime) {
-      // Booster expired, reset grow1
-      const resetGrow1 = Math.max(1, grow1 / 2);
+    if (now >= expirationTime) {
+      // Booster expired, reset grow1 using database function
+      const resetGrow1 = 1;
       setGrow1(resetGrow1);
-      updateProfile({ grow1: resetGrow1 });
-      localStorage.setItem("bdog-grow1", resetGrow1.toString());
+      updateProfile({ grow1: resetGrow1, booster_expires_at: null });
       localStorage.removeItem("bdog-booster-end");
+      localStorage.removeItem("bdog-booster-expires");
       setBoosterEndTime(null);
       setBoosterTimeLeft("");
       
@@ -145,7 +180,7 @@ const Game = () => {
       return;
     }
 
-    const diff = boosterEndTime - now;
+    const diff = expirationTime - now;
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
@@ -202,23 +237,26 @@ const Game = () => {
       return;
     }
 
-    const newBone = Math.min(1000, currentBone - 500); // Ensure bone doesn't exceed 1000
+    const newBone = Math.min(1000, currentBone - 500);
     const newGrow1 = grow1 * 2;
-    const endTime = Date.now() + (60 * 60 * 1000); // 1 hour from now
+    const expirationTime = new Date(Date.now() + (60 * 60 * 1000)); // 1 hour from now
     
-    // Update profile in database
+    // Update profile in database with new booster expiration
     updateProfile({
       bone: newBone,
-      grow1: newGrow1
+      grow1: newGrow1,
+      booster_expires_at: expirationTime.toISOString()
     });
     
     localStorage.setItem("bdog-bone", newBone.toString());
     localStorage.setItem("bdog-grow1", newGrow1.toString());
-    localStorage.setItem("bdog-booster-end", endTime.toString());
+    localStorage.setItem("bdog-booster-expires", expirationTime.toISOString());
+    // Keep legacy support
+    localStorage.setItem("bdog-booster-end", expirationTime.getTime().toString());
     
     setBone(newBone);
     setGrow1(newGrow1);
-    setBoosterEndTime(endTime);
+    setBoosterEndTime(expirationTime.getTime());
     
     setShowBooster(false);
     
@@ -362,7 +400,8 @@ const Game = () => {
                 {weeklyTimeLeft}
               </div>
               <div className="text-xs text-muted-foreground mt-2">
-                Топ-5 получат по 5,000,000 V-BDOG!
+                Топ-5 получат по 5,000,000 V-BDOG!<br/>
+                <span className="text-xs">Воскресенье 10:00 (МСК)</span>
               </div>
             </div>
             <div className="space-y-2">

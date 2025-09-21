@@ -18,6 +18,7 @@ interface UserProfile {
   referred_by?: string;
   ip_address?: string | null;
   device_fingerprint?: string | null;
+  booster_expires_at?: string | null; // New field for booster expiration
   created_at: string;
   updated_at: string;
 }
@@ -81,6 +82,23 @@ export const useProfile = () => {
 
       if (existingProfile) {
         console.log('Found existing profile:', existingProfile.id);
+        
+        // Check if booster has expired and reset if necessary
+        if (existingProfile.booster_expires_at && new Date(existingProfile.booster_expires_at) <= new Date() && existingProfile.grow1 > 1) {
+          console.log('Booster expired, resetting grow1 to 1');
+          const { data: updatedProfile, error: updateError } = await supabase
+            .from('profiles')
+            .update({ grow1: 1, booster_expires_at: null })
+            .eq('id', existingProfile.id)
+            .select()
+            .single();
+          
+          if (!updateError && updatedProfile) {
+            existingProfile.grow1 = updatedProfile.grow1;
+            existingProfile.booster_expires_at = updatedProfile.booster_expires_at;
+          }
+        }
+        
         setProfile({
           ...existingProfile,
           ip_address: existingProfile.ip_address as string | null,
@@ -100,6 +118,11 @@ export const useProfile = () => {
         localStorage.setItem('bdog-grow', existingProfile.grow.toString());
         localStorage.setItem('bdog-grow1', existingProfile.grow1.toString());
         localStorage.setItem('bdog-bone', existingProfile.bone.toString());
+        if (existingProfile.booster_expires_at) {
+          localStorage.setItem('bdog-booster-expires', existingProfile.booster_expires_at);
+        } else {
+          localStorage.removeItem('bdog-booster-expires');
+        }
         if (existingProfile.wallet_address) {
           localStorage.setItem('bdog-api', existingProfile.wallet_address);
         }
@@ -173,6 +196,7 @@ export const useProfile = () => {
           wallet_address: localStorage.getItem('bdog-api') || null,
           ip_address: deviceInfo.ip_address,
           device_fingerprint: deviceInfo.device_fingerprint,
+          booster_expires_at: null, // New profiles don't have active boosters
         };
 
         const { data: createdProfile, error: createError } = await supabase
@@ -242,6 +266,13 @@ export const useProfile = () => {
       }
       if (updates.v_bdog_earned !== undefined) {
         localStorage.setItem('bdog-v-earned', updates.v_bdog_earned.toString());
+      }
+      if (updates.booster_expires_at !== undefined) {
+        if (updates.booster_expires_at) {
+          localStorage.setItem('bdog-booster-expires', updates.booster_expires_at);
+        } else {
+          localStorage.removeItem('bdog-booster-expires');
+        }
       }
       if (updates.wallet_address !== undefined) {
         if (updates.wallet_address) {

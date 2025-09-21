@@ -47,7 +47,9 @@ Deno.serve(async (req) => {
     const { searchParams } = new URL(req.url)
     const resetType = searchParams.get('type') // 'daily' or 'weekly'
 
-    console.log(`Starting ${resetType} reset at ${new Date().toISOString()}`)
+    // Get current Moscow time
+    const moscowTime = new Date().toLocaleString("en-US", {timeZone: "Europe/Moscow"});
+    console.log(`Starting ${resetType} reset at ${new Date().toISOString()} (Moscow: ${moscowTime})`)
 
     if (resetType === 'daily') {
       // Daily reset: set all bone values to 1000
@@ -76,7 +78,8 @@ Deno.serve(async (req) => {
       )
 
     } else if (resetType === 'weekly') {
-      // Weekly reset: reward top 5 players and reset grow to 1
+      // Weekly reset: reward top 5 players and reset grow to 0
+      // This should run every Sunday at 10:00 AM Moscow time
       
       // 1. Get top 5 players by grow
       const { data: topPlayers, error: topPlayersError } = await supabaseClient
@@ -121,14 +124,26 @@ Deno.serve(async (req) => {
         throw resetGrowError
       }
 
-      console.log('Weekly reset completed: All grow reset to 0, top 5 players rewarded')
+      // 4. Also reset any expired boosters during weekly reset
+      const { data: boosterResetCount, error: boosterError } = await supabaseClient
+        .rpc('reset_expired_boosters')
+
+      if (boosterError) {
+        console.error('Error resetting boosters during weekly reset:', boosterError)
+      } else {
+        console.log(`Reset ${boosterResetCount} expired boosters during weekly reset`)
+      }
+
+      console.log('Weekly reset completed: All grow reset to 0, top 5 players rewarded, boosters checked')
 
       return new Response(
         JSON.stringify({ 
           success: true, 
           message: 'Weekly reset completed: All grow reset to 0, top 5 players rewarded',
           topPlayers: topPlayers?.map(p => ({ name: p.reg || 'Anonymous', grow: p.grow })),
-          timestamp: new Date().toISOString()
+          boosterResetCount: boosterResetCount || 0,
+          timestamp: new Date().toISOString(),
+          moscowTime: moscowTime
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },

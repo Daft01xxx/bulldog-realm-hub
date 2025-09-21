@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.daily-weekly-reset]
 verify_jwt = false
+
+[functions.booster-cleanup]
+verify_jwt = false
+
+[functions.admin-panel]
+verify_jwt = false

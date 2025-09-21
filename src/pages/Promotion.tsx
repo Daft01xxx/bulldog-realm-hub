@@ -8,101 +8,107 @@ const Promotion = () => {
 
   const promotionTasks = [
     {
-      title: "Пост в Telegram",
-      description: "Опубликуйте пост о BDOG в своем Telegram канале",
-      reward: "2,500,000 V-BDOG",
-      icon: MessageSquare,
-      color: "from-blue-500 to-blue-600"
+      title: "Создай вирусный ролик",
+      description: "Сними креативное видео о BDOG для TikTok или YouTube",
+      reward: "500,000 V-BDOG",
+      icon: TrendingUp,
+      gradient: "from-purple-500 via-pink-500 to-red-500"
     },
     {
-      title: "100,000 просмотров в TikTok",
-      description: "Создайте видео о BDOG и наберите 100к просмотров",
+      title: "Стрим с BDOG",
+      description: "Проведи прямую трансляцию игры в BDOG на популярной платформе",
       reward: "1,000,000 V-BDOG", 
       icon: Eye,
-      color: "from-pink-500 to-red-500"
+      gradient: "from-blue-500 via-cyan-500 to-teal-500"
     },
     {
-      title: "1,000,000 просмотров в TikTok",
-      description: "Создайте вирусное видео о BDOG с миллионом просмотров",
-      reward: "5,000,000 V-BDOG",
-      icon: TrendingUp,
-      color: "from-gold to-gold-light"
+      title: "Пост в социальных сетях",
+      description: "Опубликуй качественный пост о BDOG в своих соцсетях",
+      reward: "250,000 V-BDOG",
+      icon: MessageSquare,
+      gradient: "from-gold via-yellow-400 to-orange-500"
     }
   ];
 
   const tips = [
-    "Используйте хештеги #BDOG #BulldogToken #CryptoGaming",
-    "Показывайте игровой процесс и возможности заработка", 
-    "Добавляйте эмоции и личный опыт",
-    "Используйте нейронные сети для создания контента",
-    "Создавайте обучающий контент про криптовалюты"
+    "Используй трендовые хештеги и музыку",
+    "Покажи реальный геймплей и заработок", 
+    "Делись личными эмоциями от игры",
+    "Создавай уникальный контент с AI",
+    "Объясняй простыми словами про крипто"
   ];
 
   return (
-    <div className="min-h-screen bg-background px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20 px-4 py-8">
       {/* Navigation */}
       <div className="flex justify-between items-center mb-8 pt-8">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(-1)}
-          className="button-outline-gold"
+          className="button-outline-gold shadow-gold"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-2 icon-gold" />
           Назад
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/menu")}
-          className="button-outline-gold"
+          className="button-outline-gold shadow-gold"
         >
-          <Home className="w-4 h-4 mr-2" />
+          <Home className="w-4 h-4 mr-2 icon-gold" />
           Меню
         </Button>
       </div>
 
-      {/* Title */}
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-gradient animate-glow-text mb-4">
-          Реклама проекта за вознаграждение
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Продвигайте BDOG в социальных сетях и получайте щедрые награды в токенах V-BDOG
-        </p>
+      {/* Hero Section */}
+      <div className="text-center mb-12 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-transparent rounded-3xl blur-3xl"></div>
+        <div className="relative">
+          <h1 className="text-4xl md:text-6xl font-bold text-gradient animate-glow-text mb-6">
+            💰 Заработай на рекламе
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Стань промоутером BDOG и получай крутые награды за качественный контент в социальных сетях
+          </p>
+        </div>
       </div>
 
-      {/* Promotion tasks */}
-      <div className="max-w-4xl mx-auto mb-12">
-        <h2 className="text-2xl font-bold text-foreground mb-6 text-center animate-fade-in-up">
-          Задания для промоутеров
+      {/* Promotion Tasks */}
+      <div className="max-w-6xl mx-auto mb-16">
+        <h2 className="text-3xl font-bold text-center text-gradient mb-8 animate-fade-in-up">
+          🎯 Доступные задания
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {promotionTasks.map((task, index) => {
             const IconComponent = task.icon;
             return (
               <Card 
                 key={task.title}
-                className="card-glow p-6 hover-lift cursor-pointer animate-slide-in-right"
-                style={{animationDelay: `${index * 0.1}s`}}
+                className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-2 border-gold/30 hover:border-gold/60 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-gold/25 animate-slide-in-right group"
+                style={{animationDelay: `${index * 0.15}s`}}
               >
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-gold rounded-full flex items-center justify-center animate-pulse-gold">
-                    <IconComponent className="w-8 h-8 text-black" />
+                {/* Background gradient */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${task.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
+                
+                <div className="relative p-8 text-center">
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-gold/80 to-gold flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-500">
+                    <IconComponent className="w-10 h-10 text-black" />
                   </div>
                   
-                  <h3 className="text-lg font-bold text-foreground mb-2">
+                  <h3 className="text-xl font-bold text-foreground mb-4 group-hover:text-gold transition-colors">
                     {task.title}
                   </h3>
                   
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-muted-foreground mb-6 leading-relaxed">
                     {task.description}
                   </p>
                   
-                  <div className="bg-gradient-gold rounded-lg p-3">
-                    <p className="text-black font-bold text-lg">
-                      {task.reward}
+                  <div className="bg-gradient-to-r from-gold to-gold-light rounded-xl p-4 shadow-lg">
+                    <p className="text-black font-bold text-xl">
+                      💎 {task.reward}
                     </p>
                   </div>
                 </div>

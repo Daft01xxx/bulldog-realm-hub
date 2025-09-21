@@ -226,7 +226,7 @@ const Menu = () => {
                     {item.icon === "bdog-silver" ? (
                       <img src={bdogSilverLogo} alt="BDOG Silver" className="w-8 h-8 rounded-full object-contain" />
                     ) : (
-                      <IconComponent className="w-8 h-8 text-black" />
+                      <IconComponent className="w-8 h-8 text-gold" />
                     )}
                   </div>
                   <div className="flex-1">

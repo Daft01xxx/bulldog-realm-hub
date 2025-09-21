@@ -160,17 +160,72 @@ Deno.serve(async (req) => {
         }
       )
 
-    } else {
+    } else if (action === 'ban_user') {
+      const body = await req.json()
+      const { user_reg } = body
+
+      if (!user_reg) {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'User REG is required' 
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400 
+          }
+        )
+      }
+
+      // Update user ban status
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .update({ ban: 1 })
+        .eq('reg', user_reg)
+        .select('id, reg')
+
+      if (error) {
+        throw error
+      }
+
+      if (!data || data.length === 0) {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'User not found' 
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 404 
+          }
+        )
+      }
+
+      console.log(`Banned user with REG: ${user_reg}`)
+
       return new Response(
         JSON.stringify({ 
-          success: false, 
-          error: 'Invalid action or missing parameters. Available actions: list_users, update_user, delete_all_users, reset_boosters' 
+          success: true, 
+          message: `User ${user_reg} has been banned`,
+          profile: data[0]
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
+          status: 200 
         }
       )
+
+    } else {
+        return new Response(
+          JSON.stringify({ 
+            success: false, 
+            error: 'Invalid action or missing parameters. Available actions: list_users, update_user, delete_all_users, reset_boosters, ban_user' 
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400 
+          }
+        )
     }
 
   } catch (error) {

@@ -58,7 +58,7 @@ const Referral = () => {
           onClick={() => navigate(-1)}
           className="button-outline-gold"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-2 text-gold" />
           Назад
         </Button>
         <Button
@@ -67,7 +67,7 @@ const Referral = () => {
           onClick={() => navigate("/menu")}
           className="button-outline-gold"
         >
-          <Home className="w-4 h-4 mr-2" />
+          <Home className="w-4 h-4 mr-2 text-gold" />
           Меню
         </Button>
       </div>
@@ -82,11 +82,19 @@ const Referral = () => {
         </p>
       </div>
 
+      {/* Reward Info */}
+      <Card className="card-glow max-w-md mx-auto p-6 mb-6 text-center animate-fade-in-up">
+        <Gift className="w-10 h-10 text-gold mx-auto mb-3" />
+        <h3 className="text-lg font-semibold text-foreground mb-2">Награда за реферала</h3>
+        <p className="text-3xl font-bold text-gradient mb-1">100,000 V-BDOG</p>
+        <p className="text-sm text-muted-foreground">за каждого приглашенного друга</p>
+      </Card>
+
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-8">
         <Card className="card-glow p-6 text-center animate-fade-in-up">
           <Users className="w-8 h-8 text-gold mx-auto mb-2" />
-          <p className="text-sm text-muted-eferground mb-1">Приглашено</p>
+          <p className="text-sm text-muted-foreground mb-1">Приглашено</p>
           <p className="text-2xl font-bold text-foreground">{referredCount}</p>
         </Card>
         
@@ -114,7 +122,7 @@ const Referral = () => {
             size="sm"
             className="button-outline-gold px-3"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="w-4 h-4 text-gold" />
           </Button>
         </div>
       </Card>

@@ -49,42 +49,42 @@ export default function Tasks() {
     {
       id: 'task_1000_taps',
       title: 'Сделай 1000 тапов',
-      description: 'Набери 1000 тапов в игре',
-      icon: <MousePointer className="h-6 w-6" />,
+      description: `Набери 1000 тапов в игре (${getTapCount()}/1000)`,
+      icon: <MousePointer className="h-6 w-6 text-gold" />,
       reward: { type: 'v_bdog', amount: 10000 },
       requirement: { type: 'taps', target: 1000 },
       progress: Math.min(getTapCount(), 1000),
-      completed: completedTasks.includes('task_1000_taps') || getTapCount() >= 1000
+      completed: getTapCount() >= 1000
     },
     {
       id: 'task_daily_2days',
       title: 'Заходи в BDOG APP каждый день',
-      description: 'Заходи в приложение 2 дня подряд',
-      icon: <Calendar className="h-6 w-6" />,
+      description: `Заходи в приложение 2 дня подряд (${getDailyStreak()}/2)`,
+      icon: <Calendar className="h-6 w-6 text-gold" />,
       reward: { type: 'bone', amount: 2000 },
       requirement: { type: 'days', target: 2 },
       progress: Math.min(getDailyStreak(), 2),
-      completed: completedTasks.includes('task_daily_2days') || getDailyStreak() >= 2
+      completed: getDailyStreak() >= 2
     },
     {
       id: 'task_invite_1friend',
       title: 'Пригласи 1 друга',
-      description: 'Пригласи друга через реферальную ссылку',
-      icon: <Users className="h-6 w-6" />,
+      description: `Пригласи друга через реферальную ссылку (${profile?.referrals || 0}/1)`,
+      icon: <Users className="h-6 w-6 text-gold" />,
       reward: { type: 'bone', amount: 1000 },
       requirement: { type: 'referrals', target: 1 },
       progress: Math.min(profile?.referrals || 0, 1),
-      completed: completedTasks.includes('task_invite_1friend') || (profile?.referrals || 0) >= 1
+      completed: (profile?.referrals || 0) >= 1
     },
     {
       id: 'task_3000_taps',
       title: 'Сделай 3000 тапов',
-      description: 'Набери 3000 тапов в игре',
-      icon: <MousePointer className="h-6 w-6" />,
+      description: `Набери 3000 тапов в игре (${getTapCount()}/3000)`,
+      icon: <MousePointer className="h-6 w-6 text-gold" />,
       reward: { type: 'bone', amount: 500 },
       requirement: { type: 'taps', target: 3000 },
       progress: Math.min(getTapCount(), 3000),
-      completed: completedTasks.includes('task_3000_taps') || getTapCount() >= 3000
+      completed: getTapCount() >= 3000
     }
   ];
 
@@ -123,7 +123,7 @@ export default function Tasks() {
           <Button 
             variant="outline" 
             onClick={() => navigate(-1)}
-            className="bg-background/80 backdrop-blur-sm"
+            className="button-outline-gold"
           >
             ← Назад
           </Button>
@@ -131,7 +131,7 @@ export default function Tasks() {
           <Button 
             variant="outline" 
             onClick={() => navigate('/menu')}
-            className="bg-background/80 backdrop-blur-sm"
+            className="button-outline-gold"
           >
             Меню
           </Button>
@@ -185,9 +185,9 @@ export default function Tasks() {
                       <Button 
                         size="sm" 
                         onClick={() => handleClaimReward(task)}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="button-gradient-gold"
                       >
-                        Получить
+                        Забрать награду
                       </Button>
                     )}
                     

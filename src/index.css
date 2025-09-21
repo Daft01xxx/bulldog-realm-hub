@@ -299,4 +299,55 @@ All colors MUST be HSL.
     border-radius: var(--radius);
     backdrop-filter: blur(20px);
   }
+
+  /* Custom Button styles for BDOG APP */
+  .button-gradient-gold {
+    background: var(--gradient-primary);
+    border: none;
+    color: hsl(var(--primary-foreground));
+    font-weight: 600;
+    box-shadow: var(--shadow-primary);
+    transition: var(--transition-smooth);
+  }
+  
+  .button-gradient-gold:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-primary), var(--shadow-elevated);
+  }
+  
+  .button-outline-gold {
+    border: 1px solid hsl(var(--gold) / 0.3);
+    background: hsl(var(--background) / 0.5);
+    backdrop-filter: blur(10px);
+    color: hsl(var(--gold));
+    font-weight: 500;
+    transition: var(--transition-smooth);
+  }
+  
+  .button-outline-gold:hover {
+    background: hsl(var(--gold) / 0.1);
+    border-color: hsl(var(--gold) / 0.5);
+    color: hsl(var(--gold-light));
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-subtle);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-primary);
+  }
+
+  .card-glow {
+    background: var(--gradient-surface);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-elevated);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    transition: var(--transition-smooth);
+  }
+
+  .card-glow:hover {
+    border-color: hsl(var(--gold) / 0.3);
+    box-shadow: var(--shadow-elevated), 0 0 20px hsl(var(--gold) / 0.1);
+    transform: translateY(-2px);
+  }
 }

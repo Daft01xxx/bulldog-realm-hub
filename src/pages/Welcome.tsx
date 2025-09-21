@@ -52,31 +52,42 @@ const Welcome = () => {
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-dark"></div>
       
-      {/* Floating particles effect */}
-      <div className="absolute inset-0">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute w-2 h-2 bg-gold rounded-full animate-float opacity-30`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
-            }}
-          ></div>
-        ))}
+      {/* Floating particles effect - fixed positions to prevent layout shift */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(20)].map((_, i) => {
+          const positions = [
+            { left: '10%', top: '20%' }, { left: '80%', top: '15%' }, { left: '15%', top: '80%' },
+            { left: '90%', top: '70%' }, { left: '5%', top: '50%' }, { left: '75%', top: '85%' },
+            { left: '50%', top: '10%' }, { left: '25%', top: '90%' }, { left: '85%', top: '40%' },
+            { left: '30%', top: '25%' }, { left: '70%', top: '60%' }, { left: '45%', top: '75%' },
+            { left: '20%', top: '40%' }, { left: '95%', top: '25%' }, { left: '60%', top: '5%' },
+            { left: '35%', top: '95%' }, { left: '55%', top: '30%' }, { left: '65%', top: '45%' },
+            { left: '40%', top: '65%' }, { left: '12%', top: '35%' }
+          ];
+          return (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-gold rounded-full animate-float opacity-30"
+              style={{
+                left: positions[i]?.left || '50%',
+                top: positions[i]?.top || '50%',
+                animationDelay: `${i * 0.15}s`,
+                animationDuration: '4s',
+              }}
+            />
+          );
+        })}
       </div>
 
       {/* Main content */}
       <div className="relative z-10 text-center px-6">
-        <div className="animate-bounce-in">
+        <div className="animate-bounce-in min-h-[400px] flex flex-col justify-center">
           <h1 className="text-6xl md:text-8xl font-bold text-gradient animate-glow-text mb-8">
             BDOG APP
           </h1>
-          <div className="mb-6">
+          <div className="mb-6 h-[48px] flex items-center justify-center">
             <Button 
-              className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-8 py-3 rounded-full shadow-gold animate-pulse-gold"
+              className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-8 py-3 rounded-full shadow-gold animate-pulse-gold min-w-[169px]"
               onClick={handleLogin}
               disabled={loading}
             >

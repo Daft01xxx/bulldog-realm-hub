@@ -91,11 +91,24 @@ const ConnectedWallet = () => {
         </div>
       </div>
 
+      {/* BDOG Balance Display */}
+      <div className="px-4 pt-4">
+        <Card className="bg-white text-black border-none shadow-lg">
+          <div className="p-4 text-center">
+            <div className="text-sm font-medium text-black/70 mb-1">BDOG Баланс</div>
+            <div className="text-2xl font-bold text-black">
+              {formatBalance(parseFloat(walletData?.bdogBalance || "0"))}
+            </div>
+            <div className="text-xs text-black/50 mt-1">BDOG Tokens</div>
+          </div>
+        </Card>
+      </div>
+
       {/* Main Content */}
       <div className="pb-20">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Wallet Tab Content */}
-          <TabsContent value="wallet" className="px-4 pt-6 space-y-6">
+          <TabsContent value="wallet" className="px-4 pt-2 space-y-6">
             {/* Wallet Address Card */}
             <Card className="card-tonkeeper p-6">
               <div className="flex items-center justify-between mb-4">

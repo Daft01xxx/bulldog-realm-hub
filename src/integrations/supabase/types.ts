@@ -20,6 +20,7 @@ export type Database = {
           balance2: number | null
           bdog_balance: number | null
           bone: number | null
+          booster_expires_at: string | null
           created_at: string
           device_fingerprint: string | null
           grow: number | null
@@ -39,6 +40,7 @@ export type Database = {
           balance2?: number | null
           bdog_balance?: number | null
           bone?: number | null
+          booster_expires_at?: string | null
           created_at?: string
           device_fingerprint?: string | null
           grow?: number | null
@@ -58,6 +60,7 @@ export type Database = {
           balance2?: number | null
           bdog_balance?: number | null
           bone?: number | null
+          booster_expires_at?: string | null
           created_at?: string
           device_fingerprint?: string | null
           grow?: number | null
@@ -118,6 +121,22 @@ export type Database = {
           user_id: string
           v_bdog_earned: number
         }[]
+      }
+      get_moscow_time: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_next_sunday_reset: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      has_active_booster: {
+        Args: { user_profile_id: string }
+        Returns: boolean
+      }
+      reset_expired_boosters: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       validate_referral_code: {
         Args: { referral_code: string }

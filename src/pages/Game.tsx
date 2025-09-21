@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, Zap, Info } from "lucide-react";
+import { ArrowLeft, Home, Zap, Info, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
@@ -279,6 +279,15 @@ const Game = () => {
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Назад
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/tasks")}
+          className="button-outline-gold"
+        >
+          <ClipboardList className="w-4 h-4 mr-2" />
+          Задания
         </Button>
         <Button
           variant="outline"

@@ -15,13 +15,13 @@ const Referral = () => {
   const [earnedVBDOG, setEarnedVBDOG] = useState(0);
 
   const rewards = [
-    { count: 1, reward: 5000, completed: false },
-    { count: 2, reward: 6000, completed: false },
-    { count: 3, reward: 7000, completed: false },
-    { count: 10, reward: 10000, completed: false },
-    { count: 20, reward: 30000, completed: false },
+    { count: 1, reward: 100000, completed: false },
+    { count: 2, reward: 100000, completed: false },
+    { count: 3, reward: 100000, completed: false },
+    { count: 10, reward: 100000, completed: false },
+    { count: 20, reward: 100000, completed: false },
     { count: 50, reward: 100000, completed: false },
-    { count: 100, reward: 300000, completed: false },
+    { count: 100, reward: 100000, completed: false },
   ];
 
   useEffect(() => {
@@ -30,13 +30,13 @@ const Referral = () => {
       const link = `${window.location.origin}?ref=${profile.reg}`;
       setReferralLink(link);
       setReferredCount(profile.referrals || 0);
-      setEarnedVBDOG(Number(localStorage.getItem("bdog-vbdog-earned")) || 0);
+      setEarnedVBDOG(profile.v_bdog_earned || 0);
     } else {
       const userId = localStorage.getItem("bdog-reg") || "user";
       const link = `${window.location.origin}?ref=${userId}`;
       setReferralLink(link);
       setReferredCount(Number(localStorage.getItem("bdog-referrals")) || 0);
-      setEarnedVBDOG(Number(localStorage.getItem("bdog-vbdog-earned")) || 0);
+      setEarnedVBDOG(Number(localStorage.getItem("bdog-v-earned")) || 0);
     }
   }, [profile]);
 

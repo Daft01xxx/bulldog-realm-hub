@@ -147,22 +147,8 @@ export const useProfile = () => {
             
             const newReferralCount = (referrer.referrals || 0) + 1;
             
-            // Calculate reward based on referral count
-            const rewards = [
-              { count: 1, reward: 5000 },
-              { count: 2, reward: 6000 },
-              { count: 3, reward: 7000 },
-              { count: 10, reward: 10000 },
-              { count: 20, reward: 30000 },
-              { count: 50, reward: 100000 },
-              { count: 100, reward: 300000 },
-            ];
-            
-            const rewardTier = rewards.find(r => r.count === newReferralCount);
-            let balanceIncrease = 0;
-            if (rewardTier) {
-              balanceIncrease = rewardTier.reward;
-            }
+            // Fixed reward: 100,000 v-bdog for each referral
+            const balanceIncrease = 100000;
             
             // Update referrer
             await supabase
@@ -184,8 +170,8 @@ export const useProfile = () => {
         const newProfile = {
           user_id: userId,
           reg: `User${Date.now()}`,
-          balance: Number(localStorage.getItem('bdog-balance')) || 0,
-          balance2: 1000, // Start with 1000 V-BDOG
+          balance: 0, // Start with 0 balance
+          balance2: 0, // Start with 0 V-BDOG
           bdog_balance: 0, // No BDOG tokens initially  
           v_bdog_earned: 0, // No referral rewards initially
           grow: Number(localStorage.getItem('bdog-grow')) || 0,

@@ -207,10 +207,14 @@ All colors MUST be HSL.
 
   .animate-glow-text {
     animation: glow-text 2s ease-in-out infinite;
+    will-change: text-shadow;
+    transform: translate3d(0, 0, 0);
   }
 
   .animate-bounce-in {
-    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    animation: bounce-in 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    will-change: transform, opacity;
+    contain: layout;
   }
 
   .animate-fall-coin {
@@ -239,6 +243,9 @@ All colors MUST be HSL.
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    will-change: transform;
+    contain: layout style paint;
+    transform: translate3d(0, 0, 0);
   }
 
   .card-tonkeeper {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useProfile';
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Gift, Users, MousePointer, Calendar } from 'lucide-react';
+import { NotificationToast } from '@/components/NotificationToast';
 
 interface Task {
   id: string;
@@ -127,6 +128,7 @@ export default function Tasks() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/20 to-background p-4">
+      <NotificationToast />
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

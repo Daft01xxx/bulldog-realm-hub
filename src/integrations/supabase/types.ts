@@ -28,6 +28,10 @@ export type Database = {
           grow1: number | null
           id: string
           ip_address: unknown | null
+          is_vpn_user: boolean | null
+          last_referral_code: string | null
+          referral_code_used: boolean | null
+          referral_notifications: Json | null
           referrals: number | null
           referred_by: string | null
           reg: string | null
@@ -49,6 +53,10 @@ export type Database = {
           grow1?: number | null
           id?: string
           ip_address?: unknown | null
+          is_vpn_user?: boolean | null
+          last_referral_code?: string | null
+          referral_code_used?: boolean | null
+          referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
@@ -70,6 +78,10 @@ export type Database = {
           grow1?: number | null
           id?: string
           ip_address?: unknown | null
+          is_vpn_user?: boolean | null
+          last_referral_code?: string | null
+          referral_code_used?: boolean | null
+          referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null

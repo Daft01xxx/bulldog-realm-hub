@@ -9,7 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 const Referral = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { profile } = useProfile();
+  const { profile, updateProfile } = useProfile();
   const [referralLink, setReferralLink] = useState("");
   const [referredCount, setReferredCount] = useState(0);
   const [earnedVBDOG, setEarnedVBDOG] = useState(0);
@@ -18,7 +18,19 @@ const Referral = () => {
   useEffect(() => {
     // Generate unique referral link and load data from profile
     if (profile) {
-      const link = `${window.location.origin}?ref=${profile.reg}`;
+      // Generate new referral code if current one was used
+      let currentCode = profile.reg;
+      if (profile.referral_code_used) {
+        currentCode = `${profile.reg}-${Date.now().toString(36)}`;
+        // Update profile with new code
+        updateProfile({ 
+          reg: currentCode, 
+          referral_code_used: false,
+          last_referral_code: null 
+        });
+      }
+      
+      const link = `${window.location.origin}?ref=${currentCode}`;
       setReferralLink(link);
       setReferredCount(profile.referrals || 0);
       setEarnedVBDOG(profile.v_bdog_earned || 0);
@@ -29,7 +41,7 @@ const Referral = () => {
       setReferredCount(Number(localStorage.getItem("bdog-referrals")) || 0);
       setEarnedVBDOG(Number(localStorage.getItem("bdog-v-earned")) || 0);
     }
-  }, [profile]);
+  }, [profile, updateProfile]);
 
   const copyLink = async () => {
     try {

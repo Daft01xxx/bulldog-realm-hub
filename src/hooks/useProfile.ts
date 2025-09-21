@@ -22,6 +22,10 @@ interface UserProfile {
   ban?: number;
   created_at: string;
   updated_at: string;
+  is_vpn_user?: boolean;
+  referral_code_used?: boolean;
+  last_referral_code?: string;
+  referral_notifications?: any; // JSON data from database
 }
 
 interface DeviceInfo {
@@ -62,49 +66,184 @@ export const useProfile = () => {
   }, []);
 
   const loadProfile = useCallback(async () => {
+    if (loading) return;
+    
     setLoading(true);
+    console.log('Starting profile load...');
+
     try {
+      // Get device information
       const deviceInfo = await getDeviceInfo();
-      
-      console.log('Looking for profile with:', deviceInfo);
-      
-      // Try to get existing profile by IP + device fingerprint
-      const { data: existingProfile, error: fetchError } = await supabase
+      console.log('Device info received:', deviceInfo);
+
+      if (!deviceInfo) {
+        throw new Error('Failed to get device information');
+      }
+
+      // Check for VPN
+      const vpnCheck = await supabase.functions.invoke('detect-vpn', {
+        body: { ip_address: deviceInfo.ip_address }
+      });
+
+      if (vpnCheck.error) {
+        console.error('VPN check failed:', vpnCheck.error);
+      }
+
+      const isVpnDetected = vpnCheck.data?.is_vpn || false;
+      console.log('VPN detection result:', isVpnDetected);
+
+      // Check if profile exists based on device fingerprint or ip
+      let { data: existingProfiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('ip_address', deviceInfo.ip_address)
-        .eq('device_fingerprint', deviceInfo.device_fingerprint)
-        .maybeSingle();
+        .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
+        .limit(1);
 
-      if (fetchError && fetchError.code !== 'PGRST116') {
+      if (fetchError) {
         console.error('Error fetching profile:', fetchError);
+        throw fetchError;
+      }
+
+      let userProfile = existingProfiles?.[0];
+      console.log('Existing profile found:', userProfile);
+
+      // Ban VPN users immediately
+      if (isVpnDetected) {
+        if (userProfile) {
+          const { error: banError } = await supabase
+            .from('profiles')
+            .update({ ban: 1, is_vpn_user: true })
+            .eq('id', userProfile.id);
+          
+          if (banError) {
+            console.error('Failed to ban VPN user:', banError);
+          }
+        }
+        
+        // Redirect to ban page
+        window.location.href = '/ban';
         return;
       }
 
-      if (existingProfile) {
-        console.log('Found existing profile:', existingProfile.id);
+      // Handle referral logic only for new users
+      const urlParams = new URLSearchParams(window.location.search);
+      const referralCode = urlParams.get('ref');
+      let referrerData = null;
+
+      if (referralCode && !userProfile) {
+        console.log('Processing referral code:', referralCode);
         
+        const { data: referrerResult, error: referrerError } = await supabase
+          .rpc('find_referrer_safely', { referral_code: referralCode });
+
+        if (!referrerError && referrerResult && referrerResult.length > 0) {
+          referrerData = referrerResult[0];
+          console.log('Referrer found:', referrerData);
+
+          // Check if referral code was already used
+          const { data: codeUsageCheck } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('last_referral_code', referralCode)
+            .limit(1);
+
+          if (codeUsageCheck && codeUsageCheck.length > 0) {
+            console.log('Referral code already used, no reward');
+            referrerData = null;
+          }
+
+          // Check if it's the referrer themselves
+          if (referrerData && referrerData.reg === referralCode) {
+            console.log('Self-referral detected, no reward');
+            referrerData = null;
+          }
+        }
+      }
+
+      if (!userProfile) {
+        // Generate unique registration ID
+        const regId = `BDOG${Date.now()}${Math.random().toString(36).substr(2, 5)}`.toUpperCase();
+        
+        console.log('Creating new profile with reg:', regId);
+
+        const newProfileData = {
+          user_id: crypto.randomUUID(),
+          reg: regId,
+          device_fingerprint: deviceInfo.device_fingerprint,
+          ip_address: deviceInfo.ip_address,
+          balance: 0,
+          balance2: 0,
+          grow: 0,
+          grow1: 1,
+          bone: 1000,
+          referrals: 0,
+          referred_by: referrerData?.user_id || null,
+          bdog_balance: 0,
+          v_bdog_earned: 0,
+          ban: 0,
+          is_vpn_user: isVpnDetected,
+          referral_code_used: false,
+          last_referral_code: referralCode || null,
+          referral_notifications: []
+        };
+
+        const { data: createdProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert([newProfileData])
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          throw createError;
+        }
+
+        userProfile = createdProfile;
+        console.log('New profile created:', userProfile);
+
+        // Award referral bonus and send notification
+        if (referrerData && !isVpnDetected) {
+          console.log('Awarding referral bonus to referrer:', referrerData.user_id);
+          
+          const notifications = referrerData.referral_notifications || [];
+          const newNotification = {
+            type: 'new_referral',
+            timestamp: new Date().toISOString(),
+            message: `Новый реферал зарегистрировался! +100,000 V-BDOG`,
+            reg_id: regId,
+            read: false
+          };
+
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({
+              referrals: referrerData.referrals + 1,
+              v_bdog_earned: referrerData.v_bdog_earned + 100000,
+              referral_notifications: [...notifications, newNotification]
+            })
+            .eq('user_id', referrerData.user_id);
+
+          if (updateError) {
+            console.error('Error updating referrer:', updateError);
+          } else {
+            // Mark referral code as used
+            const { error: markUsedError } = await supabase
+              .from('profiles')
+              .update({ referral_code_used: true })
+              .eq('reg', referralCode);
+            
+            if (markUsedError) {
+              console.error('Error marking referral code as used:', markUsedError);
+            }
+          }
+        }
+      } else {
         // Check if user is banned - redirect to ban page
-        if (existingProfile.ban === 1) {
+        if (userProfile.ban === 1) {
           console.log('User is banned, clearing data and redirecting to ban page');
           
           // Clear all user data
           localStorage.clear();
-          
-          // Set a minimal banned profile
-          setProfile({
-            ...existingProfile,
-            balance: 0,
-            balance2: 0,
-            grow: 0,
-            grow1: 1,
-            bone: 0,
-            referrals: 0,
-            bdog_balance: 0,
-            v_bdog_earned: 0,
-            ip_address: existingProfile.ip_address as string | null,
-            device_fingerprint: existingProfile.device_fingerprint as string | null
-          });
           
           // Force redirect to ban page
           setTimeout(() => {
@@ -114,134 +253,69 @@ export const useProfile = () => {
         }
         
         // Check if booster has expired and reset if necessary
-        if (existingProfile.booster_expires_at && new Date(existingProfile.booster_expires_at) <= new Date() && existingProfile.grow1 > 1) {
+        if (userProfile.booster_expires_at && new Date(userProfile.booster_expires_at) <= new Date() && userProfile.grow1 > 1) {
           console.log('Booster expired, resetting grow1 to 1');
           const { data: updatedProfile, error: updateError } = await supabase
             .from('profiles')
             .update({ grow1: 1, booster_expires_at: null })
-            .eq('id', existingProfile.id)
+            .eq('id', userProfile.id)
             .select()
             .single();
           
           if (!updateError && updatedProfile) {
-            existingProfile.grow1 = updatedProfile.grow1;
-            existingProfile.booster_expires_at = updatedProfile.booster_expires_at;
+            userProfile.grow1 = updatedProfile.grow1;
+            userProfile.booster_expires_at = updatedProfile.booster_expires_at;
           }
         }
         
-        setProfile({
-          ...existingProfile,
-          ip_address: existingProfile.ip_address as string | null,
-          device_fingerprint: existingProfile.device_fingerprint as string | null
-        });
-        // Store user_id in localStorage for backwards compatibility
-        localStorage.setItem('bdog-user-id', existingProfile.user_id);
-        // Sync with localStorage
-        localStorage.setItem('bdog-balance', existingProfile.balance.toString());
-        localStorage.setItem('bdog-balance2', existingProfile.balance2.toString());
-        if (existingProfile.bdog_balance) {
-          localStorage.setItem('bdog-balance-token', existingProfile.bdog_balance.toString());
-        }
-        if (existingProfile.v_bdog_earned) {
-          localStorage.setItem('bdog-v-earned', existingProfile.v_bdog_earned.toString());
-        }
-        localStorage.setItem('bdog-grow', existingProfile.grow.toString());
-        localStorage.setItem('bdog-grow1', existingProfile.grow1.toString());
-        localStorage.setItem('bdog-bone', existingProfile.bone.toString());
-        if (existingProfile.booster_expires_at) {
-          localStorage.setItem('bdog-booster-expires', existingProfile.booster_expires_at);
-        } else {
-          localStorage.removeItem('bdog-booster-expires');
-        }
-        if (existingProfile.wallet_address) {
-          localStorage.setItem('bdog-api', existingProfile.wallet_address);
-        }
-        if (existingProfile.reg) {
-          localStorage.setItem('bdog-reg', existingProfile.reg);
-        }
-      } else {
-        console.log('Creating new profile for device:', deviceInfo);
-        // Create new profile with referral processing
-        const referralCode = localStorage.getItem("bdog-referral-code");
-        let referred_by = null;
+        // Update existing profile with new device info if needed
+        const updates: any = {};
         
-        if (referralCode) {
-          // Use secure function to find referrer and get their data safely
-          const { data: referrerData } = await supabase.rpc('find_referrer_safely', {
-            referral_code: referralCode
-          });
+        if (userProfile.device_fingerprint !== deviceInfo.device_fingerprint) {
+          updates.device_fingerprint = deviceInfo.device_fingerprint;
+        }
+        if (userProfile.ip_address !== deviceInfo.ip_address) {
+          updates.ip_address = deviceInfo.ip_address;
+        }
+        
+        if (Object.keys(updates).length > 0) {
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update(updates)
+            .eq('id', userProfile.id);
             
-          if (referrerData && referrerData.length > 0) {
-            const referrer = referrerData[0];
-            referred_by = referrer.user_id;
-            
-            const newReferralCount = (referrer.referrals || 0) + 1;
-            
-            // Fixed reward: 100,000 v-bdog for each referral
-            const balanceIncrease = 100000;
-            
-            // Update referrer
-            await supabase
-              .from('profiles')
-              .update({ 
-                referrals: newReferralCount,
-                v_bdog_earned: (referrer.v_bdog_earned || 0) + balanceIncrease 
-              })
-              .eq('user_id', referrer.user_id);
+          if (updateError) {
+            console.error('Error updating existing profile:', updateError);
           }
-          
-          // Clear the referral code from localStorage
-          localStorage.removeItem("bdog-referral-code");
         }
-
-        // Generate unique user ID for new profile
-        const userId = crypto.randomUUID();
-        
-        const newProfile = {
-          user_id: userId,
-          reg: `User${Date.now()}`,
-          balance: 0, // Start with 0 balance
-          balance2: 0, // Start with 0 V-BDOG
-          bdog_balance: 0, // No BDOG tokens initially  
-          v_bdog_earned: 0, // No referral rewards initially
-          grow: Number(localStorage.getItem('bdog-grow')) || 0,
-          grow1: Number(localStorage.getItem('bdog-grow1')) || 1,
-          bone: Number(localStorage.getItem('bdog-bone')) || 1000,
-          referrals: 0,
-          referred_by,
-          wallet_address: localStorage.getItem('bdog-api') || null,
-          ip_address: deviceInfo.ip_address,
-          device_fingerprint: deviceInfo.device_fingerprint,
-          booster_expires_at: null, // New profiles don't have active boosters
-          ban: 0, // New users are not banned
-        };
-
-        const { data: createdProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert(newProfile)
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          return;
-        }
-
-        setProfile({
-          ...createdProfile,
-          ip_address: createdProfile.ip_address as string | null,
-          device_fingerprint: createdProfile.device_fingerprint as string | null
-        });
-        // Store user_id in localStorage for backwards compatibility
-        localStorage.setItem('bdog-user-id', createdProfile.user_id);
-        localStorage.setItem('bdog-reg', createdProfile.reg);
       }
+
+      // Store profile data
+      setProfile({
+        ...userProfile,
+        ip_address: userProfile.ip_address as string | null,
+        device_fingerprint: userProfile.device_fingerprint as string | null
+      });
+      
+      // Sync with localStorage
+      localStorage.setItem('bdog-reg', userProfile.reg || '');
+      localStorage.setItem('bdog-balance', userProfile.balance?.toString() || '0');
+      localStorage.setItem('bdog-balance2', userProfile.balance2?.toString() || '0');
+      localStorage.setItem('bdog-grow', userProfile.grow?.toString() || '0');
+      localStorage.setItem('bdog-grow1', userProfile.grow1?.toString() || '1');
+      localStorage.setItem('bdog-bone', userProfile.bone?.toString() || '1000');
+      localStorage.setItem('bdog-referrals', userProfile.referrals?.toString() || '0');
+      localStorage.setItem('bdog-v-earned', userProfile.v_bdog_earned?.toString() || '0');
+
+      console.log('Profile loaded successfully:', userProfile);
+
     } catch (error) {
       console.error('Error loading profile:', error);
+      setProfile(null);
     } finally {
       setLoading(false);
     }
-  }, [getDeviceInfo]);
+  }, [loading, getDeviceInfo]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
@@ -284,19 +358,8 @@ export const useProfile = () => {
       if (updates.v_bdog_earned !== undefined) {
         localStorage.setItem('bdog-v-earned', updates.v_bdog_earned.toString());
       }
-      if (updates.booster_expires_at !== undefined) {
-        if (updates.booster_expires_at) {
-          localStorage.setItem('bdog-booster-expires', updates.booster_expires_at);
-        } else {
-          localStorage.removeItem('bdog-booster-expires');
-        }
-      }
-      if (updates.wallet_address !== undefined) {
-        if (updates.wallet_address) {
-          localStorage.setItem('bdog-api', updates.wallet_address);
-        } else {
-          localStorage.removeItem('bdog-api');
-        }
+      if (updates.reg !== undefined) {
+        localStorage.setItem('bdog-reg', updates.reg);
       }
 
     } catch (error) {
@@ -320,30 +383,27 @@ export const useProfile = () => {
         return null;
       }
 
-      const balance2 = parseFloat(data.bdogBalance || data.tonBalance || "0");
+      const bdogBalance = parseFloat(data.bdogBalance || "0");
       
-      // Update profile with new balance
-      await updateProfile({
-        bdog_balance: balance2, // BDOG tokens from blockchain
-        wallet_address: walletAddress
-      });
-
-      toast({
-        title: "Баланс обновлен",
-        description: `Текущий баланс: ${balance2} BDOG`,
-      });
+      // Update profile with new balance and wallet address
+      if (profile) {
+        await updateProfile({
+          bdog_balance: bdogBalance,
+          wallet_address: walletAddress
+        });
+      }
 
       return data;
     } catch (error) {
-      console.error('Error fetching wallet balance:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось получить баланс кошелька",
-        variant: "destructive",
-      });
+      console.error('Error in fetchWalletBalance:', error);
       return null;
     }
-  }, [updateProfile, toast]);
+  }, [profile, updateProfile, toast]);
+
+  const reloadProfile = useCallback(() => {
+    setProfile(null);
+    loadProfile();
+  }, [loadProfile]);
 
   useEffect(() => {
     loadProfile();
@@ -354,6 +414,6 @@ export const useProfile = () => {
     loading,
     updateProfile,
     fetchWalletBalance,
-    reloadProfile: loadProfile,
+    reloadProfile
   };
 };

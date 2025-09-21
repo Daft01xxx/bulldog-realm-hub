@@ -47,17 +47,20 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Custom BDOG colors - Ultra intense golden shine
+        // Tonkeeper Gold System
         gold: {
           DEFAULT: "hsl(var(--gold))",
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
-          shine: "hsl(var(--gold-shine))",
+          muted: "hsl(var(--gold-muted))",
           bright: "hsl(var(--gold-bright))",
+          accent: "hsl(var(--gold-accent))",
         },
-        "white-glow": "hsl(var(--white-glow))",
-        "black-card": "hsl(var(--black-card))",
-        "gray-subtle": "hsl(var(--gray-subtle))",
+        surface: {
+          DEFAULT: "hsl(var(--surface))",
+          elevated: "hsl(var(--surface-elevated))",
+          muted: "hsl(var(--surface-muted))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -172,14 +175,14 @@ export default {
         "slow-spin": "slow-spin 8s linear infinite",
       },
       backgroundImage: {
-        "gradient-gold": "var(--gradient-gold)",
-        "gradient-dark": "var(--gradient-dark)",
-        "gradient-glow": "var(--gradient-glow)",
+        "gradient-primary": "var(--gradient-primary)",
+        "gradient-surface": "var(--gradient-surface)",
+        "gradient-accent": "var(--gradient-accent)",
       },
       boxShadow: {
-        gold: "var(--shadow-gold)",
-        glow: "var(--shadow-glow)",
-        "card-dark": "var(--shadow-card)",
+        primary: "var(--shadow-primary)",
+        elevated: "var(--shadow-elevated)",
+        subtle: "var(--shadow-subtle)",
       },
     },
   },

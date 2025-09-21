@@ -8,60 +8,64 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* BDOG App Black & White Theme with Gold Accents */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
+    /* Tonkeeper-style Theme - Elegant Black & Rich Gold */
+    --background: 0 0% 6%;
+    --foreground: 0 0% 96%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 100%;
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 45 100% 50%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 45 96% 53%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 63%;
 
-    --accent: 45 100% 60%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 45 96% 64%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 75% 58%;
+    --destructive-foreground: 0 0% 96%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 45 100% 50%;
+    --border: 0 0% 22%;
+    --input: 0 0% 18%;
+    --ring: 45 96% 53%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Custom BDOG variables - Ultra golden theme with intense shine */
-    --gold: 42 100% 50%;
-    --gold-light: 44 100% 65%;
-    --gold-dark: 38 100% 35%;
-    --gold-shine: 46 100% 80%;
-    --gold-bright: 45 100% 90%;
-    --white-glow: 0 0% 100%;
-    --black-card: 0 0% 8%;
-    --gray-subtle: 0 0% 25%;
-
-    /* Gradients - Ultra intense golden shine */
-    --gradient-gold: linear-gradient(135deg, hsl(38 100% 35%), hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%));
-    --gradient-dark: linear-gradient(135deg, hsl(0 0% 0%), hsl(0 0% 15%));
-    --gradient-glow: linear-gradient(135deg, hsl(42 100% 50% / 0.3), hsl(44 100% 65% / 0.5));
-
-    /* Shadows - Ultra intense golden glow */
-    --shadow-gold: 0 0 30px hsl(42 100% 50% / 0.8), 0 0 60px hsl(44 100% 65% / 0.5), 0 0 90px hsl(46 100% 80% / 0.3);
-    --shadow-glow: 0 0 60px hsl(42 100% 50% / 0.7), 0 0 120px hsl(44 100% 65% / 0.4), 0 0 180px hsl(46 100% 80% / 0.2);
-    --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.8);
-
-    /* Animations */
-    --transition-smooth: all 0.6s cubic-bezier(0.25, 0.1, 0.25, 1);
-    --transition-bounce: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Tonkeeper Gold System - Rich & Elegant */
+    --gold: 45 96% 53%;
+    --gold-light: 46 94% 68%;
+    --gold-dark: 43 98% 38%;
+    --gold-muted: 45 85% 45%;
+    --gold-bright: 47 100% 78%;
+    --gold-accent: 44 92% 62%;
+    
+    /* Background variations */
+    --surface: 0 0% 11%;
+    --surface-elevated: 0 0% 16%;
+    --surface-muted: 0 0% 8%;
+    
+    /* Tonkeeper-style gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(43 98% 38%) 0%, hsl(45 96% 53%) 50%, hsl(46 94% 68%) 100%);
+    --gradient-surface: linear-gradient(145deg, hsl(0 0% 11%) 0%, hsl(0 0% 16%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(45 96% 53% / 0.1) 0%, hsl(46 94% 68% / 0.05) 100%);
+    
+    /* Refined shadows */
+    --shadow-primary: 0 4px 20px hsl(45 96% 53% / 0.25);
+    --shadow-elevated: 0 8px 40px hsl(0 0% 0% / 0.5), 0 2px 10px hsl(0 0% 0% / 0.3);
+    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.15);
+    
+    /* Smooth transitions */
+    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .light {
@@ -231,49 +235,68 @@ All colors MUST be HSL.
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(38 100% 35%), hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%), hsl(45 100% 90%));
+    background: var(--gradient-primary);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
-  .card-glow {
-    background: linear-gradient(135deg, hsl(0 0% 8%), hsl(0 0% 12%));
-    border: 1px solid hsl(42 100% 50% / 0.4);
-    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.5), inset 0 1px 0 hsl(42 100% 50% / 0.2), 0 0 25px hsl(42 100% 50% / 0.2);
+  .card-tonkeeper {
+    background: var(--gradient-surface);
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-elevated);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
   }
 
-  .button-gold {
-    background: linear-gradient(135deg, hsl(38 100% 35%), hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%));
+  .card-tonkeeper:hover {
+    border-color: hsl(var(--gold) / 0.3);
+    box-shadow: var(--shadow-elevated), 0 0 20px hsl(var(--gold) / 0.1);
+    transform: translateY(-2px);
+    transition: var(--transition-smooth);
+  }
+
+  .button-tonkeeper-primary {
+    background: var(--gradient-primary);
     border: none;
-    color: hsl(0 0% 0%);
-    font-weight: 700;
-    text-shadow: 0 2px 4px hsl(0 0% 0% / 0.5);
+    color: hsl(var(--primary-foreground));
+    border-radius: var(--radius);
+    font-weight: 600;
+    box-shadow: var(--shadow-primary);
     transition: var(--transition-smooth);
-    box-shadow: 0 6px 20px hsl(42 100% 50% / 0.4), 0 0 30px hsl(44 100% 65% / 0.2);
   }
 
-  .button-gold:hover {
-    background: linear-gradient(135deg, hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%), hsl(45 100% 90%));
-    transform: translateY(-4px) scale(1.06);
-    box-shadow: 0 15px 40px hsl(42 100% 50% / 0.8), 0 0 60px hsl(44 100% 65% / 0.6), 0 0 90px hsl(46 100% 80% / 0.3);
+  .button-tonkeeper-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-primary), var(--shadow-elevated);
   }
 
-  .button-outline-gold {
-    background: transparent;
-    border: 2px solid hsl(42 100% 50%);
-    color: hsl(42 100% 50%);
+  .button-tonkeeper-secondary {
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground));
+    border-radius: var(--radius);
+    font-weight: 500;
     transition: var(--transition-smooth);
-    box-shadow: 0 0 20px hsl(42 100% 50% / 0.3);
-    text-shadow: 0 0 10px hsl(42 100% 50% / 0.5);
   }
 
-  .button-outline-gold:hover {
-    background: linear-gradient(135deg, hsl(42 100% 50%), hsl(44 100% 65%), hsl(46 100% 80%));
-    color: hsl(0 0% 0%);
-    border-color: hsl(44 100% 65%);
-    transform: translateY(-4px) scale(1.06);
-    box-shadow: 0 15px 40px hsl(42 100% 50% / 0.8), 0 0 60px hsl(44 100% 65% / 0.6);
-    text-shadow: 0 2px 4px hsl(0 0% 0% / 0.5);
+  .button-tonkeeper-secondary:hover {
+    background: hsl(var(--surface-elevated));
+    border-color: hsl(var(--gold) / 0.4);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-subtle);
+  }
+
+  .surface-elevated {
+    background: hsl(var(--surface-elevated));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+  }
+
+  .balance-card {
+    background: var(--gradient-accent);
+    border: 1px solid hsl(var(--gold) / 0.2);
+    border-radius: var(--radius);
+    backdrop-filter: blur(20px);
   }
 }

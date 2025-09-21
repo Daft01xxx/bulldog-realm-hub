@@ -1,35 +1,43 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, RefreshCw, Copy, ExternalLink, ShoppingCart, History, Wallet, Image as ImageIcon, Send } from 'lucide-react';
-import { useBdogTonWallet } from '@/hooks/useTonWallet';
-import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { 
+  ArrowLeft, 
+  Copy, 
+  ExternalLink, 
+  Send, 
+  History, 
+  Wallet as WalletIcon,
+  Image as ImageIcon,
+  TrendingUp,
+  Coins,
+  Clock,
+  CheckCircle
+} from "lucide-react";
+import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import { useProfile } from "@/hooks/useProfile";
+import { useToast } from "@/hooks/use-toast";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
-  const { 
-    isConnected, 
-    walletData, 
-    loading, 
-    profile, 
-    disconnectWallet, 
-    refreshWalletData, 
-    autoRefresh, 
-    setAutoRefresh 
-  } = useBdogTonWallet();
+  const { walletAddress, isConnected, disconnectWallet, walletData } = useBdogTonWallet();
+  const { profile } = useProfile();
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("wallet");
 
   // Redirect if not connected
-  if (!isConnected) {
-    navigate('/wallet');
-    return null;
-  }
+  useEffect(() => {
+    if (!isConnected || !walletAddress) {
+      navigate("/wallet");
+    }
+  }, [isConnected, walletAddress, navigate]);
 
-  const copyAddress = () => {
-    if (walletData?.walletInfo?.address) {
-      navigator.clipboard.writeText(walletData.walletInfo.address);
+  const copyAddress = async () => {
+    if (walletAddress) {
+      await navigator.clipboard.writeText(walletAddress);
       toast({
         title: "Адрес скопирован",
         description: "Адрес кошелька скопирован в буфер обмена",
@@ -37,215 +45,319 @@ const ConnectedWallet = () => {
     }
   };
 
+  const handleDisconnect = () => {
+    disconnectWallet();
+    navigate("/menu");
+  };
+
+  const formatBalance = (balance: number) => {
+    return balance.toLocaleString("ru-RU", { 
+      minimumFractionDigits: 2, 
+      maximumFractionDigits: 4 
+    });
+  };
+
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-6)}`;
+  };
+
+  if (!isConnected || !walletAddress) {
+    return null;
+  }
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-gradient-to-r from-amber-600 to-yellow-500">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/menu')}
-          className="text-black hover:bg-black/10"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        
-        <h1 className="text-lg font-bold text-black">BDOG Wallet</h1>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={refreshWalletData}
-          disabled={loading}
-          className="text-black hover:bg-black/10"
-        >
-          <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
-        </Button>
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="flex items-center justify-between p-4 pt-12">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/menu")}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Меню
+          </Button>
+          <h1 className="text-lg font-semibold text-foreground">Кошелёк</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleDisconnect}
+            className="text-muted-foreground hover:text-destructive"
+          >
+            Отключить
+          </Button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs defaultValue="wallet" className="w-full">
-        <div className="flex-1 pb-16">
-          <TabsContent value="wallet" className="p-4 space-y-4 m-0">
-            {/* Balance Card */}
-            <Card className="bg-gradient-to-r from-amber-600 to-yellow-500 text-black p-6 border-0">
-              <div className="text-center">
-                <div className="text-sm opacity-80 mb-2">Общий баланс</div>
-                <div className="text-3xl font-bold mb-4">
-                  {walletData?.tonBalance || '0'} TON
+      {/* Main Content */}
+      <div className="pb-20">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          {/* Wallet Tab Content */}
+          <TabsContent value="wallet" className="px-4 pt-6 space-y-6">
+            {/* Wallet Address Card */}
+            <Card className="card-tonkeeper p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center">
+                    <WalletIcon className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground">Мой кошелёк</h3>
+                    <p className="text-sm text-muted-foreground">TON Wallet</p>
+                  </div>
                 </div>
-                <div className="text-lg font-semibold">
-                  {walletData?.bdogBalance || '0'} BDOG
-                </div>
+                <Badge variant="secondary" className="bg-gold/10 text-gold border-gold/20">
+                  Подключен
+                </Badge>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 bg-surface-elevated rounded-lg">
+                <span className="font-mono text-sm text-foreground">
+                  {formatAddress(walletAddress)}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={copyAddress}
+                  className="text-gold hover:text-gold-light hover:bg-gold/10"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
               </div>
             </Card>
 
-            {/* Actions */}
+            {/* Balance Cards */}
+            <div className="grid grid-cols-1 gap-4">
+              {/* TON Balance */}
+              <Card className="card-tonkeeper p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                      <Coins className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-foreground">TON</h4>
+                      <p className="text-xs text-muted-foreground">Toncoin</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-foreground">
+                      {formatBalance(parseFloat(walletData?.tonBalance || "0"))}
+                    </p>
+                    <p className="text-xs text-muted-foreground">TON</p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* V-BDOG Balance */}
+              <Card className="balance-card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-gold" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-foreground">V-BDOG</h4>
+                      <p className="text-xs text-muted-foreground">Виртуальный BDOG</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-gold">
+                      {formatBalance(profile?.v_bdog_earned || 0)}
+                    </p>
+                    <p className="text-xs text-gold-muted">V-BDOG</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-4">
               <Button
-                onClick={() => window.open('https://t.me/blum/app?startapp=memepadjetton_BDOG_Y28d0-ref_wg9QjmgoJX', '_blank')}
-                className="bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-700 hover:to-yellow-600 text-black font-semibold py-6"
+                onClick={() => window.open("https://t.me/blum/app?startapp=memepadjetton_BDOG_Y28d0-ref_wg9QjmgoJX", "_blank")}
+                className="button-tonkeeper-primary h-14 text-base"
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
+                <ExternalLink className="w-5 h-5 mr-2" />
                 Купить BDOG
               </Button>
               
               <Button
-                onClick={() => window.open('https://bdogpay.com', '_blank')}
-                variant="outline"
-                className="border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-black py-6"
+                onClick={() => navigate("/bdogpay")}
+                className="button-tonkeeper-secondary h-14 text-base"
               >
-                <Send className="mr-2 h-5 w-5" />
+                <Send className="w-5 h-5 mr-2" />
                 Отправить BDOG
               </Button>
             </div>
 
-            {/* Wallet Info */}
-            <Card className="bg-gray-900 border-gray-800 p-4">
-              <h3 className="font-semibold mb-4 text-amber-500">Информация о кошельке</h3>
+            {/* NFT Quick Preview */}
+            <Card className="card-tonkeeper p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-2">
+                  <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                  <h4 className="font-medium text-foreground">NFT Коллекция</h4>
+                </div>
+                <Badge variant="outline" className="text-muted-foreground">
+                  {walletData?.nfts?.length || 0} NFT
+                </Badge>
+              </div>
               
-              {walletData?.walletInfo && (
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400">Адрес:</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-mono">
-                        {walletData.walletInfo.shortAddress}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={copyAddress}
-                        className="h-6 w-6 text-amber-500 hover:text-amber-600"
-                      >
-                        <Copy className="h-3 w-3" />
-                      </Button>
+              {walletData?.nfts && walletData.nfts.length > 0 ? (
+                <div className="flex space-x-3 overflow-x-auto pb-2">
+                  {walletData.nfts.slice(0, 4).map((nft, index) => (
+                    <div key={index} className="flex-shrink-0">
+                      <div className="w-16 h-16 bg-surface-elevated rounded-lg flex items-center justify-center">
+                        {nft.image ? (
+                          <img 
+                            src={nft.image} 
+                            alt={nft.name} 
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">NFT коллекция:</span>
-                    <span className="text-white">{walletData.walletInfo.nftCount}</span>
-                  </div>
+                  ))}
+                  {walletData.nfts.length > 4 && (
+                    <div className="flex-shrink-0 w-16 h-16 bg-surface-elevated rounded-lg flex items-center justify-center">
+                      <span className="text-xs text-muted-foreground">+{walletData.nfts.length - 4}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <ImageIcon className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground mb-3">NFT не найдены</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open("https://getgems.io/collection/EQBBQyriB8oloKQbrumUgvmyQF5iFweNInGHPio0PB_kbVDQ", "_blank")}
+                    className="text-gold border-gold/40 hover:bg-gold/10"
+                  >
+                    <ExternalLink className="w-4 h-4 mr-2" />
+                    Купить NFT
+                  </Button>
                 </div>
               )}
-              
-              <Button
-                onClick={disconnectWallet}
-                variant="destructive"
-                className="w-full mt-4"
-              >
-                Отключить кошелёк
-              </Button>
             </Card>
+          </TabsContent>
 
-            {/* Balance Details */}
-            <Card className="bg-gray-900 border-gray-800 p-4">
-              <h3 className="font-semibold mb-4 text-amber-500">Детали баланса</h3>
+          {/* History Tab Content */}
+          <TabsContent value="history" className="px-4 pt-6">
+            <Card className="card-tonkeeper p-6">
+              <div className="flex items-center space-x-2 mb-6">
+                <Clock className="w-5 h-5 text-muted-foreground" />
+                <h3 className="font-semibold text-foreground">История транзакций</h3>
+              </div>
               
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">TON:</span>
-                  <span className="text-white font-mono">{walletData?.tonBalance || '0'}</span>
-                </div>
-                
-                <div className="flex justify-between">
-                  <span className="text-gray-400">V-BDOG:</span>
-                  <span className="text-amber-500 font-mono">
-                    {profile?.v_bdog_earned?.toLocaleString() || '0'}
-                  </span>
-                </div>
+              <div className="text-center py-12">
+                <History className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h4 className="font-medium text-foreground mb-2">Транзакций не обнаружено</h4>
+                <p className="text-sm text-muted-foreground">
+                  История всех транзакций BDOG будет отображаться здесь
+                </p>
               </div>
             </Card>
           </TabsContent>
 
-          <TabsContent value="history" className="p-4 m-0">
-            <Card className="bg-gray-900 border-gray-800 p-6 text-center">
-              <History className="h-12 w-12 mx-auto mb-4 text-gray-500" />
-              <h3 className="text-lg font-semibold mb-2 text-white">История транзакций</h3>
-              <p className="text-gray-400">Транзакций не обнаружено</p>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="collections" className="p-4 m-0">
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-amber-500">NFT Коллекции</h3>
+          {/* Collections Tab Content */}
+          <TabsContent value="collections" className="px-4 pt-6">
+            <Card className="card-tonkeeper p-6">
+              <div className="flex items-center space-x-2 mb-6">
+                <ImageIcon className="w-5 h-5 text-muted-foreground" />
+                <h3 className="font-semibold text-foreground">NFT Коллекции</h3>
+              </div>
               
               {walletData?.nfts && walletData.nfts.length > 0 ? (
                 <div className="grid grid-cols-2 gap-4">
                   {walletData.nfts.map((nft, index) => (
-                    <Card key={nft.id || index} className="bg-gray-900 border-gray-800 p-3">
-                      {nft.image ? (
-                        <img 
-                          src={nft.image} 
-                          alt={nft.name}
-                          className="w-full h-32 object-cover rounded-lg mb-2"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder.svg';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-32 bg-gray-700 rounded-lg mb-2 flex items-center justify-center">
-                          <ImageIcon className="h-8 w-8 text-gray-500" />
-                        </div>
-                      )}
-                      
-                      <h4 className="font-semibold text-sm text-white truncate">
-                        {nft.name}
+                    <Card key={index} className="surface-elevated p-4 hover:border-gold/30 transition-colors">
+                      <div className="aspect-square bg-surface-muted rounded-lg mb-3 overflow-hidden">
+                        {nft.image ? (
+                          <img 
+                            src={nft.image} 
+                            alt={nft.name} 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                      <h4 className="font-medium text-foreground text-sm truncate mb-1">
+                        {nft.name || `NFT #${index + 1}`}
                       </h4>
-                      
-                      <p className="text-xs text-gray-400 truncate">
-                        {nft.collection}
+                      <p className="text-xs text-muted-foreground truncate">
+                        {nft.collection || "BDOG Collection"}
                       </p>
                     </Card>
                   ))}
                 </div>
               ) : (
-                <Card className="bg-gray-900 border-gray-800 p-6 text-center">
-                  <ImageIcon className="h-12 w-12 mx-auto mb-4 text-gray-500" />
-                  <p className="text-gray-400 mb-4">NFT не найдены в вашем кошельке</p>
+                <div className="text-center py-12">
+                  <ImageIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h4 className="font-medium text-foreground mb-2">NFT не найдены</h4>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Подключите кошелёк с NFT или приобретите их
+                  </p>
                   <Button
-                    onClick={() => window.open('https://getgems.io/nft/EQC5Q1fGi0f1K9z7tfNaWRZcEzELxpW1B3bKCEgBkEV6ZW2G', '_blank')}
-                    className="bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-700 hover:to-yellow-600 text-black"
+                    onClick={() => window.open("https://getgems.io/collection/EQBBQyriB8oloKQbrumUgvmyQF5iFweNInGHPio0PB_kbVDQ", "_blank")}
+                    className="button-tonkeeper-primary"
                   >
-                    <ExternalLink className="mr-2 h-4 w-4" />
+                    <ExternalLink className="w-5 h-5 mr-2" />
                     Купить NFT
                   </Button>
-                </Card>
+                </div>
               )}
-            </div>
+            </Card>
           </TabsContent>
-        </div>
+        </Tabs>
+      </div>
 
-        {/* Bottom Navigation */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800">
-          <TabsList className="grid w-full grid-cols-3 bg-transparent h-16 rounded-none">
-            <TabsTrigger 
-              value="history" 
-              className="flex flex-col gap-1 data-[state=active]:bg-transparent data-[state=active]:text-amber-500 text-gray-400 h-full"
-            >
-              <History className="h-5 w-5" />
-              <span className="text-xs">История</span>
-            </TabsTrigger>
-            
-            <TabsTrigger 
-              value="wallet" 
-              className="flex flex-col gap-1 data-[state=active]:bg-transparent data-[state=active]:text-amber-500 text-gray-400 h-full"
-            >
-              <Wallet className="h-5 w-5" />
-              <span className="text-xs">Кошелёк</span>
-            </TabsTrigger>
-            
-            <TabsTrigger 
-              value="collections" 
-              className="flex flex-col gap-1 data-[state=active]:bg-transparent data-[state=active]:text-amber-500 text-gray-400 h-full"
-            >
-              <ImageIcon className="h-5 w-5" />
-              <span className="text-xs">Коллекции</span>
-            </TabsTrigger>
-          </TabsList>
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border">
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+              activeTab === "history" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <History className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">История</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("wallet")}
+            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+              activeTab === "wallet" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <WalletIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Кошелёк</span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("collections")}
+            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+              activeTab === "collections" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ImageIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Коллекции</span>
+          </button>
         </div>
-      </Tabs>
+      </div>
     </div>
   );
 };

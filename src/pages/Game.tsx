@@ -55,8 +55,11 @@ const Game = () => {
     // Load top players
     loadTopPlayers();
     
+    // Reset and restart timers
     calculateTimeLeft();
-    calculateWeeklyTimeLeft(); // Make initial call
+    calculateWeeklyTimeLeft();
+    calculateBoosterTimeLeft();
+    
     const timer = setInterval(() => {
       calculateTimeLeft();
       calculateWeeklyTimeLeft();
@@ -277,7 +280,7 @@ const Game = () => {
           onClick={() => navigate(-1)}
           className="button-outline-gold"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-4 h-4 mr-2 text-gold" />
           Назад
         </Button>
         <Button
@@ -286,7 +289,7 @@ const Game = () => {
           onClick={() => navigate("/tasks")}
           className="button-outline-gold"
         >
-          <ClipboardList className="w-4 h-4 mr-2" />
+          <ClipboardList className="w-4 h-4 mr-2 text-gold" />
           Задания
         </Button>
         <Button
@@ -295,7 +298,7 @@ const Game = () => {
           onClick={() => navigate("/menu")}
           className="button-outline-gold"
         >
-          <Home className="w-4 h-4 mr-2" />
+          <Home className="w-4 h-4 mr-2 text-gold" />
           Меню
         </Button>
       </div>
@@ -357,7 +360,7 @@ const Game = () => {
       <div className="flex justify-center gap-4 mb-8">
         {boosterEndTime && boosterTimeLeft ? (
           <div className="bg-primary/20 border border-primary/30 rounded-md px-4 py-2 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-primary animate-pulse" />
+            <Zap className="w-4 h-4 text-gold animate-pulse" />
             <span className="text-primary font-semibold">{boosterTimeLeft}</span>
           </div>
         ) : (
@@ -365,7 +368,7 @@ const Game = () => {
             onClick={() => setShowBooster(true)}
             className="button-gold group"
           >
-            <Zap className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+            <Zap className="w-4 h-4 mr-2 text-gold group-hover:animate-pulse" />
             Ускорить
           </Button>
         )}
@@ -375,7 +378,7 @@ const Game = () => {
           variant="outline"
           className="button-outline-gold group"
         >
-          <Info className="w-4 h-4 mr-2 group-hover:animate-pulse" />
+          <Info className="w-4 h-4 mr-2 text-gold group-hover:animate-pulse" />
           Правила игры
         </Button>
       </div>

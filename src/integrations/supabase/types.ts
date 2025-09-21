@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           balance: number | null
           balance2: number | null
+          ban: number | null
           bdog_balance: number | null
           bone: number | null
           booster_expires_at: string | null
@@ -38,6 +39,7 @@ export type Database = {
         Insert: {
           balance?: number | null
           balance2?: number | null
+          ban?: number | null
           bdog_balance?: number | null
           bone?: number | null
           booster_expires_at?: string | null
@@ -58,6 +60,7 @@ export type Database = {
         Update: {
           balance?: number | null
           balance2?: number | null
+          ban?: number | null
           bdog_balance?: number | null
           bone?: number | null
           booster_expires_at?: string | null

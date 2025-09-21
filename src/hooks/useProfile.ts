@@ -18,7 +18,8 @@ interface UserProfile {
   referred_by?: string;
   ip_address?: string | null;
   device_fingerprint?: string | null;
-  booster_expires_at?: string | null; // New field for booster expiration
+  booster_expires_at?: string | null;
+  ban?: number;
   created_at: string;
   updated_at: string;
 }
@@ -82,6 +83,35 @@ export const useProfile = () => {
 
       if (existingProfile) {
         console.log('Found existing profile:', existingProfile.id);
+        
+        // Check if user is banned - redirect to ban page
+        if (existingProfile.ban === 1) {
+          console.log('User is banned, clearing data and redirecting to ban page');
+          
+          // Clear all user data
+          localStorage.clear();
+          
+          // Set a minimal banned profile
+          setProfile({
+            ...existingProfile,
+            balance: 0,
+            balance2: 0,
+            grow: 0,
+            grow1: 1,
+            bone: 0,
+            referrals: 0,
+            bdog_balance: 0,
+            v_bdog_earned: 0,
+            ip_address: existingProfile.ip_address as string | null,
+            device_fingerprint: existingProfile.device_fingerprint as string | null
+          });
+          
+          // Force redirect to ban page
+          setTimeout(() => {
+            window.location.href = '/ban';
+          }, 100);
+          return;
+        }
         
         // Check if booster has expired and reset if necessary
         if (existingProfile.booster_expires_at && new Date(existingProfile.booster_expires_at) <= new Date() && existingProfile.grow1 > 1) {
@@ -183,6 +213,7 @@ export const useProfile = () => {
           ip_address: deviceInfo.ip_address,
           device_fingerprint: deviceInfo.device_fingerprint,
           booster_expires_at: null, // New profiles don't have active boosters
+          ban: 0, // New users are not banned
         };
 
         const { data: createdProfile, error: createError } = await supabase

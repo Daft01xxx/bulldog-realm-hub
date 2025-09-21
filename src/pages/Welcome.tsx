@@ -23,6 +23,14 @@ const Welcome = () => {
     }
   }, [toast]);
 
+  // Check for BAN status when profile loads
+  useEffect(() => {
+    if (profile && profile.ban === 1) {
+      // User is banned, redirect to ban page
+      navigate('/ban');
+    }
+  }, [profile, navigate]);
+
   const handleLogin = async () => {
     if (loading) return;
     

@@ -14,6 +14,7 @@ import Referral from "./pages/Referral";
 import Tasks from "./pages/Tasks";
 import Promotion from "./pages/Promotion";
 import Admin from "./pages/Admin";
+import Ban from "./pages/Ban";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/promotion" element={<Promotion />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/ban" element={<Ban />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

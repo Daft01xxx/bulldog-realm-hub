@@ -111,7 +111,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      validate_referral_code: {
+        Args: { referral_code: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

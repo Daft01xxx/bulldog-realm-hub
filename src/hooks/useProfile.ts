@@ -290,22 +290,29 @@ export const useProfile = () => {
         }
       }
 
-      // Store profile data
+      // Store profile data - ensure proper conversion from database bigint types
       setProfile({
         ...userProfile,
+        grow: Number(userProfile.grow) || 0,
+        grow1: Number(userProfile.grow1) || 1,
+        bone: Number(userProfile.bone) || 1000,
+        balance: Number(userProfile.balance) || 0,
+        balance2: Number(userProfile.balance2) || 0,
+        v_bdog_earned: Number(userProfile.v_bdog_earned) || 0,
+        referrals: Number(userProfile.referrals) || 0,
         ip_address: userProfile.ip_address as string | null,
         device_fingerprint: userProfile.device_fingerprint as string | null
       });
       
-      // Sync with localStorage
+      // Sync with localStorage - ensure proper number conversion for bigint values
       localStorage.setItem('bdog-reg', userProfile.reg || '');
-      localStorage.setItem('bdog-balance', userProfile.balance?.toString() || '0');
-      localStorage.setItem('bdog-balance2', userProfile.balance2?.toString() || '0');
-      localStorage.setItem('bdog-grow', userProfile.grow?.toString() || '0');
-      localStorage.setItem('bdog-grow1', userProfile.grow1?.toString() || '1');
-      localStorage.setItem('bdog-bone', userProfile.bone?.toString() || '1000');
-      localStorage.setItem('bdog-referrals', userProfile.referrals?.toString() || '0');
-      localStorage.setItem('bdog-v-earned', userProfile.v_bdog_earned?.toString() || '0');
+      localStorage.setItem('bdog-balance', String(userProfile.balance || 0));
+      localStorage.setItem('bdog-balance2', String(userProfile.balance2 || 0));
+      localStorage.setItem('bdog-grow', String(Number(userProfile.grow) || 0));
+      localStorage.setItem('bdog-grow1', String(Number(userProfile.grow1) || 1));
+      localStorage.setItem('bdog-bone', String(Number(userProfile.bone) || 1000));
+      localStorage.setItem('bdog-referrals', String(Number(userProfile.referrals) || 0));
+      localStorage.setItem('bdog-v-earned', String(Number(userProfile.v_bdog_earned) || 0));
 
       console.log('Profile loaded successfully:', userProfile);
 
@@ -335,28 +342,35 @@ export const useProfile = () => {
 
       setProfile({
         ...updatedProfile,
+        grow: Number(updatedProfile.grow) || 0,
+        grow1: Number(updatedProfile.grow1) || 1,
+        bone: Number(updatedProfile.bone) || 1000,
+        balance: Number(updatedProfile.balance) || 0,
+        balance2: Number(updatedProfile.balance2) || 0,
+        v_bdog_earned: Number(updatedProfile.v_bdog_earned) || 0,
+        referrals: Number(updatedProfile.referrals) || 0,
         ip_address: updatedProfile.ip_address as string | null,
         device_fingerprint: updatedProfile.device_fingerprint as string | null
       });
 
-      // Sync with localStorage
+      // Sync with localStorage - ensure proper number conversion
       if (updates.balance !== undefined) {
-        localStorage.setItem('bdog-balance', updates.balance.toString());
+        localStorage.setItem('bdog-balance', String(Number(updates.balance)));
       }
       if (updates.balance2 !== undefined) {
-        localStorage.setItem('bdog-balance2', updates.balance2.toString());
+        localStorage.setItem('bdog-balance2', String(Number(updates.balance2)));
       }
       if (updates.grow !== undefined) {
-        localStorage.setItem('bdog-grow', updates.grow.toString());
+        localStorage.setItem('bdog-grow', String(Number(updates.grow)));
       }
       if (updates.grow1 !== undefined) {
-        localStorage.setItem('bdog-grow1', updates.grow1.toString());
+        localStorage.setItem('bdog-grow1', String(Number(updates.grow1)));
       }
       if (updates.bone !== undefined) {
-        localStorage.setItem('bdog-bone', updates.bone.toString());
+        localStorage.setItem('bdog-bone', String(Number(updates.bone)));
       }
       if (updates.v_bdog_earned !== undefined) {
-        localStorage.setItem('bdog-v-earned', updates.v_bdog_earned.toString());
+        localStorage.setItem('bdog-v-earned', String(Number(updates.v_bdog_earned)));
       }
       if (updates.reg !== undefined) {
         localStorage.setItem('bdog-reg', updates.reg);

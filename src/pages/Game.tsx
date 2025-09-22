@@ -218,6 +218,15 @@ const Game = () => {
     const newBone = Math.max(0, currentBone - 1);
     const newTotalTaps = currentTotalTaps + 1;
     
+    console.log('Click debug:', {
+      currentGrow,
+      currentGrow1,
+      newGrow,
+      currentBone,
+      newBone,
+      localStorage_grow: localStorage.getItem("bdog-grow")
+    });
+    
     setGrow(newGrow);
     setBone(newBone);
     setTotalTaps(newTotalTaps);
@@ -228,9 +237,9 @@ const Game = () => {
       bone: newBone
     });
     
-    localStorage.setItem("bdog-grow", newGrow.toString());
-    localStorage.setItem("bdog-bone", newBone.toString());
-    localStorage.setItem("bdog-total-taps", newTotalTaps.toString());
+    localStorage.setItem("bdog-grow", String(newGrow));
+    localStorage.setItem("bdog-bone", String(newBone));
+    localStorage.setItem("bdog-total-taps", String(newTotalTaps));
 
     // Click effect animation
     const rect = (event.target as HTMLElement).getBoundingClientRect();

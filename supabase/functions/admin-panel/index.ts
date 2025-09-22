@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
     
     // Get action from body if not in query params
     const finalAction = action || body.action;
-    const userId = searchParams.get('userId');
+    const finalUserId = userId || body.userId;
 
     console.log(`Admin panel action: ${finalAction} at ${new Date().toISOString()}`);
 
@@ -105,25 +105,25 @@ Deno.serve(async (req) => {
         }
       )
 
-    } else if (finalAction === 'update_user' && userId) {
+    } else if (finalAction === 'update_user' && finalUserId) {
       const { updates } = body
 
       const { data, error } = await supabaseClient
         .from('profiles')
         .update(updates)
-        .eq('id', userId)
+        .eq('id', finalUserId)
         .select()
 
       if (error) {
         throw error
       }
 
-      console.log(`Updated user ${userId}:`, updates)
+      console.log(`Updated user ${finalUserId}:`, updates)
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: `User ${userId} updated successfully`,
+          message: `User ${finalUserId} updated successfully`,
           profile: data?.[0]
         }),
         { 

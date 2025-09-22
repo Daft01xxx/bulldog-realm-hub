@@ -278,59 +278,59 @@ const Game = () => {
 
 
   return (
-    <div className="min-h-screen bg-background px-4 py-12">
+    <div className="min-h-screen bg-background px-2 py-8">
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-8 pt-8">
+      <div className="flex justify-between items-center mb-6 pt-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(-1)}
-          className="button-outline-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <ArrowLeft className="w-4 h-4 mr-2 text-gold" />
+          <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
           Назад
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/tasks")}
-          className="button-outline-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <ClipboardList className="w-4 h-4 mr-2 text-gold" />
+          <ClipboardList className="w-3 h-3 mr-1 text-gold" />
           Задания
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/menu")}
-          className="button-outline-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <Home className="w-4 h-4 mr-2 text-gold" />
+          <Home className="w-3 h-3 mr-1 text-gold" />
           Меню
         </Button>
       </div>
 
       {/* Game stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8 max-w-md mx-auto">
-        <Card className="card-glow p-4 text-center animate-fade-in-up">
-          <p className="text-sm text-muted-foreground">Рост</p>
-          <p className="text-xl font-bold text-gold">{grow.toLocaleString()}</p>
+      <div className="grid grid-cols-3 gap-2 mb-6 max-w-sm mx-auto">
+        <Card className="card-glow p-2 text-center animate-fade-in-up">
+          <p className="text-xs text-muted-foreground">Рост</p>
+          <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
         </Card>
         
-        <Card className="card-glow p-4 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-          <p className="text-sm text-muted-foreground">Косточки</p>
-          <p className="text-xl font-bold text-foreground">{bone}</p>
+        <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+          <p className="text-xs text-muted-foreground">Косточки</p>
+          <p className="text-sm font-bold text-foreground">{bone}</p>
         </Card>
         
-        <Card className="card-glow p-4 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-          <p className="text-sm text-muted-foreground">Сброс через</p>
-          <p className="text-sm font-bold text-gold">{timeLeft}</p>
+        <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+          <p className="text-xs text-muted-foreground">Сброс через</p>
+          <p className="text-xs font-bold text-gold">{timeLeft}</p>
         </Card>
       </div>
 
       {/* Game area */}
-      <div className="text-center mb-8">
-        <Card className="card-glow p-8 max-w-sm mx-auto relative overflow-hidden animate-bounce-in">
+      <div className="text-center mb-6">
+        <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
           <div 
             className="relative cursor-pointer group"
             onClick={handleClick}
@@ -338,14 +338,14 @@ const Game = () => {
             <img 
               src={bulldogSuit}
               alt="BDOG"
-              className="w-48 h-48 mx-auto rounded-full object-cover group-hover:scale-110 transition-transform duration-300"
+              className="w-32 h-32 mx-auto rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
             
             {/* Click effects */}
             {clickEffect.map((effect) => (
               <div
                 key={effect.id}
-                className="absolute pointer-events-none text-gold font-bold text-2xl animate-bounce-in"
+                className="absolute pointer-events-none text-gold font-bold text-lg animate-bounce-in"
                 style={{
                   left: effect.x,
                   top: effect.y,
@@ -357,25 +357,25 @@ const Game = () => {
             ))}
           </div>
           
-          <p className="text-lg font-semibold text-foreground mt-4">
+          <p className="text-sm font-semibold text-foreground mt-2">
             Нажми на бульдога!
           </p>
         </Card>
       </div>
 
       {/* Action buttons */}
-      <div className="flex justify-center gap-4 mb-8">
+      <div className="flex justify-center gap-2 mb-6">
         {boosterEndTime && boosterTimeLeft ? (
-          <div className="bg-primary/20 border border-primary/30 rounded-md px-4 py-2 flex items-center gap-2">
-            <Zap className="w-4 h-4 text-gold animate-pulse" />
-            <span className="text-primary font-semibold">{boosterTimeLeft}</span>
+          <div className="bg-primary/20 border border-primary/30 rounded-md px-2 py-1 flex items-center gap-1">
+            <Zap className="w-3 h-3 text-gold animate-pulse" />
+            <span className="text-primary font-semibold text-xs">{boosterTimeLeft}</span>
           </div>
         ) : (
           <Button
             onClick={() => setShowBooster(true)}
-            className="button-gold group"
+            className="button-gold group text-xs px-3 py-2"
           >
-            <Zap className="w-4 h-4 mr-2 text-gold group-hover:animate-pulse" />
+            <Zap className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
             Ускорить
           </Button>
         )}
@@ -383,21 +383,21 @@ const Game = () => {
         <Button
           onClick={() => setShowRules(true)}
           variant="outline"
-          className="button-outline-gold group"
+          className="button-outline-gold group text-xs px-3 py-2"
         >
-          <Info className="w-4 h-4 mr-2 text-gold group-hover:animate-pulse" />
-          Правила игры
+          <Info className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
+          Правила
         </Button>
       </div>
 
       {/* Ad space */}
-      <Card className="card-glow p-4 text-center mb-8 max-w-md mx-auto animate-fade-in-up">
-        <p className="text-gray-subtle text-sm mb-1">Твоя реклама тут,</p>
+      <Card className="card-glow p-3 text-center mb-6 max-w-xs mx-auto animate-fade-in-up">
+        <p className="text-gray-subtle text-xs mb-1">Твоя реклама тут,</p>
         <a 
           href="https://t.me/Deff0xq" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-gold hover:text-gold-light transition-colors underline text-sm font-semibold"
+          className="text-gold hover:text-gold-light transition-colors underline text-xs font-semibold"
         >
           пиши нам
         </a>
@@ -405,29 +405,29 @@ const Game = () => {
 
       {/* Top players */}
       {topPlayers.length > 0 && (
-        <div className="max-w-md mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
-          <h3 className="text-xl font-bold text-foreground mb-4 text-center">
+        <div className="max-w-xs mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
+          <h3 className="text-lg font-bold text-foreground mb-3 text-center">
             🏆 Топ роста
           </h3>
           
-          <Card className="card-glow p-4">
-            <div className="text-center mb-4 border-b border-border pb-4">
-              <div className="text-sm text-muted-foreground mb-1">
+          <Card className="card-glow p-3">
+            <div className="text-center mb-3 border-b border-border pb-3">
+              <div className="text-xs text-muted-foreground mb-1">
                 Еженедельный сброс через:
               </div>
-              <div className="text-lg font-bold text-gold">
+              <div className="text-sm font-bold text-gold">
                 {weeklyTimeLeft}
               </div>
-              <div className="text-xs text-muted-foreground mt-2">
+              <div className="text-xs text-muted-foreground mt-1">
                 Топ-5 получат по 5,000,000 V-BDOG!<br/>
                 <span className="text-xs">Воскресенье 20:00 (МСК)</span>
               </div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {topPlayers.map((player, index) => (
                 <div 
                   key={player.name + index} 
-                  className={`flex justify-between items-center p-2 rounded ${
+                  className={`flex justify-between items-center p-2 rounded text-xs ${
                     index === 0 ? 'bg-gold/20 border border-gold/30' : 
                     index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
                     index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
@@ -435,7 +435,7 @@ const Game = () => {
                   }`}
                 >
                   <span className="flex items-center">
-                    <span className="font-bold mr-2">
+                    <span className="font-bold mr-1 text-xs">
                       {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
                     </span>
                     <span className="text-foreground">{player.name}</span>

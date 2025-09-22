@@ -68,20 +68,20 @@ const Welcome = () => {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 text-center px-6">
-        <div className="animate-bounce-in min-h-[400px] flex flex-col justify-center">
-          <h1 className="text-6xl md:text-8xl font-bold text-gradient animate-glow-text mb-8">
+      <div className="relative z-10 text-center px-4">
+        <div className="animate-bounce-in min-h-[300px] flex flex-col justify-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-gradient animate-glow-text mb-6">
             BDOG APP
           </h1>
-          <div className="mb-6 h-[48px] flex items-center justify-center">
+          <div className="mb-4 h-[36px] flex items-center justify-center">
             <Button 
-              className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-8 py-3 rounded-full shadow-gold animate-pulse-gold min-w-[169px]"
+              className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-6 py-2 rounded-full shadow-gold animate-pulse-gold min-w-[140px] text-sm"
               onClick={handleLogin}
             >
               Вход в аккаунт
             </Button>
           </div>
-          <p className="text-xl md:text-2xl text-white-glow animate-fade-in-up opacity-80">
+          <p className="text-lg md:text-xl text-white-glow animate-fade-in-up opacity-80">
             Добро пожаловать в экосистему Bulldog
           </p>
         </div>

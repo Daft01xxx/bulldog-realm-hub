@@ -146,15 +146,14 @@ const Menu = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
       {/* 3D Falling Coins */}
-      <FallingCoins3D count={15} />
+      <FallingCoins3D count={8} />
       
-
       {/* Header with title */}
-      <div className="text-center mb-12 pt-8 relative z-10">
+      <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-5xl md:text-7xl font-bold text-gradient animate-glow-text mb-8 ${
+          className={`text-3xl md:text-4xl font-bold text-gradient animate-glow-text mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
@@ -163,24 +162,24 @@ const Menu = () => {
         
         {/* User info */}
         <Card 
-          className={`card-glow max-w-md mx-auto p-6 mb-8 ${
+          className={`card-glow max-w-xs mx-auto p-3 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
         >
-          <div className="space-y-3">
-            <p className="text-lg text-muted-foreground">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">
               <span className="text-gold font-semibold">{reg}</span>
             </p>
-            <div className="space-y-2">
-              <p className="text-xl text-foreground">
-                BDOG токены: <span className="text-gradient font-bold">{bdogBalance}</span>
+            <div className="space-y-1">
+              <p className="text-sm text-foreground">
+                BDOG: <span className="text-gradient font-bold">{bdogBalance}</span>
               </p>
-              <p className="text-xl text-foreground">
-                V-BDOG баланс: <span className="text-gradient font-bold">{vBdogBalance}</span>
+              <p className="text-sm text-foreground">
+                V-BDOG: <span className="text-gradient font-bold">{vBdogBalance}</span>
               </p>
               {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
-                <p className="text-sm text-gold">
+                <p className="text-xs text-gold">
                   (включая {profile.v_bdog_earned.toLocaleString()} V-BDOG за рефералов)
                 </p>
               )}
@@ -189,51 +188,51 @@ const Menu = () => {
         </Card>
 
         {/* Daily Gift Button */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4">
             <Button
             onClick={claimDailyGift}
             disabled={!canClaimDaily}
-            className={`button-gradient-gold button-glow px-8 py-3 text-lg font-semibold ${
+            className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
               animate ? 'animate-bounce-in' : 'opacity-0'
             } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
             style={{ animationDelay: '0.5s' }}
           >
-            <Gift className="w-5 h-5 mr-2 icon-gold" />
+            <Gift className="w-3 h-3 mr-2 icon-gold" />
             {canClaimDaily ? "Получить ежедневный подарок" : "Подарок уже получен"}
           </Button>
-          <p className="text-xs text-muted-foreground mt-2 opacity-70">
+          <p className="text-xs text-muted-foreground mt-1 opacity-70">
             Обновляется каждые 24 часа
           </p>
         </div>
       </div>
 
       {/* Menu grid */}
-      <div className="max-w-4xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="max-w-sm mx-auto relative z-10">
+        <div className="grid grid-cols-1 gap-3 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
             return (
               <Card
                 key={item.title}
-                className={`card-glow p-6 cursor-pointer hover-lift group ${
+                className={`card-glow p-4 cursor-pointer hover-lift group ${
                   animate ? 'animate-slide-in-right' : 'opacity-0'
                 }`}
                 style={{ animationDelay: item.delay }}
                 onClick={() => navigate(item.path)}
               >
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-8 h-8 rounded-full object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-6 h-6 rounded-full object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : (
-                      <IconComponent className="w-8 h-8 icon-gold" />
+                      <IconComponent className="w-6 h-6 icon-gold" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-foreground mb-1 group-hover:text-gold transition-colors">
+                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {item.description}
                     </p>
                   </div>

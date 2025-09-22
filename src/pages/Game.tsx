@@ -28,22 +28,38 @@ const Game = () => {
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
   useEffect(() => {
+    console.log('Game useEffect triggered:', { profile: !!profile, isUpdatingFromClick });
+    
     // Load game data from profile or localStorage ONLY once when profile is first loaded
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
       const profileGrow1 = Number(profile.grow1) || 1;
       const profileBone = Math.min(1000, Number(profile.bone) || 1000);
       
+      console.log('Loading from profile:', { profileGrow, profileGrow1, profileBone });
+      console.log('Current local state:', { grow, grow1, bone });
+      
       // Only update if local state is different from profile (to avoid constant resets)
-      if (grow !== profileGrow) setGrow(profileGrow);
-      if (grow1 !== profileGrow1) setGrow1(profileGrow1);
-      if (bone !== profileBone) setBone(profileBone);
+      if (grow !== profileGrow) {
+        console.log('Updating grow from profile:', profileGrow);
+        setGrow(profileGrow);
+      }
+      if (grow1 !== profileGrow1) {
+        console.log('Updating grow1 from profile:', profileGrow1);
+        setGrow1(profileGrow1);
+      }
+      if (bone !== profileBone) {
+        console.log('Updating bone from profile:', profileBone);
+        setBone(profileBone);
+      }
       
     } else if (!profile && !isUpdatingFromClick && grow === 0) {
       // Load from localStorage only if we don't have any data yet
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
       const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
+      
+      console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
       
       setGrow(savedGrow);
       setGrow1(savedGrow1);
@@ -85,7 +101,7 @@ const Game = () => {
       calculateBoosterTimeLeft();
     }, 1000);
     return () => clearInterval(timer);
-  }, [profile, isUpdatingFromClick]);
+  }, [profile]); // Removed isUpdatingFromClick from dependencies!
 
   const loadTopPlayers = async () => {
     try {

@@ -11,7 +11,7 @@ import bulldogSuit from "@/assets/bulldog-suit.jpeg";
 const Game = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, loading } = useProfile();
   const [grow, setGrow] = useState(0);
   const [grow1, setGrow1] = useState(1);
   const [bone, setBone] = useState(1000);
@@ -28,9 +28,15 @@ const Game = () => {
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
   useEffect(() => {
-    console.log('Game useEffect triggered:', { profile: !!profile, isUpdatingFromClick });
+    console.log('Game useEffect triggered:', { profile: !!profile, isUpdatingFromClick, loading });
     
-    // Load game data from profile or localStorage ONLY once when profile is first loaded
+    // Don't load data if we're still loading profile
+    if (loading) {
+      console.log('Profile is loading, skipping data load');
+      return;
+    }
+    
+    // Load game data from profile or localStorage ONLY once when profile is loaded
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
       const profileGrow1 = Number(profile.grow1) || 1;
@@ -39,8 +45,8 @@ const Game = () => {
       console.log('Loading from profile:', { profileGrow, profileGrow1, profileBone });
       console.log('Current local state:', { grow, grow1, bone });
       
-      // Only update if local state is different from profile (to avoid constant resets)
-      if (grow !== profileGrow) {
+      // Only update if local state is significantly different from profile
+      if (Math.abs(grow - profileGrow) > 0) {
         console.log('Updating grow from profile:', profileGrow);
         setGrow(profileGrow);
       }
@@ -48,13 +54,13 @@ const Game = () => {
         console.log('Updating grow1 from profile:', profileGrow1);
         setGrow1(profileGrow1);
       }
-      if (bone !== profileBone) {
+      if (Math.abs(bone - profileBone) > 0) {
         console.log('Updating bone from profile:', profileBone);
         setBone(profileBone);
       }
       
-    } else if (!profile && !isUpdatingFromClick && grow === 0) {
-      // Load from localStorage only if we don't have any data yet
+    } else if (!profile && !loading && !isUpdatingFromClick && grow === 0) {
+      // Load from localStorage only if we're not loading and don't have any data yet
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
       const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
@@ -101,7 +107,7 @@ const Game = () => {
       calculateBoosterTimeLeft();
     }, 1000);
     return () => clearInterval(timer);
-  }, [profile]); // Removed isUpdatingFromClick from dependencies!
+  }, [profile, loading]); // Added loading dependency
 
   const loadTopPlayers = async () => {
     try {

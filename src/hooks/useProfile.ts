@@ -309,9 +309,14 @@ export const useProfile = () => {
   }, [getDeviceInfo]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
-    if (!profile) return;
+    if (!profile) {
+      console.warn('No profile available for update');
+      return;
+    }
 
     try {
+      console.log('Updating profile:', profile.user_id, 'with updates:', updates);
+      
       // Update using user_id which is unique
       const { data: updatedProfile, error } = await supabase
         .from('profiles')
@@ -326,10 +331,40 @@ export const useProfile = () => {
       }
 
       if (!updatedProfile) {
-        console.error('Profile not found for update');
+        console.error('Profile not found for update, user_id:', profile.user_id);
+        // Try to update using device_fingerprint as fallback
+        const { data: fallbackProfile, error: fallbackError } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('device_fingerprint', profile.device_fingerprint)
+          .select()
+          .maybeSingle();
+          
+        if (fallbackError) {
+          console.error('Fallback update failed:', fallbackError);
+          return;
+        }
+        
+        if (fallbackProfile) {
+          console.log('Profile updated via fallback method');
+          setProfile({
+            ...fallbackProfile,
+            grow: Number(fallbackProfile.grow) || 0,
+            grow1: Number(fallbackProfile.grow1) || 1,
+            bone: Number(fallbackProfile.bone) || 1000,
+            balance: Number(fallbackProfile.balance) || 0,
+            balance2: Number(fallbackProfile.balance2) || 0,
+            v_bdog_earned: Number(fallbackProfile.v_bdog_earned) || 0,
+            referrals: Number(fallbackProfile.referrals) || 0,
+            ban: Number(fallbackProfile.ban) || 0,
+            ip_address: fallbackProfile.ip_address as string | null,
+            device_fingerprint: fallbackProfile.device_fingerprint as string | null
+          });
+        }
         return;
       }
 
+      console.log('Profile updated successfully:', updatedProfile);
       setProfile({
         ...updatedProfile,
         grow: Number(updatedProfile.grow) || 0,
@@ -339,6 +374,7 @@ export const useProfile = () => {
         balance2: Number(updatedProfile.balance2) || 0,
         v_bdog_earned: Number(updatedProfile.v_bdog_earned) || 0,
         referrals: Number(updatedProfile.referrals) || 0,
+        ban: Number(updatedProfile.ban) || 0,
         ip_address: updatedProfile.ip_address as string | null,
         device_fingerprint: updatedProfile.device_fingerprint as string | null
       });

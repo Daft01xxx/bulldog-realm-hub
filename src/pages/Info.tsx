@@ -28,51 +28,51 @@ const Info = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background px-4 py-12">
+    <div className="min-h-screen bg-background px-2 py-4">
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-8 pt-8">
+      <div className="flex justify-between items-center mb-4 pt-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(-1)}
-          className="button-outline-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
           Назад
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/menu")}
-          className="button-outline-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <Home className="w-4 h-4 mr-2" />
+          <Home className="w-3 h-3 mr-1 text-gold" />
           Меню
         </Button>
       </div>
 
       {/* Social links */}
-      <div className="max-w-md mx-auto mb-8">
-        <h2 className="text-2xl font-bold text-foreground text-center mb-6 animate-fade-in-up">
+      <div className="max-w-sm mx-auto mb-4">
+        <h2 className="text-lg font-bold text-foreground text-center mb-3 animate-fade-in-up">
           Наши социальные сети
         </h2>
         
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {socialLinks.map((link, index) => (
             <Card 
               key={link.name}
-              className="card-glow p-4 hover-lift cursor-pointer animate-slide-in-right"
+              className="card-glow p-3 hover-lift cursor-pointer animate-slide-in-right"
               style={{animationDelay: `${index * 0.1}s`}}
               onClick={() => window.open(link.url, "_blank")}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="text-2xl">{link.icon}</div>
-                  <span className="text-lg font-semibold text-foreground">
+                <div className="flex items-center space-x-3">
+                  <div className="text-lg">{link.icon}</div>
+                  <span className="text-sm font-semibold text-foreground">
                     {link.name}
                   </span>
                 </div>
-                <ExternalLink className="w-5 h-5 text-gold" />
+                <ExternalLink className="w-4 h-4 text-gold" />
               </div>
             </Card>
           ))}
@@ -80,7 +80,7 @@ const Info = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+      <div className="max-w-sm mx-auto space-y-4 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
         <Card className="card-glow p-6">
           <h2 className="text-2xl font-bold text-gradient mb-6 text-center">
             Bulldog Multichain Ecosystem

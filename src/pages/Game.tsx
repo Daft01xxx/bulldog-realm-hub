@@ -278,9 +278,9 @@ const Game = () => {
 
 
   return (
-    <div className="min-h-screen bg-background px-2 py-8">
+    <div className="min-h-screen bg-background px-2 py-4">
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-6 pt-4">
+      <div className="flex justify-between items-center mb-4 pt-4">
         <Button
           variant="outline"
           size="sm"
@@ -311,7 +311,7 @@ const Game = () => {
       </div>
 
       {/* Game stats */}
-      <div className="grid grid-cols-3 gap-2 mb-6 max-w-sm mx-auto">
+      <div className="grid grid-cols-3 gap-2 mb-4 max-w-sm mx-auto">
         <Card className="card-glow p-2 text-center animate-fade-in-up">
           <p className="text-xs text-muted-foreground">Рост</p>
           <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
@@ -329,7 +329,7 @@ const Game = () => {
       </div>
 
       {/* Game area */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
           <div 
             className="relative cursor-pointer group"

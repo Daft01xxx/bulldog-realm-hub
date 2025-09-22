@@ -46,67 +46,65 @@ const Wallet = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-gold/5 px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-gold/5 px-2 py-4">
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-8 pt-8">
+      <div className="flex justify-between items-center mb-4 pt-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(-1)}
-          className="button-outline-gold shadow-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <ArrowLeft className="w-4 h-4 mr-2 icon-gold" />
+          <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
           Назад
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/menu")}
-          className="button-outline-gold shadow-gold"
+          className="button-outline-gold text-xs px-2 py-1"
         >
-          <Home className="w-4 h-4 mr-2 icon-gold" />
+          <Home className="w-3 h-3 mr-1 text-gold" />
           Меню
         </Button>
       </div>
 
       {/* Hero Section */}
-      <div className="text-center mb-12 relative">
+      <div className="text-center mb-6 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-transparent rounded-3xl blur-3xl"></div>
         <div className="relative">
-          <h1 className="text-5xl md:text-7xl font-bold text-gradient animate-glow-text mb-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-gradient animate-glow-text mb-2">
             Кошелёк BDOG
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Управляй своими токенами и NFT
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-2xl mx-auto space-y-10">
+      <div className="max-w-sm mx-auto space-y-4">
         {/* Connection Status Card */}
-        <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-2 border-gold/30 p-10 text-center animate-fade-in-up hover:border-gold/60 transition-all duration-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent"></div>
-          
+        <Card className="card-glow p-4 text-center animate-fade-in-up">
           <div className="relative">
-            <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-2xl animate-pulse-gold">
-              <WalletIcon className="w-12 h-12 text-black" />
+            <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-lg">
+              <WalletIcon className="w-6 h-6 text-black" />
             </div>
             
-            <h2 className="text-3xl font-bold text-gradient mb-4">
+            <h2 className="text-lg font-bold text-gradient mb-2">
               {isConnected ? "🔗 Кошелек подключен" : "🔌 Подключить кошелек"}
             </h2>
             
-            <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
+            <p className="text-muted-foreground text-xs mb-4 leading-relaxed">
               {isConnected 
-                ? `Адрес: ${walletAddress?.slice(0, 12)}...${walletAddress?.slice(-8)}`
+                ? `Адрес: ${walletAddress?.slice(0, 8)}...${walletAddress?.slice(-6)}`
                 : "Подключи свой TON кошелек для управления BDOG токенами и NFT"
               }
             </p>
 
             <Button
               onClick={handleConnect}
-              className="button-gold text-xl py-6 px-12 animate-bounce-in shadow-2xl hover:shadow-gold/30 transition-all duration-300"
+              className="button-gold text-sm py-2 px-4 animate-bounce-in"
             >
               {isConnected ? "🚀 Открыть кошелек" : "⚡ Подключить TON"}
             </Button>
@@ -114,33 +112,31 @@ const Wallet = () => {
         </Card>
 
         {/* Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-          <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-2 border-blue-500/30 p-8 hover:border-blue-500/60 transition-all duration-500 hover:scale-105 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent group-hover:from-blue-500/20"></div>
-            <div className="relative text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-                <ExternalLink className="w-8 h-8 text-white" />
+        <div className="grid grid-cols-1 gap-3 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+          <Card className="card-glow p-4 hover-lift group">
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                <ExternalLink className="w-4 h-4 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors">Купить BDOG</h3>
+              <h3 className="text-sm font-bold mb-2 group-hover:text-blue-400 transition-colors">Купить BDOG</h3>
               <Button
                 onClick={() => window.open("https://t.me/blum/app?startapp=memepadjetton_BDOG_Y28d0-ref_wg9QjmgoJX", "_blank")}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 shadow-lg"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 text-xs px-3 py-1"
               >
                 Открыть Blum
               </Button>
             </div>
           </Card>
           
-          <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl border-2 border-purple-500/30 p-8 hover:border-purple-500/60 transition-all duration-500 hover:scale-105 group">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent group-hover:from-purple-500/20"></div>
-            <div className="relative text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-lg">
-                <ExternalLink className="w-8 h-8 text-white" />
+          <Card className="card-glow p-4 hover-lift group">
+            <div className="text-center">
+              <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                <ExternalLink className="w-4 h-4 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3 group-hover:text-purple-400 transition-colors">NFT Collection</h3>
+              <h3 className="text-sm font-bold mb-2 group-hover:text-purple-400 transition-colors">NFT Collection</h3>
               <Button
                 onClick={() => window.open("https://getgems.io/collection/EQBBQyriB8oloKQbrumUgvmyQF5iFweNInGHPio0PB_kbVDQ", "_blank")}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0 shadow-lg"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0 text-xs px-3 py-1"
               >
                 Открыть GetGems
               </Button>

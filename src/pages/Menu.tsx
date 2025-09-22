@@ -6,7 +6,7 @@ import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
-import FallingCoins2D from "@/components/FallingCoins2D";
+
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogSilverLogo from "@/assets/bdog-silver-logo.jpeg";
 
@@ -41,26 +41,26 @@ const Menu = () => {
     
     // Check if daily gift can be claimed and calculate time remaining
     const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
-    const today = new Date().toDateString();
-    const canClaim = !lastDailyGift || lastDailyGift !== today;
-    setCanClaimDaily(canClaim);
-    
-    // Calculate time until next gift if already claimed today
-    if (!canClaim && lastDailyGift) {
+    if (lastDailyGift) {
       const lastGiftTime = new Date(lastDailyGift).getTime();
       const nextGiftTime = lastGiftTime + (24 * 60 * 60 * 1000); // 24 hours later
       const now = Date.now();
-      const timeRemaining = nextGiftTime - now;
       
-      if (timeRemaining > 0) {
+      if (now < nextGiftTime) {
+        // Still within cooldown period
+        setCanClaimDaily(false);
+        const timeRemaining = nextGiftTime - now;
         const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
         const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
         setTimeUntilNextGift(`${hours}ч ${minutes}м`);
       } else {
-        setTimeUntilNextGift("");
+        // Cooldown expired, can claim again
         setCanClaimDaily(true);
+        setTimeUntilNextGift("");
       }
     } else {
+      // No previous gift, can claim
+      setCanClaimDaily(true);
       setTimeUntilNextGift("");
     }
     
@@ -70,30 +70,31 @@ const Menu = () => {
   
   // Update timer every minute
   useEffect(() => {
-    if (!canClaimDaily) {
-      const interval = setInterval(() => {
-        const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
-        if (lastDailyGift) {
-          const lastGiftTime = new Date(lastDailyGift).getTime();
-          const nextGiftTime = lastGiftTime + (24 * 60 * 60 * 1000);
-          const now = Date.now();
+    const interval = setInterval(() => {
+      const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
+      if (lastDailyGift) {
+        const lastGiftTime = new Date(lastDailyGift).getTime();
+        const nextGiftTime = lastGiftTime + (24 * 60 * 60 * 1000);
+        const now = Date.now();
+        
+        if (now < nextGiftTime) {
           const timeRemaining = nextGiftTime - now;
-          
-          if (timeRemaining > 0) {
-            const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-            setTimeUntilNextGift(`${hours}ч ${minutes}м`);
-          } else {
-            setTimeUntilNextGift("");
-            setCanClaimDaily(true);
-            clearInterval(interval);
-          }
+          const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+          const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+          setTimeUntilNextGift(`${hours}ч ${minutes}м`);
+          setCanClaimDaily(false);
+        } else {
+          setTimeUntilNextGift("");
+          setCanClaimDaily(true);
         }
-      }, 60000); // Update every minute
-      
-      return () => clearInterval(interval);
-    }
-  }, [canClaimDaily]);
+      } else {
+        setCanClaimDaily(true);
+        setTimeUntilNextGift("");
+      }
+    }, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const claimDailyGift = async () => {
     if (!canClaimDaily) {
@@ -203,8 +204,6 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
-      {/* 2D Falling Coins */}
-      <FallingCoins2D count={8} />
       
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">

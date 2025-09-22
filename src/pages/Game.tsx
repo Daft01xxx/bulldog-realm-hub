@@ -275,73 +275,9 @@ const Game = () => {
       return;
     }
 
-    // Enhanced vibration for iPhone and all devices
-    try {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      
-      if (isIOS) {
-        // iOS specific vibration methods
-        if (navigator.vibrate) {
-          navigator.vibrate(200);
-        }
-        
-        // Alternative iOS vibration using AudioContext
-        try {
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-          const oscillator = audioContext.createOscillator();
-          const gainNode = audioContext.createGain();
-          
-          oscillator.connect(gainNode);
-          gainNode.connect(audioContext.destination);
-          
-          oscillator.frequency.value = 200;
-          oscillator.type = 'sine';
-          gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-          gainNode.gain.linearRampToValueAtTime(0.01, audioContext.currentTime + 0.01);
-          gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
-          
-          oscillator.start(audioContext.currentTime);
-          oscillator.stop(audioContext.currentTime + 0.1);
-        } catch (audioError) {
-          console.log('Audio vibration failed:', audioError);
-        }
-        
-        // iOS haptic feedback if available
-        if ((window as any).DeviceMotionEvent && typeof (window as any).DeviceMotionEvent.requestPermission === 'function') {
-          try {
-            const permission = await (window as any).DeviceMotionEvent.requestPermission();
-            if (permission === 'granted') {
-              // Trigger haptic feedback through motion
-              if (navigator.vibrate) {
-                navigator.vibrate([100, 30, 100, 30, 200]);
-              }
-            }
-          } catch (permissionError) {
-            console.log('Motion permission failed:', permissionError);
-          }
-        }
-      } else {
-        // Android and other devices - stronger vibration patterns
-        if (navigator.vibrate) {
-          navigator.vibrate([200, 50, 200]);
-        }
-      }
-      
-      // Fallback methods for all browsers
-      if ((window as any).navigator?.vibrate) {
-        (window as any).navigator.vibrate(200);
-      }
-      
-      if ((navigator as any).mozVibrate) {
-        (navigator as any).mozVibrate(200);
-      }
-      
-      if ((navigator as any).webkitVibrate) {
-        (navigator as any).webkitVibrate(200);
-      }
-      
-    } catch (error) {
-      console.log('Vibration not supported:', error);
+    // Simple and reliable vibration for all devices including iPhone
+    if (navigator.vibrate) {
+      navigator.vibrate(100);
     }
 
     // Click animation effect

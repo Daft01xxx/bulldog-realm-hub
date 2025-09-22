@@ -36,6 +36,8 @@ function AppContent() {
   useEffect(() => {
     if (profile?.ban === 1 && !isOnBanPage && !banRedirectProcessed.current && !loading) {
       banRedirectProcessed.current = true;
+      // Clear any cached data before redirect
+      localStorage.clear();
       window.location.replace('/ban');
     }
   }, [profile?.ban, isOnBanPage, loading]);

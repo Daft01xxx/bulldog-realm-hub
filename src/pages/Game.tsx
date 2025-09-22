@@ -28,13 +28,17 @@ const Game = () => {
   useEffect(() => {
     // Load game data from profile or localStorage
     if (profile) {
-      setGrow(profile.grow);
-      setGrow1(profile.grow1);
-      setBone(Math.min(1000, profile.bone)); // Ensure bone doesn't exceed 1000
+      setGrow(Number(profile.grow) || 0);
+      setGrow1(Number(profile.grow1) || 1);
+      setBone(Math.min(1000, Number(profile.bone) || 1000));
     } else {
-      setGrow(Number(localStorage.getItem("bdog-grow")) || 0);
-      setGrow1(Number(localStorage.getItem("bdog-grow1")) || 1);
-      setBone(Math.min(1000, Number(localStorage.getItem("bdog-bone")) || 1000)); // Ensure bone doesn't exceed 1000
+      const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
+      const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
+      const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
+      
+      setGrow(savedGrow);
+      setGrow1(savedGrow1);
+      setBone(Math.min(1000, savedBone));
     }
     
     // Load total taps count
@@ -205,9 +209,14 @@ const Game = () => {
       return;
     }
 
-    const newGrow = grow + grow1;
-    const newBone = Math.max(0, bone - 1); // Ensure bone doesn't go below 0
-    const newTotalTaps = totalTaps + 1;
+    const currentGrow = Number(grow) || 0;
+    const currentGrow1 = Number(grow1) || 1;
+    const currentBone = Number(bone) || 0;
+    const currentTotalTaps = Number(totalTaps) || 0;
+    
+    const newGrow = currentGrow + currentGrow1;
+    const newBone = Math.max(0, currentBone - 1);
+    const newTotalTaps = currentTotalTaps + 1;
     
     setGrow(newGrow);
     setBone(newBone);

@@ -315,52 +315,18 @@ export const useProfile = () => {
     }
 
     try {
-      console.log('Updating profile:', profile.user_id, 'with updates:', updates);
+      console.log('Updating profile:', profile.id, 'with updates:', updates);
       
-      // Update using user_id which is unique
+      // Update using profile ID which is the primary key
       const { data: updatedProfile, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('user_id', profile.user_id)
+        .eq('id', profile.id)
         .select()
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error('Error updating profile:', error);
-        return;
-      }
-
-      if (!updatedProfile) {
-        console.error('Profile not found for update, user_id:', profile.user_id);
-        // Try to update using device_fingerprint as fallback
-        const { data: fallbackProfile, error: fallbackError } = await supabase
-          .from('profiles')
-          .update(updates)
-          .eq('device_fingerprint', profile.device_fingerprint)
-          .select()
-          .maybeSingle();
-          
-        if (fallbackError) {
-          console.error('Fallback update failed:', fallbackError);
-          return;
-        }
-        
-        if (fallbackProfile) {
-          console.log('Profile updated via fallback method');
-          setProfile({
-            ...fallbackProfile,
-            grow: Number(fallbackProfile.grow) || 0,
-            grow1: Number(fallbackProfile.grow1) || 1,
-            bone: Number(fallbackProfile.bone) || 1000,
-            balance: Number(fallbackProfile.balance) || 0,
-            balance2: Number(fallbackProfile.balance2) || 0,
-            v_bdog_earned: Number(fallbackProfile.v_bdog_earned) || 0,
-            referrals: Number(fallbackProfile.referrals) || 0,
-            ban: Number(fallbackProfile.ban) || 0,
-            ip_address: fallbackProfile.ip_address as string | null,
-            device_fingerprint: fallbackProfile.device_fingerprint as string | null
-          });
-        }
         return;
       }
 

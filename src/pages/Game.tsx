@@ -25,13 +25,15 @@ const Game = () => {
   const [boosterTimeLeft, setBoosterTimeLeft] = useState("");
   const [totalTaps, setTotalTaps] = useState(0);
 
+  const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
+
   useEffect(() => {
-    // Load game data from profile or localStorage
-    if (profile) {
+    // Load game data from profile or localStorage (but not when we're updating from a click)
+    if (profile && !isUpdatingFromClick) {
       setGrow(Number(profile.grow) || 0);
       setGrow1(Number(profile.grow1) || 1);
       setBone(Math.min(1000, Number(profile.bone) || 1000));
-    } else {
+    } else if (!profile && !isUpdatingFromClick) {
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
       const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
@@ -199,7 +201,7 @@ const Game = () => {
     setBoosterTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
   };
 
-  const handleClick = (event: React.MouseEvent) => {
+  const handleClick = async (event: React.MouseEvent) => {
     if (bone <= 0) {
       toast({
         title: "Закончились косточки",
@@ -227,19 +229,27 @@ const Game = () => {
       localStorage_grow: localStorage.getItem("bdog-grow")
     });
     
+    // Set flag to prevent profile reload from overriding our changes
+    setIsUpdatingFromClick(true);
+    
     setGrow(newGrow);
     setBone(newBone);
     setTotalTaps(newTotalTaps);
     
+    localStorage.setItem("bdog-grow", String(newGrow));
+    localStorage.setItem("bdog-bone", String(newBone));
+    localStorage.setItem("bdog-total-taps", String(newTotalTaps));
+    
     // Update profile in database
-    updateProfile({
+    await updateProfile({
       grow: newGrow,
       bone: newBone
     });
     
-    localStorage.setItem("bdog-grow", String(newGrow));
-    localStorage.setItem("bdog-bone", String(newBone));
-    localStorage.setItem("bdog-total-taps", String(newTotalTaps));
+    // Reset the flag after a delay to allow profile updates again
+    setTimeout(() => {
+      setIsUpdatingFromClick(false);
+    }, 2000);
 
     // Click effect animation
     const rect = (event.target as HTMLElement).getBoundingClientRect();

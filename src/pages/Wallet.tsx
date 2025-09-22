@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
-import bulldogGoldCoin from "@/assets/bulldog-gold-coin.jpeg";
-import tonLogo from "@/assets/ton-logo.svg";
+import bdogLogo from "@/assets/bdog-logo.jpeg";
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -91,7 +90,7 @@ const Wallet = () => {
           <div className="relative">
             <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
               <img 
-                src={bulldogGoldCoin} 
+                src={bdogLogo} 
                 alt="BDOG Coin" 
                 className="w-full h-full object-cover rounded-full"
               />

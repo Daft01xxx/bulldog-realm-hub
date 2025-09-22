@@ -20,6 +20,8 @@ import {
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import tonLogo from "@/assets/v-bdog-logo.png";
+import bdogLogo from "@/assets/bdog-logo.jpeg";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
@@ -147,8 +149,8 @@ const ConnectedWallet = () => {
               <Card className="card-tonkeeper p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
-                      <Coins className="w-5 h-5 text-blue-400" />
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center overflow-hidden">
+                      <img src={tonLogo} alt="TON" className="w-6 h-6 object-contain" />
                     </div>
                     <div>
                       <h4 className="font-medium text-foreground">TON</h4>
@@ -168,8 +170,8 @@ const ConnectedWallet = () => {
               <Card className="balance-card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-gold" />
+                    <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center overflow-hidden">
+                      <img src={bdogLogo} alt="V-BDOG" className="w-6 h-6 object-cover rounded-full" />
                     </div>
                     <div>
                       <h4 className="font-medium text-foreground">V-BDOG</h4>

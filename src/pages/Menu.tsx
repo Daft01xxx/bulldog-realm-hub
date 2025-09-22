@@ -8,7 +8,7 @@ import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
 
 import bdogBackground from "@/assets/bdog-background.png";
-import bdogSilverLogo from "@/assets/bdog-silver-logo.jpeg";
+import bdogLogo from "@/assets/bdog-logo.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -278,7 +278,7 @@ const Menu = () => {
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogSilverLogo} alt="BDOG Silver" className="w-6 h-6 rounded-full object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                      <img src={bdogLogo} alt="BDOG" className="w-6 h-6 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : (
                       <IconComponent className="w-6 h-6 icon-gold" />
                     )}

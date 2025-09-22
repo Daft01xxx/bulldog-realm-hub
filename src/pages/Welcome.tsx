@@ -1,13 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 
 const Welcome = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { profile, loading, updateProfile } = useProfile();
 
   useEffect(() => {
     // Check for referral code in URL and store it
@@ -23,17 +21,7 @@ const Welcome = () => {
     }
   }, [toast]);
 
-  // Check for BAN status when profile loads
-  useEffect(() => {
-    if (profile && profile.ban === 1) {
-      // User is banned, redirect to ban page
-      navigate('/ban');
-    }
-  }, [profile, navigate]);
-
   const handleLogin = async () => {
-    if (loading) return;
-    
     try {
       // Always redirect to menu
       navigate("/menu");
@@ -89,9 +77,8 @@ const Welcome = () => {
             <Button 
               className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-8 py-3 rounded-full shadow-gold animate-pulse-gold min-w-[169px]"
               onClick={handleLogin}
-              disabled={loading}
             >
-              {loading ? "Загрузка..." : "Вход в аккаунт"}
+              Вход в аккаунт
             </Button>
           </div>
           <p className="text-xl md:text-2xl text-white-glow animate-fade-in-up opacity-80">

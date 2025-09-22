@@ -3,11 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
 import { AuthProvider } from "./hooks/useAuth";
-import { useProfile } from "./hooks/useProfile";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
 import Wallet from "./pages/Wallet";
@@ -27,20 +26,21 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
-  const { profile, loading } = useProfile();
+  // Temporarily disable profile loading to avoid infinite loading
+  // const { profile, loading } = useProfile();
   const isOnBanPage = location.pathname === '/ban';
   const isOnAuthPage = location.pathname === '/auth';
   const banRedirectProcessed = useRef(false);
 
   // Handle ban redirect only once per session
-  useEffect(() => {
-    if (profile?.ban === 1 && !isOnBanPage && !banRedirectProcessed.current && !loading) {
-      banRedirectProcessed.current = true;
-      // Clear any cached data before redirect
-      localStorage.clear();
-      window.location.replace('/ban');
-    }
-  }, [profile?.ban, isOnBanPage, loading]);
+  // useEffect(() => {
+  //   if (profile?.ban === 1 && !isOnBanPage && !banRedirectProcessed.current && !loading) {
+  //     banRedirectProcessed.current = true;
+  //     // Clear any cached data before redirect
+  //     localStorage.clear();
+  //     window.location.replace('/ban');
+  //   }
+  // }, [profile?.ban, isOnBanPage, loading]);
 
   // Reset ban redirect flag when user navigates away from ban page
   useEffect(() => {
@@ -49,17 +49,17 @@ function AppContent() {
     }
   }, [isOnBanPage]);
 
-  // Show loading while profile is being fetched
-  if (loading && !isOnBanPage && !isOnAuthPage) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Загрузка...</p>
-        </div>
-      </div>
-    );
-  }
+  // Temporarily disable loading screen
+  // if (loading && !isOnBanPage && !isOnAuthPage) {
+  //   return (
+  //     <div className="min-h-screen bg-background flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+  //         <p className="text-muted-foreground">Загрузка...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>

@@ -312,17 +312,21 @@ export const useProfile = () => {
     if (!profile) return;
 
     try {
-      // Update using device fingerprint since we don't use auth
+      // Update using user_id which is unique
       const { data: updatedProfile, error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('device_fingerprint', profile.device_fingerprint)
         .eq('user_id', profile.user_id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error updating profile:', error);
+        return;
+      }
+
+      if (!updatedProfile) {
+        console.error('Profile not found for update');
         return;
       }
 

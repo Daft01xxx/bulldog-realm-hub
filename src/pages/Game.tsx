@@ -28,12 +28,19 @@ const Game = () => {
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
   useEffect(() => {
-    // Load game data from profile or localStorage (but not when we're updating from a click)
+    // Load game data from profile or localStorage ONLY once when profile is first loaded
     if (profile && !isUpdatingFromClick) {
-      setGrow(Number(profile.grow) || 0);
-      setGrow1(Number(profile.grow1) || 1);
-      setBone(Math.min(1000, Number(profile.bone) || 1000));
-    } else if (!profile && !isUpdatingFromClick) {
+      const profileGrow = Number(profile.grow) || 0;
+      const profileGrow1 = Number(profile.grow1) || 1;
+      const profileBone = Math.min(1000, Number(profile.bone) || 1000);
+      
+      // Only update if local state is different from profile (to avoid constant resets)
+      if (grow !== profileGrow) setGrow(profileGrow);
+      if (grow1 !== profileGrow1) setGrow1(profileGrow1);
+      if (bone !== profileBone) setBone(profileBone);
+      
+    } else if (!profile && !isUpdatingFromClick && grow === 0) {
+      // Load from localStorage only if we don't have any data yet
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
       const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
@@ -43,8 +50,10 @@ const Game = () => {
       setBone(Math.min(1000, savedBone));
     }
     
-    // Load total taps count
-    setTotalTaps(Number(localStorage.getItem("bdog-total-taps")) || 0);
+    // Load total taps count only once
+    if (totalTaps === 0) {
+      setTotalTaps(Number(localStorage.getItem("bdog-total-taps")) || 0);
+    }
     
     // Load booster end time from profile or localStorage
     const profileBoosterExpires = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
@@ -76,7 +85,7 @@ const Game = () => {
       calculateBoosterTimeLeft();
     }, 1000);
     return () => clearInterval(timer);
-  }, [profile]);
+  }, [profile, isUpdatingFromClick]);
 
   const loadTopPlayers = async () => {
     try {

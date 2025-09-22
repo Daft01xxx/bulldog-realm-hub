@@ -107,8 +107,22 @@ export const useProfile = () => {
       let userProfile = existingProfiles?.[0];
       console.log('Existing profile found:', userProfile);
 
-      // Ban VPN users immediately
-      if (isVpnDetected) {
+      // Check if user is banned - redirect to ban page FIRST
+      if (userProfile && userProfile.ban === 1) {
+        console.log('User is banned, clearing data and redirecting to ban page');
+        
+        // Clear all user data
+        localStorage.clear();
+        
+        // Force redirect to ban page
+        setTimeout(() => {
+          window.location.href = '/ban';
+        }, 100);
+        return;
+      }
+
+      // Ban VPN users only if they are not explicitly unbanned by admin
+      if (isVpnDetected && (!userProfile || userProfile.ban !== 0)) {
         if (userProfile) {
           const { error: banError } = await supabase
             .from('profiles')
@@ -238,36 +252,6 @@ export const useProfile = () => {
           }
         }
       } else {
-        // Check if user is banned - redirect to ban page
-        if (userProfile.ban === 1) {
-          console.log('User is banned, clearing data and redirecting to ban page');
-          
-          // Clear all user data
-          localStorage.clear();
-          
-          // Force redirect to ban page
-          setTimeout(() => {
-            window.location.href = '/ban';
-          }, 100);
-          return;
-        }
-        
-        // Check if booster has expired and reset if necessary
-        if (userProfile.booster_expires_at && new Date(userProfile.booster_expires_at) <= new Date() && userProfile.grow1 > 1) {
-          console.log('Booster expired, resetting grow1 to 1');
-          const { data: updatedProfile, error: updateError } = await supabase
-            .from('profiles')
-            .update({ grow1: 1, booster_expires_at: null })
-            .eq('id', userProfile.id)
-            .select()
-            .single();
-          
-          if (!updateError && updatedProfile) {
-            userProfile.grow1 = updatedProfile.grow1;
-            userProfile.booster_expires_at = updatedProfile.booster_expires_at;
-          }
-        }
-        
         // Update existing profile with new device info if needed
         const updates: any = {};
         

@@ -5,23 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Helper function to check if user is admin
-async function isUserAdmin(supabaseClient: any, userId: string): Promise<boolean> {
-  try {
-    const { data, error } = await supabaseClient
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('role', 'admin')
-      .single();
-    
-    return !error && data;
-  } catch (error) {
-    console.error('Error checking admin role:', error);
-    return false;
-  }
-}
-
 interface Database {
   public: {
     Tables: {
@@ -39,6 +22,7 @@ interface Database {
           created_at: string
           grow1: number
           booster_expires_at: string | null
+          ban: number
         }
         Update: {
           grow?: number
@@ -46,6 +30,7 @@ interface Database {
           v_bdog_earned?: number
           grow1?: number
           booster_expires_at?: string | null
+          ban?: number
         }
       }
     }
@@ -59,171 +44,145 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // For admin panel, we'll use a simple approach - check for admin key or skip auth for now
-    // In production, you should implement proper authentication
+    console.log(`Received ${req.method} request to admin-panel`);
     
     const supabaseClient = createClient<Database>(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { searchParams } = new URL(req.url);
-    const action = searchParams.get('action');
-    
-    // Parse body for POST requests
-    let body: any = {};
-    if (req.method === 'POST') {
-      body = await req.json();
+    // Parse request body
+    let requestData: any = {};
+    try {
+      const bodyText = await req.text();
+      if (bodyText) {
+        requestData = JSON.parse(bodyText);
+      }
+    } catch (e) {
+      console.error('Error parsing request body:', e);
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON in request body' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      );
     }
-    
-    // Get action from body if not in query params
-    const finalAction = action || body.action;
-    const finalUserId = userId || body.userId;
 
-    console.log(`Admin panel action: ${finalAction} at ${new Date().toISOString()}`);
+    const action = requestData.action;
+    console.log(`Processing action: ${action}`);
 
-    if (finalAction === 'list_users') {
-      // Get all users with their data
+    if (action === 'list_users') {
+      console.log('Fetching all profiles...');
       const { data: profiles, error } = await supabaseClient
         .from('profiles')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (error) {
-        throw error
+        console.error('Database error:', error);
+        throw error;
       }
 
+      console.log(`Found ${profiles?.length || 0} profiles`);
       return new Response(
         JSON.stringify({ 
           success: true, 
-          profiles: profiles,
+          profiles: profiles || [],
           count: profiles?.length || 0
         }),
         { 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200 
         }
-      )
+      );
 
-    } else if (finalAction === 'update_user' && finalUserId) {
-      const { updates } = body
-
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .update(updates)
-        .eq('id', finalUserId)
-        .select()
-
-      if (error) {
-        throw error
-      }
-
-      console.log(`Updated user ${finalUserId}:`, updates)
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: `User ${finalUserId} updated successfully`,
-          profile: data?.[0]
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
-        }
-      )
-
-    } else if (finalAction === 'delete_all_users') {
-      // Delete all profiles except system ones
-      const { error } = await supabaseClient
-        .from('profiles')
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000')
-
-      if (error) {
-        throw error
-      }
-
-      console.log('All user profiles deleted')
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: 'All user profiles deleted successfully'
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
-        }
-      )
-
-    } else if (finalAction === 'reset_boosters') {
-      // Reset all active boosters
-      const { data, error } = await supabaseClient
-        .from('profiles')
-        .update({ grow1: 1, booster_expires_at: null })
-        .gt('grow1', 1)
-        .select('id')
-
-      if (error) {
-        throw error
-      }
-
-      console.log(`Reset boosters for ${data?.length || 0} users`)
-
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: `Reset boosters for ${data?.length || 0} users`,
-          count: data?.length || 0
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 200 
-        }
-      )
-
-    } else if (finalAction === 'ban_user') {
-      const { user_reg } = body
-
-      if (!user_reg) {
+    } else if (action === 'update_user') {
+      const { userId, updates } = requestData;
+      
+      if (!userId) {
         return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'User REG is required' 
-          }),
+          JSON.stringify({ success: false, error: 'userId is required' }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400 
           }
-        )
+        );
       }
 
-      // Update user ban status
+      console.log(`Updating user ${userId} with:`, updates);
+      
       const { data, error } = await supabaseClient
         .from('profiles')
-        .update({ ban: 1 })
-        .eq('reg', user_reg)
-        .select('id, reg')
+        .update(updates)
+        .eq('id', userId)
+        .select();
 
       if (error) {
-        throw error
+        console.error('Update error:', error);
+        throw error;
       }
 
       if (!data || data.length === 0) {
         return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'User not found' 
-          }),
+          JSON.stringify({ success: false, error: 'User not found' }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 404 
           }
-        )
+        );
       }
 
-      console.log(`Banned user with REG: ${user_reg}`)
+      console.log(`Successfully updated user ${userId}`);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: `User ${userId} updated successfully`,
+          profile: data[0]
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      );
 
+    } else if (action === 'ban_user') {
+      const { user_reg } = requestData;
+
+      if (!user_reg) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'user_reg is required' }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400 
+          }
+        );
+      }
+
+      console.log(`Banning user with REG: ${user_reg}`);
+
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .update({ ban: 1 })
+        .eq('reg', user_reg)
+        .select('id, reg');
+
+      if (error) {
+        console.error('Ban error:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        return new Response(
+          JSON.stringify({ success: false, error: 'User not found' }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 404 
+          }
+        );
+      }
+
+      console.log(`Successfully banned user ${user_reg}`);
       return new Response(
         JSON.stringify({ 
           success: true, 
@@ -234,50 +193,45 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200 
         }
-      )
+      );
 
-    } else if (finalAction === 'unban_user') {
-      const { user_reg } = body
+    } else if (action === 'unban_user') {
+      const { user_reg } = requestData;
 
       if (!user_reg) {
         return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'User REG is required' 
-          }),
+          JSON.stringify({ success: false, error: 'user_reg is required' }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 400 
           }
-        )
+        );
       }
 
-      // Update user ban status to 0 (unban)
+      console.log(`Unbanning user with REG: ${user_reg}`);
+
       const { data, error } = await supabaseClient
         .from('profiles')
         .update({ ban: 0 })
         .eq('reg', user_reg)
-        .select('id, reg')
+        .select('id, reg');
 
       if (error) {
-        throw error
+        console.error('Unban error:', error);
+        throw error;
       }
 
       if (!data || data.length === 0) {
         return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'User not found' 
-          }),
+          JSON.stringify({ success: false, error: 'User not found' }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
             status: 404 
           }
-        )
+        );
       }
 
-      console.log(`Unbanned user with REG: ${user_reg}`)
-
+      console.log(`Successfully unbanned user ${user_reg}`);
       return new Response(
         JSON.stringify({ 
           success: true, 
@@ -288,32 +242,84 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200 
         }
-      )
+      );
+
+    } else if (action === 'delete_all_users') {
+      console.log('Deleting all user profiles...');
+      
+      const { error } = await supabaseClient
+        .from('profiles')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000');
+
+      if (error) {
+        console.error('Delete error:', error);
+        throw error;
+      }
+
+      console.log('Successfully deleted all user profiles');
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'All user profiles deleted successfully'
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      );
+
+    } else if (action === 'reset_boosters') {
+      console.log('Resetting all active boosters...');
+      
+      const { data, error } = await supabaseClient
+        .from('profiles')
+        .update({ grow1: 1, booster_expires_at: null })
+        .gt('grow1', 1)
+        .select('id');
+
+      if (error) {
+        console.error('Reset boosters error:', error);
+        throw error;
+      }
+
+      console.log(`Reset boosters for ${data?.length || 0} users`);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: `Reset boosters for ${data?.length || 0} users`,
+          count: data?.length || 0
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      );
 
     } else {
-        return new Response(
-          JSON.stringify({ 
-            success: false, 
-            error: 'Invalid action or missing parameters. Available actions: list_users, update_user, delete_all_users, reset_boosters, ban_user, unban_user' 
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            status: 400 
-          }
-        )
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: `Invalid action: ${action}. Available actions: list_users, update_user, ban_user, unban_user, delete_all_users, reset_boosters` 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400 
+        }
+      );
     }
 
   } catch (error) {
-    console.error('Admin panel function error:', error)
+    console.error('Admin panel function error:', error);
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error.message || 'Internal server error'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
       }
-    )
+    );
   }
-})
+});

@@ -6,7 +6,7 @@ import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
-import FallingCoins3D from "@/components/FallingCoin3D";
+import FallingCoins2D from "@/components/FallingCoins2D";
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogSilverLogo from "@/assets/bdog-silver-logo.jpeg";
 
@@ -19,6 +19,7 @@ const Menu = () => {
   const [vBdogBalance, setVBdogBalance] = useState("0");
   const [animate, setAnimate] = useState(false);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
+  const [timeUntilNextGift, setTimeUntilNextGift] = useState("");
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -38,14 +39,61 @@ const Menu = () => {
       setVBdogBalance(localBalance2);
     }
     
-    // Check if daily gift can be claimed
+    // Check if daily gift can be claimed and calculate time remaining
     const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
     const today = new Date().toDateString();
-    setCanClaimDaily(!lastDailyGift || lastDailyGift !== today);
+    const canClaim = !lastDailyGift || lastDailyGift !== today;
+    setCanClaimDaily(canClaim);
+    
+    // Calculate time until next gift if already claimed today
+    if (!canClaim && lastDailyGift) {
+      const lastGiftTime = new Date(lastDailyGift).getTime();
+      const nextGiftTime = lastGiftTime + (24 * 60 * 60 * 1000); // 24 hours later
+      const now = Date.now();
+      const timeRemaining = nextGiftTime - now;
+      
+      if (timeRemaining > 0) {
+        const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        setTimeUntilNextGift(`${hours}ч ${minutes}м`);
+      } else {
+        setTimeUntilNextGift("");
+        setCanClaimDaily(true);
+      }
+    } else {
+      setTimeUntilNextGift("");
+    }
     
     // Trigger animations
     setAnimate(true);
   }, [profile, isConnected, walletData]);
+  
+  // Update timer every minute
+  useEffect(() => {
+    if (!canClaimDaily) {
+      const interval = setInterval(() => {
+        const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
+        if (lastDailyGift) {
+          const lastGiftTime = new Date(lastDailyGift).getTime();
+          const nextGiftTime = lastGiftTime + (24 * 60 * 60 * 1000);
+          const now = Date.now();
+          const timeRemaining = nextGiftTime - now;
+          
+          if (timeRemaining > 0) {
+            const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+            const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            setTimeUntilNextGift(`${hours}ч ${minutes}м`);
+          } else {
+            setTimeUntilNextGift("");
+            setCanClaimDaily(true);
+            clearInterval(interval);
+          }
+        }
+      }, 60000); // Update every minute
+      
+      return () => clearInterval(interval);
+    }
+  }, [canClaimDaily]);
 
   const claimDailyGift = async () => {
     if (!canClaimDaily) {
@@ -90,9 +138,17 @@ const Menu = () => {
         }
       }
 
-      // Mark daily gift as claimed
-      localStorage.setItem("bdog-last-daily-gift", new Date().toDateString());
+      // Mark daily gift as claimed with current timestamp
+      const currentTime = new Date();
+      localStorage.setItem("bdog-last-daily-gift", currentTime.toISOString());
       setCanClaimDaily(false);
+
+      // Calculate time until next gift (24 hours from now)
+      const nextGiftTime = currentTime.getTime() + (24 * 60 * 60 * 1000);
+      const timeRemaining = nextGiftTime - Date.now();
+      const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
+      const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+      setTimeUntilNextGift(`${hours}ч ${minutes}м`);
 
       toast({
         title: "Ежедневный подарок получен! 🎉",
@@ -147,8 +203,8 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
-      {/* 3D Falling Coins */}
-      <FallingCoins3D count={8} />
+      {/* 2D Falling Coins */}
+      <FallingCoins2D count={8} />
       
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
@@ -198,10 +254,10 @@ const Menu = () => {
             style={{ animationDelay: '0.5s' }}
           >
             <Gift className="w-3 h-3 mr-2 icon-gold" />
-            {canClaimDaily ? "Получить ежедневный подарок" : "Подарок уже получен"}
+            {canClaimDaily ? "Получить ежедневный подарок" : `Следующий подарок через ${timeUntilNextGift}`}
           </Button>
           <p className="text-xs text-muted-foreground mt-1 opacity-70">
-            Обновляется каждые 24 часа
+            {canClaimDaily ? "Получи свой ежедневный бонус!" : "Подарок обновляется каждые 24 часа"}
           </p>
         </div>
       </div>

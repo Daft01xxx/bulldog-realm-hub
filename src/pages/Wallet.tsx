@@ -74,7 +74,7 @@ const Wallet = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-transparent rounded-3xl blur-3xl"></div>
         <div className="relative">
           <h1 className="text-5xl md:text-7xl font-bold text-gradient animate-glow-text mb-4">
-            💳 Кошелёк BDOG
+            Кошелёк BDOG
           </h1>
           <p className="text-lg text-muted-foreground">
             Управляй своими токенами и NFT

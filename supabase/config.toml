@@ -7,13 +7,13 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.daily-weekly-reset]
-verify_jwt = false
+verify_jwt = true
 
 [functions.detect-vpn]
 verify_jwt = false
 
 [functions.booster-cleanup]
-verify_jwt = false
+verify_jwt = true
 
 [functions.admin-panel]
-verify_jwt = false
+verify_jwt = true

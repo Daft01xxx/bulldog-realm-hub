@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import FallingCoins2D from "./components/FallingCoins2D";
+import { AuthProvider } from "./hooks/useAuth";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
 import Wallet from "./pages/Wallet";
@@ -17,6 +18,7 @@ import BdogPay from "./pages/BdogPay";
 import Promotion from "./pages/Promotion";
 import Admin from "./pages/Admin";
 import Ban from "./pages/Ban";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +45,7 @@ function AppContent() {
         <Route path="/promotion" element={<Promotion />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/ban" element={<Ban />} />
+        <Route path="/auth" element={<Auth />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
@@ -55,9 +58,11 @@ const App = () => (
       manifestUrl={`${window.location.origin}/tonconnect-manifest.json`}
     >
       <TooltipProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </TonConnectUIProvider>
   </QueryClientProvider>

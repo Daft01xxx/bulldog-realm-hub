@@ -5,6 +5,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Helper function to check if user is admin
+async function isUserAdmin(supabaseClient: any, userId: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabaseClient
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .eq('role', 'admin')
+      .single();
+    
+    return !error && data;
+  } catch (error) {
+    console.error('Error checking admin role:', error);
+    return false;
+  }
+}
+
 interface Database {
   public: {
     Tables: {
@@ -42,6 +59,23 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Get JWT token from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Missing or invalid authorization header' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      );
+    }
+
+    const jwt = authHeader.replace('Bearer ', '');
+    
     const supabaseClient = createClient<Database>(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -49,9 +83,51 @@ Deno.serve(async (req) => {
         auth: {
           autoRefreshToken: false,
           persistSession: false
-        }
+        },
+        global: {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
       }
-    )
+    );
+
+    // Verify the JWT and get user info
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(jwt);
+    
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Invalid or expired token' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 401 
+        }
+      );
+    }
+
+    // Check if user is admin
+    const hasAdminRole = await isUserAdmin(supabaseClient, user.id);
+    if (!hasAdminRole) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'Insufficient permissions. Admin access required.' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 403 
+        }
+      );
+    }
+
+    // Log admin action for audit trail
+    await supabaseClient.rpc('log_audit_event', {
+      p_action: `Admin panel access - ${req.method} ${new URL(req.url).pathname}${new URL(req.url).search}`,
+      p_table_name: 'admin_panel'
+    });
 
     const { searchParams } = new URL(req.url)
     const action = searchParams.get('action')

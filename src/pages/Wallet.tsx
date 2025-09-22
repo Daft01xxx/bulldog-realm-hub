@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, ExternalLink, Wallet as WalletIcon } from "lucide-react";
+import { ArrowLeft, Home, ExternalLink } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import bulldogGoldCoin from "@/assets/bulldog-gold-coin.jpeg";
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -85,17 +86,21 @@ const Wallet = () => {
       {/* Main Content */}
       <div className="max-w-sm mx-auto space-y-4">
         {/* Connection Status Card */}
-        <Card className="card-glow p-4 text-center animate-fade-in-up">
+        <Card className="card-glow p-6 text-center animate-fade-in-up">
           <div className="relative">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-lg">
-              <WalletIcon className="w-6 h-6 text-black" />
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
+              <img 
+                src={bulldogGoldCoin} 
+                alt="BDOG Coin" 
+                className="w-full h-full object-cover rounded-full"
+              />
             </div>
             
-            <h2 className="text-lg font-bold text-gradient mb-2">
+            <h2 className="text-xl font-bold text-gradient mb-3">
               {isConnected ? "🔗 Кошелек подключен" : "🔌 Подключить кошелек"}
             </h2>
             
-            <p className="text-muted-foreground text-xs mb-4 leading-relaxed">
+            <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
               {isConnected 
                 ? `Адрес: ${walletAddress?.slice(0, 8)}...${walletAddress?.slice(-6)}`
                 : "Подключи свой TON кошелек для управления BDOG токенами и NFT"
@@ -104,7 +109,7 @@ const Wallet = () => {
 
             <Button
               onClick={handleConnect}
-              className="button-gold text-sm py-2 px-4 animate-bounce-in"
+              className="button-gold text-base py-3 px-6 animate-bounce-in"
             >
               {isConnected ? "🚀 Открыть кошелек" : "⚡ Подключить TON"}
             </Button>

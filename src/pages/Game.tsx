@@ -255,14 +255,16 @@ const Game = () => {
       return;
     }
 
-    // Vibration effect
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50); // Short vibration of 50ms
+    // Vibration effect - try multiple approaches for better compatibility
+    if (navigator.vibrate) {
+      navigator.vibrate(100); // Stronger vibration
+    } else if ((window as any).navigator?.vibrate) {
+      (window as any).navigator.vibrate(100);
     }
 
     // Click animation effect
     setIsClicked(true);
-    setTimeout(() => setIsClicked(false), 200);
+    setTimeout(() => setIsClicked(false), 150);
 
     const currentGrow = Number(grow) || 0;
     const currentGrow1 = Number(grow1) || 1;
@@ -426,8 +428,10 @@ const Game = () => {
             <img 
               src={bulldogSuit}
               alt="BDOG"
-              className={`w-40 h-40 mx-auto rounded-full object-cover group-hover:scale-105 transition-transform duration-200 ${
-                isClicked ? 'scale-110' : ''
+              className={`w-40 h-40 mx-auto rounded-full object-cover transition-all duration-150 ease-out ${
+                isClicked 
+                  ? 'scale-125 brightness-110' 
+                  : 'scale-100 hover:scale-105'
               }`}
             />
             

@@ -89,11 +89,11 @@ const Wallet = () => {
         {/* Connection Status Card */}
         <Card className="card-glow p-6 text-center animate-fade-in-up">
           <div className="relative">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
               <img 
-                src={tonLogo} 
-                alt="TON Logo" 
-                className="w-12 h-12 filter brightness-0 invert"
+                src={bulldogGoldCoin} 
+                alt="BDOG Coin" 
+                className="w-full h-full object-cover rounded-full"
               />
             </div>
             

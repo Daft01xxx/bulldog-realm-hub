@@ -217,24 +217,24 @@ const Menu = () => {
         
         {/* User info */}
         <Card 
-          className={`card-glow max-w-xs mx-auto p-3 mb-4 ${
+          className={`card-glow max-w-sm mx-auto p-6 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
         >
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">
-              <span className="text-gold font-semibold">{reg}</span>
+          <div className="space-y-4">
+            <p className="text-base text-muted-foreground text-center">
+              <span className="text-gold font-semibold text-lg">{reg}</span>
             </p>
-            <div className="space-y-1">
-              <p className="text-sm text-foreground">
-                BDOG: <span className="text-gradient font-bold">{bdogBalance}</span>
+            <div className="space-y-3">
+              <p className="text-base text-foreground text-center">
+                BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
               </p>
-              <p className="text-sm text-foreground">
-                V-BDOG: <span className="text-gradient font-bold">{vBdogBalance}</span>
+              <p className="text-base text-foreground text-center">
+                V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
               </p>
               {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
-                <p className="text-xs text-gold">
+                <p className="text-sm text-gold text-center">
                   (включая {profile.v_bdog_earned.toLocaleString()} V-BDOG за рефералов)
                 </p>
               )}

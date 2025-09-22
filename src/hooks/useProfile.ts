@@ -317,11 +317,17 @@ export const useProfile = () => {
     try {
       console.log('Updating profile:', profile.id, 'with updates:', updates);
       
-      // Update using profile ID which is the primary key
-      const { data: updatedProfile, error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', profile.id)
+      // For anonymous users, update by device_fingerprint
+      // For authenticated users, update by id
+      let updateQuery = supabase.from('profiles').update(updates);
+      
+      if (profile.user_id && profile.user_id !== 'anonymous') {
+        updateQuery = updateQuery.eq('id', profile.id);
+      } else {
+        updateQuery = updateQuery.eq('device_fingerprint', profile.device_fingerprint);
+      }
+      
+      const { data: updatedProfile, error } = await updateQuery
         .select()
         .single();
 

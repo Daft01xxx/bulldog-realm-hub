@@ -312,9 +312,11 @@ export const useProfile = () => {
     if (!profile) return;
 
     try {
+      // Update using device fingerprint since we don't use auth
       const { data: updatedProfile, error } = await supabase
         .from('profiles')
         .update(updates)
+        .eq('device_fingerprint', profile.device_fingerprint)
         .eq('user_id', profile.user_id)
         .select()
         .single();

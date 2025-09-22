@@ -177,12 +177,24 @@ const Game = () => {
 
     const now = Date.now();
     if (now >= expirationTime) {
-      // Booster expired, reset grow1 using database function
-      const resetGrow1 = 1;
-      setGrow1(resetGrow1);
-      updateProfile({ grow1: resetGrow1, booster_expires_at: null });
-      localStorage.removeItem("bdog-booster-end");
-      localStorage.removeItem("bdog-booster-expires");
+      // Booster expired, reset grow1 only once
+      if (grow1 > 1) {
+        setIsUpdatingFromClick(true);
+        
+        const resetGrow1 = 1;
+        setGrow1(resetGrow1);
+        
+        localStorage.setItem("bdog-grow1", resetGrow1.toString());
+        localStorage.removeItem("bdog-booster-end");
+        localStorage.removeItem("bdog-booster-expires");
+        
+        updateProfile({ grow1: resetGrow1, booster_expires_at: null });
+        
+        setTimeout(() => {
+          setIsUpdatingFromClick(false);
+        }, 2000);
+      }
+      
       setBoosterEndTime(null);
       setBoosterTimeLeft("");
       
@@ -264,7 +276,7 @@ const Game = () => {
     }, 500);
   };
 
-  const buyBooster = () => {
+  const buyBooster = async () => {
     const currentBone = Math.min(1000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
     if (currentBone < 500) {
       toast({
@@ -275,26 +287,33 @@ const Game = () => {
       return;
     }
 
+    setIsUpdatingFromClick(true);
+
     const newBone = Math.min(1000, currentBone - 500);
     const newGrow1 = grow1 * 2;
     const expirationTime = new Date(Date.now() + (60 * 60 * 1000)); // 1 hour from now
     
-    // Update profile in database with new booster expiration
-    updateProfile({
+    // Update local state immediately
+    setBone(newBone);
+    setGrow1(newGrow1);
+    setBoosterEndTime(expirationTime.getTime());
+    
+    // Update localStorage
+    localStorage.setItem("bdog-bone", newBone.toString());
+    localStorage.setItem("bdog-grow1", newGrow1.toString());
+    localStorage.setItem("bdog-booster-expires", expirationTime.toISOString());
+    localStorage.setItem("bdog-booster-end", expirationTime.getTime().toString());
+    
+    // Update profile in database
+    await updateProfile({
       bone: newBone,
       grow1: newGrow1,
       booster_expires_at: expirationTime.toISOString()
     });
     
-    localStorage.setItem("bdog-bone", newBone.toString());
-    localStorage.setItem("bdog-grow1", newGrow1.toString());
-    localStorage.setItem("bdog-booster-expires", expirationTime.toISOString());
-    // Keep legacy support
-    localStorage.setItem("bdog-booster-end", expirationTime.getTime().toString());
-    
-    setBone(newBone);
-    setGrow1(newGrow1);
-    setBoosterEndTime(expirationTime.getTime());
+    setTimeout(() => {
+      setIsUpdatingFromClick(false);
+    }, 2000);
     
     setShowBooster(false);
     

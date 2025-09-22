@@ -255,11 +255,30 @@ const Game = () => {
       return;
     }
 
-    // Vibration effect - try multiple approaches for better compatibility
-    if (navigator.vibrate) {
-      navigator.vibrate(100); // Stronger vibration
-    } else if ((window as any).navigator?.vibrate) {
-      (window as any).navigator.vibrate(100);
+    // Strong vibration effect - multiple patterns and approaches
+    try {
+      // Try different vibration patterns for maximum compatibility
+      if (navigator.vibrate) {
+        // Strong vibration pattern: short-pause-strong
+        navigator.vibrate([200, 50, 200]);
+      }
+      
+      // Alternative approaches for different devices
+      if ((window as any).navigator?.vibrate) {
+        (window as any).navigator.vibrate([200, 50, 200]);
+      }
+      
+      // For older devices
+      if ((navigator as any).mozVibrate) {
+        (navigator as any).mozVibrate([200, 50, 200]);
+      }
+      
+      // For webkit browsers
+      if ((navigator as any).webkitVibrate) {
+        (navigator as any).webkitVibrate([200, 50, 200]);
+      }
+    } catch (error) {
+      console.log('Vibration not supported:', error);
     }
 
     // Click animation effect

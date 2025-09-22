@@ -46,10 +46,10 @@ export const useProfile = () => {
       
       if (error) {
         console.error('Error getting device info:', error);
-        // Fallback to basic fingerprint
+        // Fallback to static fingerprint to avoid constant changes
         return {
           ip_address: '127.0.0.1',
-          device_fingerprint: `fallback-${Date.now()}`,
+          device_fingerprint: 'fallback-device-static',
           user_agent: navigator.userAgent || 'unknown'
         };
       }
@@ -59,7 +59,7 @@ export const useProfile = () => {
       console.error('Error in getDeviceInfo:', error);
       return {
         ip_address: '127.0.0.1',
-        device_fingerprint: `fallback-${Date.now()}`,
+        device_fingerprint: 'fallback-device-static',
         user_agent: navigator.userAgent || 'unknown'
       };
     }
@@ -306,7 +306,7 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [loading, getDeviceInfo]);
+  }, [getDeviceInfo]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
@@ -403,9 +403,12 @@ export const useProfile = () => {
     loadProfile();
   }, [loadProfile]);
 
+  // Load profile only once on mount, avoid constant reloads
   useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
+    if (!profile && !loading) {
+      loadProfile();
+    }
+  }, []);
 
   return {
     profile,

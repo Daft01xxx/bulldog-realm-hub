@@ -133,15 +133,17 @@ export const useBdogTonWallet = () => {
 
       setWalletData(walletInfo);
       
-      // Save wallet balance to profile
+      // Save wallet balance to profile (only wallet-related data, don't override game data)
       const bdogBalance = parseFloat(walletInfo.bdogBalance);
       const tonBalance = parseFloat(walletInfo.tonBalance);
       
       if (profile) {
+        // Only update wallet-related fields, preserve game data (grow, bone, grow1)
         await updateProfile({
           balance: Math.round(tonBalance * 1000000000), // Convert to nanotons for storage
           bdog_balance: bdogBalance, // BDOG tokens from blockchain
           wallet_address: address
+          // Deliberately NOT updating grow, bone, grow1 to avoid conflicts with game
         });
       }
 

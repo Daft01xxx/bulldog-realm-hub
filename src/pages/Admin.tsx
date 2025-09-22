@@ -7,6 +7,7 @@ import { ArrowLeft, Home, Trash2, RefreshCw, Users, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import BanUserModal from "@/components/BanUserModal";
+import UnbanUserModal from "@/components/UnbanUserModal";
 
 interface UserProfile {
   id: string;
@@ -259,6 +260,8 @@ const Admin = () => {
         </Button>
         
         <BanUserModal onUserBanned={loadUsers} />
+        
+        <UnbanUserModal onUserUnbanned={loadUsers} />
       </div>
 
       {/* Danger Zone */}

@@ -23,6 +23,7 @@ const Game = () => {
   const [topPlayers, setTopPlayers] = useState<{name: string, grow: number}[]>([]);
   const [boosterEndTime, setBoosterEndTime] = useState<number | null>(null);
   const [boosterTimeLeft, setBoosterTimeLeft] = useState("");
+  const [totalTaps, setTotalTaps] = useState(0);
 
   useEffect(() => {
     // Load game data from profile or localStorage
@@ -35,6 +36,9 @@ const Game = () => {
       setGrow1(Number(localStorage.getItem("bdog-grow1")) || 1);
       setBone(Math.min(1000, Number(localStorage.getItem("bdog-bone")) || 1000)); // Ensure bone doesn't exceed 1000
     }
+    
+    // Load total taps count
+    setTotalTaps(Number(localStorage.getItem("bdog-total-taps")) || 0);
     
     // Load booster end time from profile or localStorage
     const profileBoosterExpires = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
@@ -203,9 +207,11 @@ const Game = () => {
 
     const newGrow = grow + grow1;
     const newBone = Math.max(0, bone - 1); // Ensure bone doesn't go below 0
+    const newTotalTaps = totalTaps + 1;
     
     setGrow(newGrow);
     setBone(newBone);
+    setTotalTaps(newTotalTaps);
     
     // Update profile in database
     updateProfile({
@@ -215,6 +221,7 @@ const Game = () => {
     
     localStorage.setItem("bdog-grow", newGrow.toString());
     localStorage.setItem("bdog-bone", newBone.toString());
+    localStorage.setItem("bdog-total-taps", newTotalTaps.toString());
 
     // Click effect animation
     const rect = (event.target as HTMLElement).getBoundingClientRect();

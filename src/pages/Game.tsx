@@ -40,13 +40,33 @@ const Game = () => {
     // Load game data from profile or localStorage ONLY once when profile is loaded
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
-      const profileGrow1 = Number(profile.grow1) || 1;
+      let profileGrow1 = Number(profile.grow1) || 1;
       const profileBone = Math.min(1000, Number(profile.bone) || 1000);
       
-      console.log('Loading from profile:', { profileGrow, profileGrow1, profileBone });
+      // Check if booster is active and adjust grow1 accordingly
+      const profileBoosterExpires = profile.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
+      const isBoosterActive = profileBoosterExpires && profileBoosterExpires > Date.now();
+      
+      if (isBoosterActive) {
+        // If booster is active, ensure grow1 is at least 2
+        if (profileGrow1 < 2) {
+          profileGrow1 = 2;
+        }
+        setBoosterEndTime(profileBoosterExpires);
+        localStorage.setItem("bdog-booster-end", profileBoosterExpires.toString());
+        localStorage.setItem("bdog-booster-expires", profile.booster_expires_at!);
+      } else {
+        // If booster is not active, ensure grow1 is 1
+        profileGrow1 = 1;
+        setBoosterEndTime(null);
+        localStorage.removeItem("bdog-booster-end");
+        localStorage.removeItem("bdog-booster-expires");
+      }
+      
+      console.log('Loading from profile:', { profileGrow, profileGrow1, profileBone, isBoosterActive });
       console.log('Current local state:', { grow, grow1, bone });
       
-      // Only update if local state is significantly different from profile
+      // Update states if different from profile
       if (Math.abs(grow - profileGrow) > 0) {
         console.log('Updating grow from profile:', profileGrow);
         setGrow(profileGrow);
@@ -54,6 +74,7 @@ const Game = () => {
       if (grow1 !== profileGrow1) {
         console.log('Updating grow1 from profile:', profileGrow1);
         setGrow1(profileGrow1);
+        localStorage.setItem("bdog-grow1", profileGrow1.toString());
       }
       if (Math.abs(bone - profileBone) > 0) {
         console.log('Updating bone from profile:', profileBone);
@@ -65,33 +86,32 @@ const Game = () => {
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
       const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
+      const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
       
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
       
       setGrow(savedGrow);
-      setGrow1(savedGrow1);
       setBone(Math.min(1000, savedBone));
+      
+      // Check if booster is still active from localStorage
+      if (savedBoosterEndTime) {
+        const endTime = parseInt(savedBoosterEndTime);
+        if (endTime > Date.now()) {
+          setGrow1(Math.max(savedGrow1, 2)); // Ensure at least 2 if booster active
+          setBoosterEndTime(endTime);
+        } else {
+          setGrow1(1); // Reset to 1 if booster expired
+          localStorage.removeItem("bdog-booster-end");
+          localStorage.removeItem("bdog-booster-expires");
+        }
+      } else {
+        setGrow1(savedGrow1);
+      }
     }
     
     // Load total taps count only once
     if (totalTaps === 0) {
       setTotalTaps(Number(localStorage.getItem("bdog-total-taps")) || 0);
-    }
-    
-    // Load booster end time from profile or localStorage
-    const profileBoosterExpires = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
-    const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
-    
-    if (profileBoosterExpires && profileBoosterExpires > Date.now()) {
-      setBoosterEndTime(profileBoosterExpires);
-    } else if (savedBoosterEndTime) {
-      const endTime = parseInt(savedBoosterEndTime);
-      if (endTime > Date.now()) {
-        setBoosterEndTime(endTime);
-      } else {
-        localStorage.removeItem("bdog-booster-end");
-        localStorage.removeItem("bdog-booster-expires");
-      }
     }
     
     // Load top players

@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
 import { AuthProvider } from "./hooks/useAuth";
 import { useProfile } from "./hooks/useProfile";
@@ -29,6 +30,22 @@ function AppContent() {
   const { profile, loading } = useProfile();
   const isOnBanPage = location.pathname === '/ban';
   const isOnAuthPage = location.pathname === '/auth';
+  const banRedirectProcessed = useRef(false);
+
+  // Handle ban redirect only once per session
+  useEffect(() => {
+    if (profile?.ban === 1 && !isOnBanPage && !banRedirectProcessed.current && !loading) {
+      banRedirectProcessed.current = true;
+      window.location.replace('/ban');
+    }
+  }, [profile?.ban, isOnBanPage, loading]);
+
+  // Reset ban redirect flag when user navigates away from ban page
+  useEffect(() => {
+    if (!isOnBanPage) {
+      banRedirectProcessed.current = false;
+    }
+  }, [isOnBanPage]);
 
   // Show loading while profile is being fetched
   if (loading && !isOnBanPage && !isOnAuthPage) {
@@ -40,11 +57,6 @@ function AppContent() {
         </div>
       </div>
     );
-  }
-
-  // Redirect banned users to ban page (except if already on ban page)
-  if (profile?.ban === 1 && !isOnBanPage) {
-    return <Navigate to="/ban" replace />;
   }
 
   return (

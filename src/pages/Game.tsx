@@ -24,6 +24,7 @@ const Game = () => {
   const [boosterEndTime, setBoosterEndTime] = useState<number | null>(null);
   const [boosterTimeLeft, setBoosterTimeLeft] = useState("");
   const [totalTaps, setTotalTaps] = useState(0);
+  const [isClicked, setIsClicked] = useState(false);
 
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
@@ -254,6 +255,15 @@ const Game = () => {
       return;
     }
 
+    // Vibration effect
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50); // Short vibration of 50ms
+    }
+
+    // Click animation effect
+    setIsClicked(true);
+    setTimeout(() => setIsClicked(false), 200);
+
     const currentGrow = Number(grow) || 0;
     const currentGrow1 = Number(grow1) || 1;
     const currentBone = Number(bone) || 0;
@@ -416,7 +426,9 @@ const Game = () => {
             <img 
               src={bulldogSuit}
               alt="BDOG"
-              className="w-32 h-32 mx-auto rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className={`w-40 h-40 mx-auto rounded-full object-cover group-hover:scale-105 transition-transform duration-200 ${
+                isClicked ? 'scale-110' : ''
+              }`}
             />
             
             {/* Click effects */}

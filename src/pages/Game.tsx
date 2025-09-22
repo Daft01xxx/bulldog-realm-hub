@@ -127,7 +127,7 @@ const Game = () => {
         } else {
           nextSunday.setDate(now.getDate() + daysUntilSunday);
         }
-        nextSunday.setHours(10, 0, 0, 0); // 10:00 AM
+        nextSunday.setHours(20, 0, 0, 0); // 20:00 (8 PM)
         
         const diff = nextSunday.getTime() - now.getTime();
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -420,7 +420,7 @@ const Game = () => {
               </div>
               <div className="text-xs text-muted-foreground mt-2">
                 Топ-5 получат по 5,000,000 V-BDOG!<br/>
-                <span className="text-xs">Воскресенье 10:00 (МСК)</span>
+                <span className="text-xs">Воскресенье 20:00 (МСК)</span>
               </div>
             </div>
             <div className="space-y-2">

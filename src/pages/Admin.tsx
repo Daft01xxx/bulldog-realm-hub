@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, Home, Trash2, RefreshCw, Users, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import BanUserModal from "@/components/BanUserModal";
 
 interface UserProfile {
   id: string;
@@ -257,13 +258,22 @@ const Admin = () => {
           Сбросить все ускорители
         </Button>
         
-        <Button
-          onClick={deleteAllUsers}
-          variant="destructive"
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Удалить всех пользователей
-        </Button>
+        <BanUserModal onUserBanned={loadUsers} />
+      </div>
+
+      {/* Danger Zone */}
+      <div className="max-w-2xl mx-auto mb-8">
+        <Card className="p-6 border-red-500/20 bg-red-500/5">
+          <h3 className="text-lg font-bold text-red-500 mb-4">⚠️ Опасная зона</h3>
+          <Button
+            onClick={deleteAllUsers}
+            variant="destructive"
+            className="w-full"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Удалить всех пользователей
+          </Button>
+        </Card>
       </div>
 
       {/* User Update Form */}

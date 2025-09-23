@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { playButtonSound } from "@/utils/sounds";
+import { scrollToTopInstant } from "@/utils/scrollToTop";
 import bulldogCoinLarge from "@/assets/bulldog-coin-large.jpeg";
 
 const Welcome = () => {
@@ -26,6 +27,7 @@ const Welcome = () => {
   const handleLogin = async () => {
     try {
       playButtonSound();
+      scrollToTopInstant();
       // Always redirect to menu
       navigate("/menu");
     } catch (error) {
@@ -75,7 +77,7 @@ const Welcome = () => {
         <img 
           src={bulldogCoinLarge} 
           alt="BDOG Coin" 
-          className="w-96 h-96 object-contain animate-slow-spin"
+          className="w-96 h-96 object-contain"
         />
       </div>
 

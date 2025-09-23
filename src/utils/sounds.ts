@@ -1,13 +1,45 @@
-// Click sound utility
+// Soft click sounds - much quieter and more pleasant
 export const playClickSound = () => {
-  const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQ==');
-  audio.volume = 0.2;
-  audio.play().catch(() => {}); // Ignore errors if audio can't play
+  // Create a gentle "pop" sound
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+  
+  gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.01);
+  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+  
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + 0.1);
 };
 
-// Button click sound
+// Even softer button click sound
 export const playButtonSound = () => {
-  const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQ==');
-  audio.volume = 0.15;
-  audio.play().catch(() => {}); // Ignore errors if audio can't play
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.08);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.08);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.08);
+  } catch (error) {
+    // Fallback for browsers without AudioContext support
+    console.log('Sound not supported');
+  }
 };

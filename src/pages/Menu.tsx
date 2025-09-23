@@ -7,9 +7,11 @@ import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
 import { playButtonSound } from "@/utils/sounds";
+import { scrollToTopInstant } from "@/utils/scrollToTop";
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
+import bulldogCoinLarge from "@/assets/bulldog-coin-large.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -214,6 +216,15 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
       
+      {/* Background coin */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-10 z-5">
+        <img 
+          src={bulldogCoinLarge} 
+          alt="BDOG Coin" 
+          className="w-80 h-80 object-contain"
+        />
+      </div>
+      
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
@@ -275,6 +286,7 @@ const Menu = () => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
             const handleClick = () => {
               playButtonSound();
+              scrollToTopInstant();
               if (item.external) {
                 window.open(item.path, '_blank');
               } else {

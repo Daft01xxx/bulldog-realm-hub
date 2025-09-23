@@ -189,7 +189,7 @@ export const useProfile = () => {
           balance2: 0,
           grow: 0,
           grow1: 1,
-          bone: 1000,
+          bone: 0,
           referrals: 0,
           referred_by: referrerData?.user_id || null,
           bdog_balance: 0,
@@ -279,7 +279,7 @@ export const useProfile = () => {
         ...userProfile,
         grow: Number(userProfile.grow) || 0,
         grow1: Number(userProfile.grow1) || 1,
-        bone: Number(userProfile.bone) || 1000,
+        bone: Number(userProfile.bone) ?? 0,
         balance: Number(userProfile.balance) || 0,
         balance2: Number(userProfile.balance2) || 0,
         v_bdog_earned: Number(userProfile.v_bdog_earned) || 0,
@@ -294,7 +294,7 @@ export const useProfile = () => {
       localStorage.setItem('bdog-balance2', String(userProfile.balance2 || 0));
       localStorage.setItem('bdog-grow', String(Number(userProfile.grow) || 0));
       localStorage.setItem('bdog-grow1', String(Number(userProfile.grow1) || 1));
-      localStorage.setItem('bdog-bone', String(Number(userProfile.bone) || 1000));
+      localStorage.setItem('bdog-bone', String(Number(userProfile.bone) ?? 0));
       localStorage.setItem('bdog-referrals', String(Number(userProfile.referrals) || 0));
       localStorage.setItem('bdog-v-earned', String(Number(userProfile.v_bdog_earned) || 0));
 
@@ -341,7 +341,7 @@ export const useProfile = () => {
         ...updatedProfile,
         grow: Number(updatedProfile.grow) || 0,
         grow1: Number(updatedProfile.grow1) || 1,
-        bone: Number(updatedProfile.bone) || 1000,
+        bone: Number(updatedProfile.bone) ?? 0,
         balance: Number(updatedProfile.balance) || 0,
         balance2: Number(updatedProfile.balance2) || 0,
         v_bdog_earned: Number(updatedProfile.v_bdog_earned) || 0,

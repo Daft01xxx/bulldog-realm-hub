@@ -18,49 +18,76 @@ export type Database = {
         Row: {
           balance: number | null
           balance2: number | null
+          ban: number | null
+          bdog_balance: number | null
           bone: number | null
+          booster_expires_at: string | null
           created_at: string
+          device_fingerprint: string | null
           grow: number | null
           grow1: number | null
           id: string
           ip_address: unknown | null
+          is_vpn_user: boolean | null
+          last_referral_code: string | null
+          referral_code_used: boolean | null
+          referral_notifications: Json | null
           referrals: number | null
           referred_by: string | null
           reg: string | null
           updated_at: string
           user_id: string
+          v_bdog_earned: number | null
           wallet_address: string | null
         }
         Insert: {
           balance?: number | null
           balance2?: number | null
+          ban?: number | null
+          bdog_balance?: number | null
           bone?: number | null
+          booster_expires_at?: string | null
           created_at?: string
+          device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
           id?: string
           ip_address?: unknown | null
+          is_vpn_user?: boolean | null
+          last_referral_code?: string | null
+          referral_code_used?: boolean | null
+          referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
           updated_at?: string
           user_id: string
+          v_bdog_earned?: number | null
           wallet_address?: string | null
         }
         Update: {
           balance?: number | null
           balance2?: number | null
+          ban?: number | null
+          bdog_balance?: number | null
           bone?: number | null
+          booster_expires_at?: string | null
           created_at?: string
+          device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
           id?: string
           ip_address?: unknown | null
+          is_vpn_user?: boolean | null
+          last_referral_code?: string | null
+          referral_code_used?: boolean | null
+          referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
           updated_at?: string
           user_id?: string
+          v_bdog_earned?: number | null
           wallet_address?: string | null
         }
         Relationships: [
@@ -102,7 +129,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      find_referrer_safely: {
+        Args: { referral_code: string }
+        Returns: {
+          referral_notifications: Json
+          referrals: number
+          reg: string
+          user_id: string
+          v_bdog_earned: number
+        }[]
+      }
+      get_next_sunday_reset: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

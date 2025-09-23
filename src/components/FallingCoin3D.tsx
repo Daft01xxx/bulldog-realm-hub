@@ -26,7 +26,7 @@ function Coin3D({ position, animationDelay, animationDuration, scale }: Coin3DPr
       if (adjustedTime > 0) {
         // Infinite falling animation - reset when coin reaches bottom
         const fallProgress = ((adjustedTime % animationDuration) / animationDuration);
-        const currentY = 18 - (fallProgress * 36); // From +18 to -18 (below screen)
+        const currentY = 12 - (fallProgress * 28); // From +12 to -16 (below screen)
         meshRef.current.position.y = currentY;
         
         // 3D rotation around all axes
@@ -70,23 +70,23 @@ interface FallingCoins3DProps {
   count?: number;
 }
 
-export default function FallingCoins3D({ count = 25 }: FallingCoins3DProps) {
+export default function FallingCoins3D({ count = 15 }: FallingCoins3DProps) {
   const coins = Array.from({ length: count }, (_, i) => ({
     id: i,
     position: [
-      (Math.random() - 0.5) * 30, // x position - wider spread across screen
-      15 + Math.random() * 10, // start from different heights
-      (Math.random() - 0.5) * 20 // z position - deeper spread
+      (Math.random() - 0.5) * 20, // x position - wider spread across screen
+      12 + Math.random() * 8, // start from different heights
+      (Math.random() - 0.5) * 16 // z position - deeper spread
     ] as [number, number, number],
-    animationDelay: Math.random() * 15, // random delay up to 15 seconds  
-    animationDuration: 8 + Math.random() * 12, // 8-20 seconds fall time
-    scale: 0.6 + Math.random() * 0.8 // varied coin sizes
+    animationDelay: Math.random() * 10, // random delay up to 10 seconds  
+    animationDuration: 6 + Math.random() * 8, // 6-14 seconds fall time
+    scale: 0.8 + Math.random() * 0.6 // varied coin sizes
   }));
 
   return (
     <Canvas
       className="fixed inset-0 pointer-events-none z-5"
-      camera={{ position: [0, 0, 12], fov: 60 }}
+      camera={{ position: [0, 0, 10], fov: 50 }}
       style={{ background: 'transparent' }}
     >
       <ambientLight intensity={0.3} />

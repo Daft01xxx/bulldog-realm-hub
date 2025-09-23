@@ -2,16 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, Headphones } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
-import { playButtonSound } from "@/utils/sounds";
-import { scrollToTopInstant } from "@/utils/scrollToTop";
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
-import bulldogCoinLarge from "@/assets/bulldog-coin-large.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -125,7 +122,7 @@ const Menu = () => {
     } else if (random <= 65) {
       // 50% chance for 100 bones
       reward = "100 косточек";
-      updateData.bone = (profile?.bone ?? 0) + 100;
+      updateData.bone = (profile?.bone || 1000) + 100;
     } else {
       // 35% chance for growth +100
       reward = "Рост +100";
@@ -197,31 +194,22 @@ const Menu = () => {
       delay: "0.4s"
     },
     {
-      title: "Техническая поддержка",
-      icon: Headphones,
-      path: "https://t.me/Deff0xq",
-      description: "Помощь и поддержка",
-      delay: "0.5s",
-      external: true
-    },
-    {
       title: "Реклама проекта за вознаграждение",
       icon: Megaphone,
       path: "/promotion",
       description: "Продвигайте и получайте награды",
-      delay: "0.6s"
+      delay: "0.5s"
     }
   ];
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
       
-      
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-7xl md:text-8xl font-bold text-gold-realistic animate-golden-shimmer mb-12 ${
-            animate ? 'animate-bounce-in animate-text-glow animate-text-sparkle' : 'opacity-0'
+          className={`text-3xl md:text-4xl font-bold text-gradient animate-glow-text mb-4 ${
+            animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
           BDOG APP
@@ -229,66 +217,77 @@ const Menu = () => {
         
         {/* User info */}
         <Card 
-          className={`card-glow max-w-md mx-auto p-8 mb-4 ${
+          className={`card-glow max-w-sm mx-auto p-6 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
         >
           <div className="space-y-4">
-            <p className="text-lg text-muted-foreground text-center animate-pulse">
-              ID: <span className="text-gold-realistic font-semibold text-xl">{reg}</span>
+            <p className="text-base text-muted-foreground text-center">
+              <span className="text-gold font-semibold text-lg">{reg}</span>
             </p>
             <div className="space-y-3">
-            <p className="text-lg text-foreground text-center animate-text-glow">
-                BDOG: <span className="text-gradient font-bold text-2xl">{bdogBalance}</span>
+              <p className="text-base text-foreground text-center">
+                BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
               </p>
-              <p className="text-lg text-foreground text-center animate-text-glow">
-                V-BDOG: <span className="text-gradient font-bold text-2xl">{vBdogBalance}</span>
+              <p className="text-base text-foreground text-center">
+                V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
               </p>
+              {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
+                <p className="text-sm text-gold text-center">
+                  (включая {profile.v_bdog_earned.toLocaleString()} V-BDOG за рефералов)
+                </p>
+              )}
             </div>
           </div>
         </Card>
 
-
+        {/* Daily Gift Button */}
+        <div className="text-center mb-4">
+            <Button
+            onClick={claimDailyGift}
+            disabled={!canClaimDaily}
+            className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
+              animate ? 'animate-bounce-in' : 'opacity-0'
+            } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
+            style={{ animationDelay: '0.5s' }}
+          >
+            <Gift className="w-3 h-3 mr-2 icon-gold" />
+            {canClaimDaily ? "Получить ежедневный подарок" : `Следующий подарок через ${timeUntilNextGift}`}
+          </Button>
+          <p className="text-xs text-muted-foreground mt-1 opacity-70">
+            {canClaimDaily ? "Получи свой ежедневный бонус!" : "Подарок обновляется каждые 24 часа"}
+          </p>
+        </div>
       </div>
 
       {/* Menu grid */}
-      <div className="max-w-md mx-auto relative z-10">
-        <div className="grid grid-cols-1 gap-2 mb-4">
+      <div className="max-w-sm mx-auto relative z-10">
+        <div className="grid grid-cols-1 gap-3 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
-            const handleClick = () => {
-              playButtonSound();
-              scrollToTopInstant();
-              if (item.external) {
-                window.open(item.path, '_blank');
-              } else {
-                navigate(item.path);
-              }
-            };
-            
             return (
               <Card
                 key={item.title}
-                className={`card-glow p-3 cursor-pointer hover-lift group ${
+                className={`card-glow p-4 cursor-pointer hover-lift group ${
                   animate ? 'animate-slide-in-right' : 'opacity-0'
                 }`}
                 style={{ animationDelay: item.delay }}
-                onClick={handleClick}
+                onClick={() => navigate(item.path)}
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogLogo} alt="BDOG" className="w-5 h-5 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                      <img src={bdogLogo} alt="BDOG" className="w-6 h-6 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : (
-                      <IconComponent className="w-5 h-5 icon-gold" />
+                      <IconComponent className="w-6 h-6 icon-gold" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-gold-realistic mb-0 group-hover:text-gold transition-colors animate-text-bounce">
+                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground animate-pulse">
+                    <p className="text-xs text-muted-foreground">
                       {item.description}
                     </p>
                   </div>
@@ -305,13 +304,12 @@ const Menu = () => {
           }`}
           style={{ animationDelay: '0.6s' }}
         >
-          <p className="text-gray-subtle mb-2 animate-pulse">Твоя реклама тут,</p>
+          <p className="text-gray-subtle mb-2">Твоя реклама тут,</p>
           <a 
             href="https://t.me/Deff0xq" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-gold hover:text-gold-light transition-colors underline font-semibold animate-text-glow"
-            onClick={playButtonSound}
+            className="text-gold hover:text-gold-light transition-colors underline font-semibold"
           >
             пиши нам
           </a>

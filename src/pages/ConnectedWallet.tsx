@@ -15,62 +15,27 @@ import {
   TrendingUp,
   Coins,
   Clock,
-  CheckCircle,
-  Trophy
+  CheckCircle
 } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import customLogo from "@/assets/custom-logo.png";
+import tonLogo from "@/assets/v-bdog-logo.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
-import walletBulldogLogo from "@/assets/bulldog-logo-wallet.jpeg";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
-  const { walletAddress, isConnected, disconnectWallet, walletData, connectionRestored } = useBdogTonWallet();
+  const { walletAddress, isConnected, disconnectWallet, walletData } = useBdogTonWallet();
   const { profile } = useProfile();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("wallet");
-  const [topBdogUsers, setTopBdogUsers] = useState<{name: string, balance: number, address: string}[]>([]);
-
-  // Load top BDOG users
-  useEffect(() => {
-    loadTopBdogUsers();
-  }, []);
-
-  const loadTopBdogUsers = async () => {
-    try {
-      const { data: users, error } = await supabase
-        .from('profiles')
-        .select('reg, bdog_balance, wallet_address')
-        .not('wallet_address', 'is', null)
-        .gt('bdog_balance', 0)
-        .order('bdog_balance', { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-
-      if (users) {
-        const formattedUsers = users.map((user: any) => ({
-          name: user.reg || "Аноним",
-          balance: Number(user.bdog_balance) || 0,
-          address: user.wallet_address || ""
-        }));
-        setTopBdogUsers(formattedUsers);
-      }
-    } catch (error) {
-      console.error('Error loading top BDOG users:', error);
-    }
-  };
 
   // Redirect if not connected
   useEffect(() => {
-    if (connectionRestored && (!isConnected || !walletAddress)) {
-      console.log('Redirecting to wallet page - not connected:', { isConnected, walletAddress, connectionRestored });
+    if (!isConnected || !walletAddress) {
       navigate("/wallet");
     }
-  }, [isConnected, walletAddress, navigate, connectionRestored]);
+  }, [isConnected, walletAddress, navigate]);
 
   const copyAddress = async () => {
     if (walletAddress) {
@@ -98,35 +63,14 @@ const ConnectedWallet = () => {
     return `${address.slice(0, 6)}...${address.slice(-6)}`;
   };
 
-  // Show loading while connection is being restored
-  if (!connectionRestored) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
-          <p className="text-gold animate-text-glow">Восстановление подключения...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (!isConnected || !walletAddress) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gold animate-text-glow mb-4">Кошелек не подключен</p>
-          <button onClick={() => navigate("/wallet")} className="button-gold">
-            Вернуться к подключению
-          </button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="relative min-h-screen bg-background px-2 py-4 overflow-y-auto">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border relative">
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="flex items-center justify-between p-4 pt-12">
           <Button
             variant="ghost"
@@ -137,7 +81,7 @@ const ConnectedWallet = () => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Меню
           </Button>
-          <h1 className="text-lg font-semibold text-gold animate-text-glow animate-text-pulse">Кошелёк</h1>
+          <h1 className="text-lg font-semibold text-foreground">Кошелёк</h1>
           <Button
             variant="ghost"
             size="sm"
@@ -151,18 +95,20 @@ const ConnectedWallet = () => {
 
       {/* BDOG Balance Display */}
       <div className="px-4 pt-4">
-        <div className="text-center">
-          <div className="text-sm font-medium text-muted-foreground mb-1">BDOG Баланс</div>
-          <div className="text-2xl font-bold text-gold">
-            {formatBalance(parseFloat(walletData?.bdogBalance || "0"))}
+        <Card className="bg-white text-black border-none shadow-lg">
+          <div className="p-4 text-center">
+            <div className="text-sm font-medium text-black/70 mb-1">BDOG Баланс</div>
+            <div className="text-2xl font-bold text-black">
+              {formatBalance(parseFloat(walletData?.bdogBalance || "0"))}
+            </div>
+            <div className="text-xs text-black/50 mt-1">BDOG Tokens</div>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">BDOG Tokens</div>
-        </div>
+        </Card>
       </div>
 
       {/* Main Content */}
       <div className="pb-20">
-        <Tabs defaultValue="wallet" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Wallet Tab Content */}
           <TabsContent value="wallet" className="px-4 pt-2 space-y-6">
             {/* Wallet Address Card */}
@@ -173,7 +119,7 @@ const ConnectedWallet = () => {
                     <WalletIcon className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gold animate-text-bounce animate-text-float">Мой кошелёк</h3>
+                    <h3 className="font-semibold text-foreground">Мой кошелёк</h3>
                     <p className="text-sm text-muted-foreground">TON Wallet</p>
                   </div>
                 </div>
@@ -203,11 +149,11 @@ const ConnectedWallet = () => {
               <Card className="card-tonkeeper p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">TON</span>
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center overflow-hidden">
+                      <img src={tonLogo} alt="TON" className="w-6 h-6 object-contain" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gold animate-text-bounce animate-text-pulse">TON</h4>
+                      <h4 className="font-medium text-foreground">TON</h4>
                       <p className="text-xs text-muted-foreground">Toncoin</p>
                     </div>
                   </div>
@@ -228,7 +174,7 @@ const ConnectedWallet = () => {
                       <img src={bdogLogo} alt="V-BDOG" className="w-6 h-6 object-cover rounded-full" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-gold animate-text-bounce animate-text-sparkle">V-BDOG</h4>
+                      <h4 className="font-medium text-foreground">V-BDOG</h4>
                       <p className="text-xs text-muted-foreground">Виртуальный BDOG</p>
                     </div>
                   </div>
@@ -266,7 +212,7 @@ const ConnectedWallet = () => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <ImageIcon className="w-5 h-5 text-muted-foreground" />
-                  <h4 className="font-medium text-foreground animate-text-bounce">NFT Коллекция</h4>
+                  <h4 className="font-medium text-foreground">NFT Коллекция</h4>
                 </div>
                 <Badge variant="outline" className="text-muted-foreground">
                   {walletData?.nfts?.length || 0} NFT
@@ -319,7 +265,7 @@ const ConnectedWallet = () => {
             <Card className="card-tonkeeper p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Clock className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground animate-text-bounce">История транзакций</h3>
+                <h3 className="font-semibold text-foreground">История транзакций</h3>
               </div>
               
               <div className="text-center py-12">
@@ -337,7 +283,7 @@ const ConnectedWallet = () => {
             <Card className="card-tonkeeper p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <ImageIcon className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground animate-text-bounce">NFT Коллекции</h3>
+                <h3 className="font-semibold text-foreground">NFT Коллекции</h3>
               </div>
               
               {walletData?.nfts && walletData.nfts.length > 0 ? (
@@ -384,98 +330,48 @@ const ConnectedWallet = () => {
               )}
             </Card>
           </TabsContent>
-
-          {/* Top BDOG Users Tab Content */}
-          <TabsContent value="top" className="px-4 pt-6">
-            <Card className="card-tonkeeper p-6">
-              <div className="flex items-center space-x-2 mb-6">
-                <Trophy className="w-5 h-5 text-gold" />
-                <h3 className="font-semibold text-foreground animate-text-bounce">Топ 20 BDOG</h3>
-              </div>
-              
-              {topBdogUsers.length > 0 ? (
-                <div className="space-y-2">
-                  {topBdogUsers.map((user, index) => (
-                    <div 
-                      key={user.address + index}
-                      className={`flex items-center justify-between p-3 rounded-lg ${
-                        index === 0 ? 'bg-gold/20 border border-gold/30' :
-                        index === 1 ? 'bg-gray-400/20 border border-gray-400/30' :
-                        index === 2 ? 'bg-orange-600/20 border border-orange-600/30' :
-                        'bg-muted/50'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="flex items-center justify-center w-8 h-8">
-                          <span className="font-bold text-sm">
-                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">{user.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {user.address.slice(0, 8)}...{user.address.slice(-6)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-gold">
-                          {user.balance.toLocaleString()}
-                        </p>
-                        <p className="text-xs text-muted-foreground">BDOG</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                  <h4 className="font-medium text-foreground mb-2">Топ пользователей загружается</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Здесь будут отображены топ-20 пользователей по балансу BDOG
-                  </p>
-                </div>
-              )}
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border">
-        <TabsList className="w-full h-auto bg-transparent p-0 border-none">
-          <TabsTrigger
-            value="history"
-            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
+        <div className="flex">
+          <button
+            onClick={() => setActiveTab("history")}
+            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+              activeTab === "history" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <History className="w-5 h-5 mb-1" />
+            <History className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">История</span>
-          </TabsTrigger>
+          </button>
           
-          <TabsTrigger
-            value="wallet"
-            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
+          <button
+            onClick={() => setActiveTab("wallet")}
+            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+              activeTab === "wallet" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <WalletIcon className="w-5 h-5 mb-1" />
+            <WalletIcon className="w-6 h-6 mb-1" />
             <span className="text-xs font-medium">Кошелёк</span>
-          </TabsTrigger>
-
-          <TabsTrigger
-            value="top"
-            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
-          >
-            <Trophy className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">Топ</span>
-          </TabsTrigger>
+          </button>
           
-          <TabsTrigger
-            value="collections"
-            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
+          <button
+            onClick={() => setActiveTab("collections")}
+            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+              activeTab === "collections" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
           >
-            <ImageIcon className="w-5 h-5 mb-1" />
-            <span className="text-xs font-medium">NFT</span>
-          </TabsTrigger>
-        </TabsList>
+            <ImageIcon className="w-6 h-6 mb-1" />
+            <span className="text-xs font-medium">Коллекции</span>
+          </button>
+        </div>
       </div>
     </div>
   );

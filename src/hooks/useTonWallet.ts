@@ -78,7 +78,7 @@ export const useBdogTonWallet = () => {
       await tonConnectUI.openModal();
       
       toast({
-        title: "Подключение кошелька", 
+        title: "Подключение кошелька",
         description: "Выберите кошелек для подключения",
       });
     } catch (error) {

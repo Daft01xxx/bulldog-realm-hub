@@ -36,12 +36,6 @@ const Admin = () => {
     v_bdog_earned: "",
     grow1: ""
   });
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [passwordInput, setPasswordInput] = useState("");
-  
-  const checkPassword = (password: string) => {
-    return password === "admin123" || password === "Gnomdoma04022012";
-  };
 
   useEffect(() => {
     loadUsers();
@@ -203,100 +197,6 @@ const Admin = () => {
     }
   };
 
-  const unbanAllUsers = async () => {
-    if (!confirm("Вы уверены, что хотите разбанить ВСЕХ пользователей?")) {
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ ban: 0 } as any)
-        .gt('ban' as any, 0);
-
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Все пользователи разбанены",
-        description: "Все заблокированные пользователи были разбанены",
-      });
-      loadUsers(); // Reload users
-    } catch (error) {
-      console.error('Error unbanning all users:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось разбанить пользователей",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwordInput === "dvertyty6278ggqhak" || passwordInput === "Gnomdoma04022012") {
-      setIsAuthenticated(true);
-      toast({
-        title: "Вход выполнен",
-        description: "Добро пожаловать в админ панель",
-      });
-    } else {
-      toast({
-        title: "Неверный пароль",
-        description: "Попробуйте еще раз",
-        variant: "destructive",
-      });
-      setPasswordInput("");
-    }
-  };
-
-  // Show password form if not authenticated
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <Card className="card-glow p-8 max-w-md w-full">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-foreground mb-2">
-              🔒 Админ панель
-            </h1>
-            <p className="text-muted-foreground">
-              Введите пароль для доступа
-            </p>
-          </div>
-          
-          <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <div>
-              <Input
-                type="password"
-                value={passwordInput}
-                onChange={(e) => setPasswordInput(e.target.value)}
-                placeholder="Введите пароль"
-                className="w-full"
-                autoFocus
-              />
-            </div>
-            <Button type="submit" className="button-gold w-full">
-              Войти
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/menu")}
-              className="button-outline-gold"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад в меню
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background px-4 py-12">
       {/* Navigation */}
@@ -357,15 +257,6 @@ const Admin = () => {
         >
           <Zap className="w-4 h-4 mr-2" />
           Сбросить все ускорители
-        </Button>
-        
-        <Button
-          onClick={unbanAllUsers}
-          variant="outline"
-          className="button-outline-gold"
-        >
-          <Users className="w-4 h-4 mr-2" />
-          Разбанить всех
         </Button>
         
         <BanUserModal onUserBanned={loadUsers} />

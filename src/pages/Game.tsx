@@ -6,9 +6,7 @@ import { ArrowLeft, Home, Zap, Info, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
-import { playClickSound, playCoinsSound, playBoosterBuySound } from "@/utils/sounds";
 import bulldogSuit from "@/assets/bulldog-suit.jpeg";
-import FallingCoin3D from "@/components/FallingCoin3D";
 
 const Game = () => {
   const navigate = useNavigate();
@@ -16,7 +14,7 @@ const Game = () => {
   const { profile, updateProfile, loading } = useProfile();
   const [grow, setGrow] = useState(0);
   const [grow1, setGrow1] = useState(1);
-  const [bone, setBone] = useState(0);
+  const [bone, setBone] = useState(1000);
   const [timeLeft, setTimeLeft] = useState("");
   const [weeklyTimeLeft, setWeeklyTimeLeft] = useState("");
   const [clickEffect, setClickEffect] = useState<{id: number, x: number, y: number}[]>([]);
@@ -43,7 +41,7 @@ const Game = () => {
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
       let profileGrow1 = Number(profile.grow1) || 1;
-      const profileBone = Math.min(1000, Number(profile.bone) || 0);
+      const profileBone = Math.min(1000, Number(profile.bone) || 1000);
       
       // Check if booster is active and adjust grow1 accordingly
       const profileBoosterExpires = profile.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
@@ -87,8 +85,7 @@ const Game = () => {
       // Load from localStorage only if we're not loading and don't have any data yet
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
-      const savedBoneString = localStorage.getItem("bdog-bone");
-      const savedBone = savedBoneString !== null ? Number(savedBoneString) : 0;
+      const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
       const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
       
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
@@ -175,7 +172,7 @@ const Game = () => {
   const calculateWeeklyTimeLeft = async () => {
     try {
       // Get next Sunday 10:00 AM Moscow time from database function
-      const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset' as any);
+      const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset');
       
       if (error) {
         console.error('Error getting next reset time:', error);
@@ -278,9 +275,6 @@ const Game = () => {
       return;
     }
 
-    // Play coins sound
-    playCoinsSound();
-
     // Simple and reliable vibration for all devices including iPhone
     if (navigator.vibrate) {
       navigator.vibrate(100);
@@ -340,14 +334,11 @@ const Game = () => {
     
     setTimeout(() => {
       setClickEffect(prev => prev.filter(effect => effect.id !== effectId));
-    }, 1000);
+    }, 500);
   };
 
   const buyBooster = async () => {
-    const profileBone = profile?.bone !== undefined ? profile.bone : null;
-    const localBoneString = localStorage.getItem("bdog-bone");
-    const localBone = localBoneString !== null ? Number(localBoneString) : null;
-    const currentBone = Math.min(1000, profileBone ?? localBone ?? bone);
+    const currentBone = Math.min(1000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
     if (currentBone < 500) {
       toast({
         title: "Ошибка!",
@@ -386,8 +377,6 @@ const Game = () => {
     }, 2000);
     
     setShowBooster(false);
-    
-    playBoosterBuySound();
     
     toast({
       title: "Ускоритель активирован!",
@@ -484,9 +473,6 @@ const Game = () => {
             Нажми на бульдога!
           </p>
         </Card>
-        
-        {/* Falling coins effect */}
-        <FallingCoin3D />
       </div>
 
       {/* Action buttons */}

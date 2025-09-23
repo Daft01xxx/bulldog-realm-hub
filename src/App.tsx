@@ -6,15 +6,12 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
-import GoldenParticles from "./components/GoldenParticles";
-import BackgroundMusic from "./components/BackgroundMusic";
-import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./hooks/useAuth";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
 import Wallet from "./pages/Wallet";
 import ConnectedWallet from "./pages/ConnectedWallet";
-import GameWithTabs from "@/pages/GameWithTabs";
+import Game from "./pages/Game";
 import Info from "./pages/Info";
 import Referral from "./pages/Referral";
 import Tasks from "./pages/Tasks";
@@ -25,15 +22,7 @@ import Ban from "./pages/Ban";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
-// Create QueryClient with proper configuration for React 18
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: false,
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
@@ -74,21 +63,15 @@ function AppContent() {
 
   return (
     <>
-      <ScrollToTop />
-      <BackgroundMusic />
       <Toaster />
       <Sonner />
-      {/* Falling coins only on game and connected wallet pages */}
-      {(location.pathname === '/game' || location.pathname === '/connected-wallet') && <FallingCoins2D trigger={false} />}
-      
-      {/* Golden particles on all pages except ban */}
-      {location.pathname !== '/ban' && <GoldenParticles />}
+      {!isOnBanPage && <FallingCoins2D />}
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/connected-wallet" element={<ConnectedWallet />} />
-        <Route path="/game" element={<GameWithTabs />} />
+        <Route path="/game" element={<Game />} />
         <Route path="/info" element={<Info />} />
         <Route path="/referral" element={<Referral />} />
         <Route path="/tasks" element={<Tasks />} />

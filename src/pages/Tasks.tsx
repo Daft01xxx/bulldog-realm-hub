@@ -35,46 +35,6 @@ export default function Tasks() {
   const [tapCount, setTapCount] = useState(0);
   const [dailyStreak, setDailyStreak] = useState(0);
 
-  // Calculate daily login streak
-  const calculateDailyStreak = () => {
-    const today = new Date().toDateString();
-    const lastLoginDate = localStorage.getItem('bdog-last-login-date');
-    const currentStreak = Number(localStorage.getItem('bdog-daily-streak')) || 0;
-    
-    if (lastLoginDate !== today) {
-      // User logged in today for the first time
-      const lastDate = lastLoginDate ? new Date(lastLoginDate) : null;
-      const todayDate = new Date(today);
-      
-      let newStreak = 0;
-      
-      if (lastDate) {
-        const diffTime = todayDate.getTime() - lastDate.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 1) {
-          // Consecutive day - increment streak
-          newStreak = Math.min(currentStreak + 1, 2); // Max 2 for the task
-        } else if (diffDays === 0) {
-          // Same day - keep current streak
-          newStreak = currentStreak;
-        } else {
-          // Gap in days - reset to 1
-          newStreak = 1;
-        }
-      } else {
-        // First time login
-        newStreak = 1;
-      }
-      
-      localStorage.setItem('bdog-last-login-date', today);
-      localStorage.setItem('bdog-daily-streak', newStreak.toString());
-      return newStreak;
-    }
-    
-    return currentStreak;
-  };
-
   // Load completed tasks from localStorage and setup real-time updates
   useEffect(() => {
     const completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
@@ -83,7 +43,7 @@ export default function Tasks() {
     // Update tap count and daily streak
     const updateCounts = () => {
       setTapCount(Number(localStorage.getItem('bdog-total-taps')) || 0);
-      setDailyStreak(calculateDailyStreak());
+      setDailyStreak(Number(localStorage.getItem('bdog-daily-streak')) || 0);
     };
     
     updateCounts();
@@ -147,7 +107,7 @@ export default function Tasks() {
     if (task.reward.type === 'v_bdog') {
       updates.v_bdog_earned = (profile.v_bdog_earned || 0) + task.reward.amount;
     } else if (task.reward.type === 'bone') {
-      updates.bone = (profile.bone ?? 0) + task.reward.amount;
+      updates.bone = (profile.bone || 1000) + task.reward.amount;
     }
 
     await updateProfile(updates);

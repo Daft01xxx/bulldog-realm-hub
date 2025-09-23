@@ -331,7 +331,30 @@ const GameWithTabs = () => {
   if (currentTab === 'shop') {
     return (
       <ShopTabs currentTab={currentTab} onTabChange={setCurrentTab}>
-        <Shop />
+        <div className="relative min-h-screen pb-24">
+          {/* Navigation */}
+          <div className="flex justify-between items-center mb-4 pt-4 px-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="button-outline-gold text-xs px-2 py-1"
+            >
+              <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
+              Назад
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/menu")}
+              className="button-outline-gold text-xs px-2 py-1"
+            >
+              <Home className="w-3 h-3 mr-1 text-gold" />
+              Меню
+            </Button>
+          </div>
+          <Shop />
+        </div>
       </ShopTabs>
     );
   }
@@ -340,22 +363,14 @@ const GameWithTabs = () => {
     <ShopTabs currentTab={currentTab} onTabChange={setCurrentTab}>
       {/* Fixed Background */}
       <div className="fixed inset-0 bg-background">
-        {/* Large BDOG coin at the top */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 z-10 opacity-20">
-          <img 
-            src={bulldogCoin} 
-            alt="BDOG Coin" 
-            className="w-full h-full object-contain"
-          />
-        </div>
       </div>
 
       {/* Scrollable Content */}
-      <div className="relative min-h-screen pb-24 px-2 py-4 overflow-y-auto">
+      <div className="relative min-h-screen pb-24 px-2 py-2 overflow-y-auto">
         <FallingCoins2D trigger={coinsTriggered} />
         
         {/* Navigation */}
-        <div className="flex justify-between items-center mb-4 pt-4">
+        <div className="flex justify-between items-center mb-3 pt-2">
           <Button
             variant="outline"
             size="sm"
@@ -386,15 +401,15 @@ const GameWithTabs = () => {
         </div>
 
         {/* Game stats */}
-        <div className="grid grid-cols-3 gap-2 mb-4 max-w-sm mx-auto">
+        <div className="grid grid-cols-3 gap-1 mb-3 max-w-sm mx-auto">
           <Card className="card-glow p-2 text-center animate-fade-in-up">
             <p className="text-xs text-muted-foreground">Рост</p>
-            <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
+            <p className="text-xs font-bold text-gold">{grow.toLocaleString()}</p>
           </Card>
           
           <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
             <p className="text-xs text-muted-foreground">Косточки</p>
-            <p className="text-sm font-bold text-foreground">{bone}</p>
+            <p className="text-xs font-bold text-foreground">{bone}</p>
           </Card>
           
           <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
@@ -404,13 +419,13 @@ const GameWithTabs = () => {
         </div>
 
         {/* Game area */}
-        <div className="relative flex flex-col items-center space-y-6 max-w-sm mx-auto">
+        <div className="relative flex flex-col items-center space-y-4 max-w-sm mx-auto">
           <div className="relative">
             <div 
               className={`relative cursor-pointer transition-all duration-150 ${isClicked ? 'scale-95' : 'hover:scale-105'}`}
               onClick={handleClick}
             >
-              <div className="w-48 h-48 md:w-56 md:h-56 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+              <div className="w-40 h-40 md:w-44 md:h-44 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
                 <img 
                   src={currentBulldogLogo} 
                   alt="Bulldog" 
@@ -434,23 +449,23 @@ const GameWithTabs = () => {
             ))}
           </div>
 
-          <div className="flex gap-4 items-center">
+          <div className="flex gap-2 items-center">
             <Button 
               onClick={() => setShowBooster(true)}
               variant="outline" 
               size="sm"
-              className="button-outline-gold"
+              className="button-outline-gold text-xs px-2 py-1"
             >
-              <Zap className="w-4 h-4 mr-2 text-gold" />
+              <Zap className="w-3 h-3 mr-1 text-gold" />
               Ускоритель
             </Button>
             <Button 
               onClick={() => setShowRules(true)}
               variant="outline" 
               size="sm"
-              className="button-outline-gold"
+              className="button-outline-gold text-xs px-2 py-1"
             >
-              <Info className="w-4 h-4 mr-2 text-gold" />
+              <Info className="w-3 h-3 mr-1 text-gold" />
               Правила
             </Button>
           </div>

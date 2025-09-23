@@ -220,7 +220,7 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-3xl md:text-4xl font-bold text-gradient animate-glow-text animate-pulse mb-4 ${
+          className={`text-6xl md:text-8xl font-bold text-gradient animate-glow-text animate-pulse mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
@@ -249,26 +249,6 @@ const Menu = () => {
           </div>
         </Card>
 
-        {/* Daily Gift Button */}
-        <div className="text-center mb-4">
-          <Button
-            onClick={() => {
-              playButtonSound();
-              claimDailyGift();
-            }}
-            disabled={!canClaimDaily}
-            className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
-              animate ? 'animate-bounce-in' : 'opacity-0'
-            } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
-            style={{ animationDelay: '0.5s' }}
-          >
-            <Gift className="w-3 h-3 mr-2 icon-gold" />
-            {canClaimDaily ? "Получить ежедневный подарок" : `Следующий подарок через ${timeUntilNextGift}`}
-          </Button>
-          <p className="text-xs text-muted-foreground mt-1 opacity-70">
-            {canClaimDaily ? "Получи свой ежедневный бонус!" : "Подарок обновляется каждые 24 часа"}
-          </p>
-        </div>
 
       </div>
 

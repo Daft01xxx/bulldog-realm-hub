@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Mail, Lock, User } from 'lucide-react';
+import bulldogGoldCoin from '@/assets/bulldog-gold-coin-clean.jpeg';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -97,8 +98,17 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-primary/20 via-background to-secondary/20 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Logo */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-10">
+        <img 
+          src={bulldogGoldCoin} 
+          alt="Background Logo" 
+          className="w-96 h-96 object-contain"
+        />
+      </div>
+      
+      <Card className="w-full max-w-md mx-auto relative z-10">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-gradient">
             BDOG AUTH

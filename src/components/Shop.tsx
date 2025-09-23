@@ -88,10 +88,10 @@ const Shop = () => {
   };
 
   return (
-    <div className="p-4 pb-24 space-y-6">
+    <div className="p-2 pb-24 space-y-4 max-w-md mx-auto">
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-amber-800 mb-2">Магазин BDOG</h1>
-        <div className="w-32 h-32 mx-auto mb-6">
+        <h1 className="text-2xl font-bold text-gold mb-2">Магазин BDOG</h1>
+        <div className="w-24 h-24 mx-auto mb-4">
           <img 
             src={bulldogCoin} 
             alt="BDOG Coin" 
@@ -102,16 +102,16 @@ const Shop = () => {
 
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold text-amber-700 mb-4 text-center">
+          <h2 className="text-lg font-semibold text-gold mb-4 text-center">
             🎉 Акция в честь открытия
           </h2>
           
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Bones Package */}
-            <Card className="p-4 bg-white/80 border-amber-200">
+            <Card className="card-glow p-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12">
                     <img 
                       src={bulldogCoin} 
                       alt="Bones" 
@@ -119,17 +119,18 @@ const Shop = () => {
                     />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">x1000 косточек</p>
-                    <p className="text-sm text-gray-600">
-                      <span className="line-through text-red-500">2 TON</span> 
-                      <span className="ml-2 text-green-600 font-semibold">1 TON (-50%)</span>
+                    <p className="font-semibold text-sm text-foreground">x1000 косточек</p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="line-through text-destructive">2 TON</span> 
+                      <span className="ml-2 text-gold font-semibold">1 TON (-50%)</span>
                     </p>
                   </div>
                 </div>
                 <Button 
                   onClick={() => handlePurchase("1000000000", "bones", { bones: 1000 })}
                   disabled={loading === "bones"}
-                  className="button-gradient-gold button-glow"
+                  className="button-outline-gold text-xs px-2 py-1"
+                  size="sm"
                 >
                   {loading === "bones" ? "Покупаем..." : "Купить"}
                 </Button>
@@ -137,10 +138,10 @@ const Shop = () => {
             </Card>
 
             {/* V-BDOG Package */}
-            <Card className="p-4 bg-white/80 border-amber-200">
+            <Card className="card-glow p-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12">
                     <img 
                       src={bulldogSilverCoin} 
                       alt="V-BDOG" 
@@ -148,17 +149,18 @@ const Shop = () => {
                     />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">5,000,000 V-BDOG</p>
-                    <p className="text-sm text-gray-600">
-                      <span className="line-through text-red-500">10 TON</span> 
-                      <span className="ml-2 text-green-600 font-semibold">5 TON (-50%)</span>
+                    <p className="font-semibold text-sm text-foreground">5,000,000 V-BDOG</p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="line-through text-destructive">10 TON</span> 
+                      <span className="ml-2 text-gold font-semibold">5 TON (-50%)</span>
                     </p>
                   </div>
                 </div>
                 <Button 
                   onClick={() => handlePurchase("5000000000", "vbdog", { vbdog: 5000000 })}
                   disabled={loading === "vbdog"}
-                  className="button-gradient-gold button-glow"
+                  className="button-outline-gold text-xs px-2 py-1"
+                  size="sm"
                 >
                   {loading === "vbdog" ? "Покупаем..." : "Купить"}
                 </Button>
@@ -166,23 +168,24 @@ const Shop = () => {
             </Card>
 
             {/* Booster Package */}
-            <Card className="p-4 bg-white/80 border-amber-200">
+            <Card className="card-glow p-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 flex items-center justify-center">
-                    <Zap className="w-12 h-12 text-yellow-500 animate-pulse" />
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 flex items-center justify-center">
+                    <Zap className="w-8 h-8 text-gold animate-pulse" />
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">Ускоритель на 6 часов</p>
-                    <p className="text-sm text-gray-600">
-                      <span className="text-blue-600 font-semibold">3 TON</span>
+                    <p className="font-semibold text-sm text-foreground">Ускоритель на 6 часов</p>
+                    <p className="text-xs text-muted-foreground">
+                      <span className="text-gold font-semibold">3 TON</span>
                     </p>
                   </div>
                 </div>
                 <Button 
                   onClick={() => handlePurchase("3000000000", "booster", { booster: 6 })}
                   disabled={loading === "booster"}
-                  className="button-gradient-gold button-glow"
+                  className="button-outline-gold text-xs px-2 py-1"
+                  size="sm"
                 >
                   {loading === "booster" ? "Покупаем..." : "Купить"}
                 </Button>
@@ -191,9 +194,9 @@ const Shop = () => {
           </div>
         </div>
 
-        {/* Weekly Gift Section */}
+        {/* Daily Gift Section */}
         <div>
-          <h2 className="text-xl font-semibold text-amber-700 mb-4 text-center">
+          <h2 className="text-lg font-semibold text-gold mb-4 text-center">
             🎁 Ежедневный подарок
           </h2>
           <WeeklyGift />

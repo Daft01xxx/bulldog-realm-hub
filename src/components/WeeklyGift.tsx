@@ -155,7 +155,7 @@ const WeeklyGift = () => {
 
     try {
       const now = new Date().toISOString();
-      const updates: any = { last_daily_claim: now };
+      const updates: any = {};
 
       if (reward.type === 'bones') {
         updates.bone = (profile.bone || 0) + reward.amount;
@@ -177,8 +177,12 @@ const WeeklyGift = () => {
 
       if (error) throw error;
 
-      updateProfile(updates);
+      if (updates.bone !== undefined || updates.v_bdog_earned !== undefined || updates.current_logo !== undefined) {
+        updateProfile(updates);
+      }
+      
       localStorage.setItem('last-daily-claim', now);
+      setLastClaimTime(now);
       
       toast({
         title: "Награда получена!",

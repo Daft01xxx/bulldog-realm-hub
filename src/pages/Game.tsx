@@ -279,7 +279,7 @@ const Game = () => {
     }
 
     // Play coins sound
-    playCoinsSound();cZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQ==');
+    playCoinsSound();
 
     // Simple and reliable vibration for all devices including iPhone
     if (navigator.vibrate) {

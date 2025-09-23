@@ -85,7 +85,8 @@ const Game = () => {
       // Load from localStorage only if we're not loading and don't have any data yet
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
-      const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
+      const savedBoneString = localStorage.getItem("bdog-bone");
+      const savedBone = savedBoneString !== null ? Number(savedBoneString) : 0;
       const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
       
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
@@ -338,7 +339,10 @@ const Game = () => {
   };
 
   const buyBooster = async () => {
-    const currentBone = Math.min(3000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
+    const profileBone = profile?.bone !== undefined ? profile.bone : null;
+    const localBoneString = localStorage.getItem("bdog-bone");
+    const localBone = localBoneString !== null ? Number(localBoneString) : null;
+    const currentBone = Math.min(3000, profileBone ?? localBone ?? bone);
     if (currentBone < 500) {
       toast({
         title: "Ошибка!",

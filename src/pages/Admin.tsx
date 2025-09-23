@@ -36,6 +36,8 @@ const Admin = () => {
     v_bdog_earned: "",
     grow1: ""
   });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
 
   useEffect(() => {
     loadUsers();
@@ -196,6 +198,70 @@ const Admin = () => {
       });
     }
   };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordInput === "dvertyty6278ggqhak") {
+      setIsAuthenticated(true);
+      toast({
+        title: "Вход выполнен",
+        description: "Добро пожаловать в админ панель",
+      });
+    } else {
+      toast({
+        title: "Неверный пароль",
+        description: "Попробуйте еще раз",
+        variant: "destructive",
+      });
+      setPasswordInput("");
+    }
+  };
+
+  // Show password form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="card-glow p-8 max-w-md w-full">
+          <div className="text-center mb-6">
+            <h1 className="text-2xl font-bold text-foreground mb-2">
+              🔒 Админ панель
+            </h1>
+            <p className="text-muted-foreground">
+              Введите пароль для доступа
+            </p>
+          </div>
+          
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <div>
+              <Input
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Введите пароль"
+                className="w-full"
+                autoFocus
+              />
+            </div>
+            <Button type="submit" className="button-gold w-full">
+              Войти
+            </Button>
+          </form>
+          
+          <div className="mt-6 text-center">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/menu")}
+              className="button-outline-gold"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Назад в меню
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background px-4 py-12">

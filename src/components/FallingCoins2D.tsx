@@ -1,72 +1,69 @@
-import { useEffect, useState } from 'react';
-import bulldogCoinImage from '@/assets/bulldog-coin.png';
+import { useEffect, useState } from "react";
+import bulldogCoin from "@/assets/bulldog-coin.png";
 
-interface CoinProps {
+interface Coin {
   id: number;
-  delay: number;
-  duration: number;
-  leftPosition: number;
+  x: number;
+  y: number;
+  rotation: number;
+  speed: number;
   size: number;
 }
 
-function FallingCoin({ id, delay, duration, leftPosition, size }: CoinProps) {
-  return (
-    <div
-      className="fixed pointer-events-none z-10 opacity-70"
-      style={{
-        left: `${leftPosition}%`,
-        top: '-60px',
-        animationDelay: `${delay}s`,
-        animationDuration: `${duration}s`,
-      }}
-    >
-      <img
-        src={bulldogCoinImage}
-        alt=""
-        className="animate-fall-coin animate-slow-spin"
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-          filter: 'drop-shadow(0 0 8px hsl(var(--gold) / 0.3))',
-        }}
-      />
-    </div>
-  );
-}
-
 interface FallingCoins2DProps {
-  count?: number;
+  trigger: boolean;
 }
 
-export default function FallingCoins2D({ count = 12 }: FallingCoins2DProps) {
-  const [coins, setCoins] = useState<CoinProps[]>([]);
+const FallingCoins2D = ({ trigger }: FallingCoins2DProps) => {
+  const [coins, setCoins] = useState<Coin[]>([]);
 
   useEffect(() => {
-    const generateCoins = () => {
-      return Array.from({ length: count }, (_, i) => ({
-        id: i,
-        delay: Math.random() * 8, // Random delay up to 8 seconds
-        duration: 8 + Math.random() * 6, // 8-14 seconds fall time
-        leftPosition: Math.random() * 100, // Random horizontal position
-        size: 30 + Math.random() * 20, // 30-50px size
-      }));
-    };
+    if (!trigger) return;
 
-    setCoins(generateCoins());
-  }, [count]);
+    // Create 5-8 coins
+    const newCoins: Coin[] = Array.from({ length: Math.floor(Math.random() * 4) + 5 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 80 + 10, // 10-90% from left
+      y: 40, // Start from bulldog area
+      rotation: Math.random() * 360,
+      speed: Math.random() * 2 + 2, // 2-4 speed
+      size: Math.random() * 20 + 30, // 30-50px size
+    }));
+
+    setCoins(newCoins);
+
+    // Remove coins after animation
+    const timer = setTimeout(() => {
+      setCoins([]);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [trigger]);
 
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-40">
       {coins.map((coin) => (
-        <FallingCoin
+        <div
           key={coin.id}
-          id={coin.id}
-          delay={coin.delay}
-          duration={coin.duration}
-          leftPosition={coin.leftPosition}
-          size={coin.size}
-        />
+          className="absolute transition-all duration-2000 ease-out"
+          style={{
+            left: `${coin.x}%`,
+            top: `${coin.y}%`,
+            width: `${coin.size}px`,
+            height: `${coin.size}px`,
+            transform: `translateY(100vh) rotate(${coin.rotation + 720}deg)`,
+            animationDelay: `${Math.random() * 200}ms`,
+          }}
+        >
+          <img 
+            src={bulldogCoin} 
+            alt="Coin" 
+            className="w-full h-full object-contain drop-shadow-lg animate-spin"
+          />
+        </div>
       ))}
     </div>
   );
-}
+};
+
+export default FallingCoins2D;

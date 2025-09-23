@@ -13,7 +13,7 @@ import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
 import Wallet from "./pages/Wallet";
 import ConnectedWallet from "./pages/ConnectedWallet";
-import Game from "./pages/Game";
+import GameWithTabs from "@/pages/GameWithTabs";
 import Info from "./pages/Info";
 import Referral from "./pages/Referral";
 import Tasks from "./pages/Tasks";
@@ -77,7 +77,7 @@ function AppContent() {
       <Toaster />
       <Sonner />
       {/* Falling coins only on game and connected wallet pages */}
-      {(location.pathname === '/game' || location.pathname === '/connected-wallet') && <FallingCoins2D />}
+      {(location.pathname === '/game' || location.pathname === '/connected-wallet') && <FallingCoins2D trigger={false} />}
       
       {/* Golden particles on all pages except ban */}
       {location.pathname !== '/ban' && <GoldenParticles />}
@@ -86,7 +86,7 @@ function AppContent() {
         <Route path="/menu" element={<Menu />} />
         <Route path="/wallet" element={<Wallet />} />
         <Route path="/connected-wallet" element={<ConnectedWallet />} />
-        <Route path="/game" element={<Game />} />
+        <Route path="/game" element={<GameWithTabs />} />
         <Route path="/info" element={<Info />} />
         <Route path="/referral" element={<Referral />} />
         <Route path="/tasks" element={<Tasks />} />

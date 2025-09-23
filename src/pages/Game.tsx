@@ -41,7 +41,7 @@ const Game = () => {
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
       let profileGrow1 = Number(profile.grow1) || 1;
-      const profileBone = Math.min(1000, Number(profile.bone) || 0);
+      const profileBone = Math.min(3000, Number(profile.bone) || 0);
       
       // Check if booster is active and adjust grow1 accordingly
       const profileBoosterExpires = profile.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
@@ -91,7 +91,7 @@ const Game = () => {
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
       
       setGrow(savedGrow);
-      setBone(Math.min(1000, savedBone));
+      setBone(Math.min(3000, savedBone));
       
       // Check if booster is still active from localStorage
       if (savedBoosterEndTime) {
@@ -334,11 +334,11 @@ const Game = () => {
     
     setTimeout(() => {
       setClickEffect(prev => prev.filter(effect => effect.id !== effectId));
-    }, 500);
+    }, 1000);
   };
 
   const buyBooster = async () => {
-    const currentBone = Math.min(1000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
+    const currentBone = Math.min(3000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
     if (currentBone < 500) {
       toast({
         title: "Ошибка!",
@@ -350,7 +350,7 @@ const Game = () => {
 
     setIsUpdatingFromClick(true);
 
-    const newBone = Math.min(1000, currentBone - 500);
+    const newBone = Math.min(3000, currentBone - 500);
     const newGrow1 = grow1 * 2;
     const expirationTime = new Date(Date.now() + (60 * 60 * 1000)); // 1 hour from now
     

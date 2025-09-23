@@ -149,7 +149,7 @@ const ConnectedWallet = () => {
               <Card className="card-tonkeeper p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center overflow-hidden">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
                       <img src={tonLogo} alt="TON" className="w-6 h-6 object-contain" />
                     </div>
                     <div>

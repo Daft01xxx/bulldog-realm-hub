@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, Headphones } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Headphones } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -257,26 +257,6 @@ const Menu = () => {
           </div>
         </Card>
 
-        {/* Daily Gift Button */}
-        <div className="text-center mb-4">
-        <Button
-            onClick={() => {
-              playButtonSound();
-              claimDailyGift();
-            }}
-            disabled={!canClaimDaily}
-            className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
-              animate ? 'animate-bounce-in' : 'opacity-0'
-            } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
-            style={{ animationDelay: '0.5s' }}
-          >
-            <Gift className="w-3 h-3 mr-2 icon-gold" />
-            {canClaimDaily ? "Получить ежедневный подарок" : `Следующий подарок через ${timeUntilNextGift}`}
-          </Button>
-          <p className="text-xs text-muted-foreground mt-1 opacity-70">
-            {canClaimDaily ? "Получи свой ежедневный бонус!" : "Подарок обновляется каждые 24 часа"}
-          </p>
-        </div>
       </div>
 
       {/* Menu grid */}

@@ -5,10 +5,12 @@ import { Button } from "@/components/ui/button";
 import { playButtonSound } from "@/utils/sounds";
 import { scrollToTopInstant } from "@/utils/scrollToTop";
 import bulldogCoinLarge from "@/assets/bulldog-coin-large.jpeg";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const Welcome = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Check for referral code in URL and store it
@@ -23,6 +25,10 @@ const Welcome = () => {
       });
     }
   }, [toast]);
+
+  const handleLoadingComplete = () => {
+    setShowLoading(false);
+  };
 
   const handleLogin = async () => {
     try {
@@ -39,6 +45,10 @@ const Welcome = () => {
       });
     }
   };
+
+  if (showLoading) {
+    return <LoadingScreen onLoadingComplete={handleLoadingComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">

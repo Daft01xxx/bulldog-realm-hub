@@ -101,9 +101,17 @@ const ConnectedWallet = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background px-2 py-4 overflow-y-auto">
+      {/* Background coin */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-10 z-5">
+        <img 
+          src={customLogo} 
+          alt="BDOG Coin" 
+          className="w-80 h-80 object-contain"
+        />
+      </div>
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border relative">
         <div className="flex items-center justify-between p-4 pt-12">
           <Button
             variant="ghost"
@@ -127,20 +135,25 @@ const ConnectedWallet = () => {
       </div>
 
       {/* BDOG Balance Display */}
-      <div className="px-4 pt-4">
-        <Card className="bg-white text-black border-none shadow-lg">
-          <div className="p-4 text-center">
-            <div className="text-sm font-medium text-black/70 mb-1">BDOG Баланс</div>
-            <div className="text-2xl font-bold text-black">
+      <div className="px-4 pt-4 relative z-10">
+        <div className="relative">
+          <img 
+            src={customLogo} 
+            alt="BDOG" 
+            className="w-20 h-20 mx-auto mb-2 object-contain"
+          />
+          <div className="text-center">
+            <div className="text-sm font-medium text-muted-foreground mb-1">BDOG Баланс</div>
+            <div className="text-2xl font-bold text-gold">
               {formatBalance(parseFloat(walletData?.bdogBalance || "0"))}
             </div>
-            <div className="text-xs text-black/50 mt-1">BDOG Tokens</div>
+            <div className="text-xs text-muted-foreground mt-1">BDOG Tokens</div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="pb-20">
+      <div className="pb-20 relative z-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Wallet Tab Content */}
           <TabsContent value="wallet" className="px-4 pt-2 space-y-6">

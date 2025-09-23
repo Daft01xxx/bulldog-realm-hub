@@ -41,7 +41,7 @@ const Game = () => {
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
       let profileGrow1 = Number(profile.grow1) || 1;
-      const profileBone = Math.min(1000, Number(profile.bone) || 1000);
+      const profileBone = Math.min(1000, Number(profile.bone) || 0);
       
       // Check if booster is active and adjust grow1 accordingly
       const profileBoosterExpires = profile.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;

@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import customLogo from "@/assets/custom-logo.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
+import walletBulldogLogo from "@/assets/bulldog-logo-wallet.jpeg";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ const ConnectedWallet = () => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Меню
           </Button>
-          <h1 className="text-lg font-semibold text-foreground animate-text-glow">Кошелёк</h1>
+          <h1 className="text-lg font-semibold text-gold animate-text-glow animate-text-pulse">Кошелёк</h1>
           <Button
             variant="ghost"
             size="sm"
@@ -150,7 +151,7 @@ const ConnectedWallet = () => {
                     <WalletIcon className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground animate-text-bounce">Мой кошелёк</h3>
+                    <h3 className="font-semibold text-gold animate-text-bounce animate-text-float">Мой кошелёк</h3>
                     <p className="text-sm text-muted-foreground">TON Wallet</p>
                   </div>
                 </div>
@@ -184,7 +185,7 @@ const ConnectedWallet = () => {
                       <span className="text-white font-bold text-sm">TON</span>
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground animate-text-bounce">TON</h4>
+                      <h4 className="font-medium text-gold animate-text-bounce animate-text-pulse">TON</h4>
                       <p className="text-xs text-muted-foreground">Toncoin</p>
                     </div>
                   </div>
@@ -205,7 +206,7 @@ const ConnectedWallet = () => {
                       <img src={bdogLogo} alt="V-BDOG" className="w-6 h-6 object-cover rounded-full" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground animate-text-bounce">V-BDOG</h4>
+                      <h4 className="font-medium text-gold animate-text-bounce animate-text-sparkle">V-BDOG</h4>
                       <p className="text-xs text-muted-foreground">Виртуальный BDOG</p>
                     </div>
                   </div>

@@ -220,8 +220,8 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-6xl md:text-8xl font-bold text-gold-realistic animate-golden-shimmer mb-4 ${
-            animate ? 'animate-bounce-in' : 'opacity-0'
+          className={`text-7xl md:text-8xl font-bold text-gold-realistic animate-golden-shimmer mb-12 ${
+            animate ? 'animate-bounce-in animate-text-glow animate-text-sparkle' : 'opacity-0'
           }`}
         >
           BDOG APP

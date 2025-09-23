@@ -215,8 +215,8 @@ export const useProfile = () => {
         userProfile = createdProfile;
         console.log('New profile created:', userProfile);
 
-        // Award referral bonus and send notification
-        if (referrerData && !isVpnDetected) {
+        // Award referral bonus and send notification (max 5 referrals)
+        if (referrerData && !isVpnDetected && referrerData.referrals < 5) {
           console.log('Awarding referral bonus to referrer:', referrerData.user_id);
           
           const notifications = referrerData.referral_notifications || [];

@@ -38,6 +38,10 @@ const Admin = () => {
   });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
+  
+  const checkPassword = (password: string) => {
+    return password === "admin123" || password === "Gnomdoma04022012";
+  };
 
   useEffect(() => {
     loadUsers();
@@ -199,9 +203,39 @@ const Admin = () => {
     }
   };
 
+  const unbanAllUsers = async () => {
+    if (!confirm("Вы уверены, что хотите разбанить ВСЕХ пользователей?")) {
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .update({ ban: 0 })
+        .gt('ban', 0);
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Все пользователи разбанены",
+        description: "Все заблокированные пользователи были разбанены",
+      });
+      loadUsers(); // Reload users
+    } catch (error) {
+      console.error('Error unbanning all users:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось разбанить пользователей",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === "dvertyty6278ggqhak") {
+    if (passwordInput === "dvertyty6278ggqhak" || passwordInput === "Gnomdoma04022012") {
       setIsAuthenticated(true);
       toast({
         title: "Вход выполнен",
@@ -323,6 +357,15 @@ const Admin = () => {
         >
           <Zap className="w-4 h-4 mr-2" />
           Сбросить все ускорители
+        </Button>
+        
+        <Button
+          onClick={unbanAllUsers}
+          variant="outline"
+          className="button-outline-gold"
+        >
+          <Users className="w-4 h-4 mr-2" />
+          Разбанить всех
         </Button>
         
         <BanUserModal onUserBanned={loadUsers} />

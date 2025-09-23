@@ -14,119 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
-      audit_logs: {
-        Row: {
-          action: string
-          created_at: string | null
-          id: string
-          ip_address: unknown | null
-          new_values: Json | null
-          old_values: Json | null
-          record_id: string | null
-          table_name: string | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          action: string
-          created_at?: string | null
-          id?: string
-          ip_address?: unknown | null
-          new_values?: Json | null
-          old_values?: Json | null
-          record_id?: string | null
-          table_name?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          action?: string
-          created_at?: string | null
-          id?: string
-          ip_address?: unknown | null
-          new_values?: Json | null
-          old_values?: Json | null
-          record_id?: string | null
-          table_name?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           balance: number | null
           balance2: number | null
-          ban: number | null
-          bdog_balance: number | null
           bone: number | null
-          booster_expires_at: string | null
           created_at: string
-          device_fingerprint: string | null
           grow: number | null
           grow1: number | null
           id: string
           ip_address: unknown | null
-          is_vpn_user: boolean | null
-          last_referral_code: string | null
-          referral_code_used: boolean | null
-          referral_notifications: Json | null
           referrals: number | null
           referred_by: string | null
           reg: string | null
           updated_at: string
           user_id: string
-          v_bdog_earned: number | null
           wallet_address: string | null
         }
         Insert: {
           balance?: number | null
           balance2?: number | null
-          ban?: number | null
-          bdog_balance?: number | null
           bone?: number | null
-          booster_expires_at?: string | null
           created_at?: string
-          device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
           id?: string
           ip_address?: unknown | null
-          is_vpn_user?: boolean | null
-          last_referral_code?: string | null
-          referral_code_used?: boolean | null
-          referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
           updated_at?: string
           user_id: string
-          v_bdog_earned?: number | null
           wallet_address?: string | null
         }
         Update: {
           balance?: number | null
           balance2?: number | null
-          ban?: number | null
-          bdog_balance?: number | null
           bone?: number | null
-          booster_expires_at?: string | null
           created_at?: string
-          device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
           id?: string
           ip_address?: unknown | null
-          is_vpn_user?: boolean | null
-          last_referral_code?: string | null
-          referral_code_used?: boolean | null
-          referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
           updated_at?: string
           user_id?: string
-          v_bdog_earned?: number | null
           wallet_address?: string | null
         }
         Relationships: [
@@ -139,34 +73,12 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          id: string
-          role: Database["public"]["Enums"]["user_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
       wallet_data: {
         Row: {
           balance: number | null
           id: string
           last_updated: string
           nft_data: Json | null
-          user_id: string | null
           wallet_address: string
         }
         Insert: {
@@ -174,7 +86,6 @@ export type Database = {
           id?: string
           last_updated?: string
           nft_data?: Json | null
-          user_id?: string | null
           wallet_address: string
         }
         Update: {
@@ -182,7 +93,6 @@ export type Database = {
           id?: string
           last_updated?: string
           nft_data?: Json | null
-          user_id?: string | null
           wallet_address?: string
         }
         Relationships: []
@@ -192,54 +102,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      find_referrer_safely: {
-        Args: { referral_code: string }
-        Returns: {
-          referrals: number
-          user_id: string
-          v_bdog_earned: number
-        }[]
-      }
-      get_moscow_time: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_next_sunday_reset: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      has_active_booster: {
-        Args: { user_profile_id: string }
-        Returns: boolean
-      }
-      has_role: {
-        Args: {
-          check_role: Database["public"]["Enums"]["user_role"]
-          check_user_id: string
-        }
-        Returns: boolean
-      }
-      log_audit_event: {
-        Args: {
-          p_action: string
-          p_new_values?: Json
-          p_old_values?: Json
-          p_record_id?: string
-          p_table_name?: string
-        }
-        Returns: undefined
-      }
-      reset_expired_boosters: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      validate_referral_code: {
-        Args: { referral_code: string }
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
-      user_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -366,8 +232,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      user_role: ["admin", "user"],
-    },
+    Enums: {},
   },
 } as const

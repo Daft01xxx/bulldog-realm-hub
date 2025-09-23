@@ -1,6 +1,17 @@
+import { useEffect } from 'react';
 import banImage from '@/assets/ban-image.png';
+import { playBanSound } from '@/utils/sounds';
 
 const Ban = () => {
+  useEffect(() => {
+    // Play ban sound when component mounts
+    const timer = setTimeout(() => {
+      playBanSound();
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4">
       <div className="max-w-md mx-auto text-center">

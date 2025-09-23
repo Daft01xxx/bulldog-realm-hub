@@ -216,14 +216,6 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
       
-      {/* Background coin */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-10 z-5">
-        <img 
-          src={bulldogCoinLarge} 
-          alt="BDOG Coin" 
-          className="w-80 h-80 object-contain"
-        />
-      </div>
       
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">

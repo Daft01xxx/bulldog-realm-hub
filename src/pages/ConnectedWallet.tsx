@@ -102,14 +102,6 @@ const ConnectedWallet = () => {
 
   return (
     <div className="relative min-h-screen bg-background px-2 py-4 overflow-y-auto">
-      {/* Background coin */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-10 z-5">
-        <img 
-          src={customLogo} 
-          alt="BDOG Coin" 
-          className="w-80 h-80 object-contain"
-        />
-      </div>
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border relative">
         <div className="flex items-center justify-between p-4 pt-12">
@@ -135,26 +127,19 @@ const ConnectedWallet = () => {
       </div>
 
       {/* BDOG Balance Display */}
-      <div className="px-4 pt-4 relative z-10">
-        <div className="relative">
-          <img 
-            src={customLogo} 
-            alt="BDOG" 
-            className="w-20 h-20 mx-auto mb-2 object-contain"
-          />
-          <div className="text-center">
-            <div className="text-sm font-medium text-muted-foreground mb-1">BDOG Баланс</div>
-            <div className="text-2xl font-bold text-gold">
-              {formatBalance(parseFloat(walletData?.bdogBalance || "0"))}
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">BDOG Tokens</div>
+      <div className="px-4 pt-4">
+        <div className="text-center">
+          <div className="text-sm font-medium text-muted-foreground mb-1">BDOG Баланс</div>
+          <div className="text-2xl font-bold text-gold">
+            {formatBalance(parseFloat(walletData?.bdogBalance || "0"))}
           </div>
+          <div className="text-xs text-muted-foreground mt-1">BDOG Tokens</div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="pb-20 relative z-10">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+      <div className="pb-20">
+        <Tabs defaultValue="wallet" className="w-full">
           {/* Wallet Tab Content */}
           <TabsContent value="wallet" className="px-4 pt-2 space-y-6">
             {/* Wallet Address Card */}
@@ -195,8 +180,8 @@ const ConnectedWallet = () => {
               <Card className="card-tonkeeper p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
-                      <img src={customLogo} alt="TON" className="w-6 h-6 object-contain brightness-200" />
+                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                      <span className="text-white font-bold text-sm">TON</span>
                     </div>
                     <div>
                       <h4 className="font-medium text-foreground animate-text-bounce">TON</h4>
@@ -435,55 +420,39 @@ const ConnectedWallet = () => {
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border">
-        <div className="flex">
-          <button
-            onClick={() => setActiveTab("history")}
-            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
-              activeTab === "history" 
-                ? "text-gold" 
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+        <TabsList className="w-full h-auto bg-transparent p-0 border-none">
+          <TabsTrigger
+            value="history"
+            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
           >
             <History className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">История</span>
-          </button>
+          </TabsTrigger>
           
-          <button
-            onClick={() => setActiveTab("wallet")}
-            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
-              activeTab === "wallet" 
-                ? "text-gold" 
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+          <TabsTrigger
+            value="wallet"
+            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
           >
             <WalletIcon className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">Кошелёк</span>
-          </button>
+          </TabsTrigger>
 
-          <button
-            onClick={() => setActiveTab("top")}
-            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
-              activeTab === "top" 
-                ? "text-gold" 
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+          <TabsTrigger
+            value="top"
+            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
           >
             <Trophy className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">Топ</span>
-          </button>
+          </TabsTrigger>
           
-          <button
-            onClick={() => setActiveTab("collections")}
-            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
-              activeTab === "collections" 
-                ? "text-gold" 
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+          <TabsTrigger
+            value="collections"
+            className="flex-1 flex flex-col items-center py-3 px-1 transition-colors data-[state=active]:text-gold data-[state=inactive]:text-muted-foreground hover:text-foreground bg-transparent border-none shadow-none"
           >
             <ImageIcon className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">NFT</span>
-          </button>
-        </div>
+          </TabsTrigger>
+        </TabsList>
       </div>
     </div>
   );

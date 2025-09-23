@@ -5,12 +5,9 @@ import { Button } from "@/components/ui/button";
 import { playButtonSound } from "@/utils/sounds";
 import { scrollToTopInstant } from "@/utils/scrollToTop";
 import bulldogCoinLarge from "@/assets/bulldog-coin-large.jpeg";
-import LoadingScreen from "@/components/LoadingScreen";
-
 const Welcome = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [showLoading, setShowLoading] = useState(true);
 
   useEffect(() => {
     // Check for referral code in URL and store it
@@ -25,10 +22,6 @@ const Welcome = () => {
       });
     }
   }, [toast]);
-
-  const handleLoadingComplete = () => {
-    setShowLoading(false);
-  };
 
   const handleLogin = async () => {
     try {
@@ -45,10 +38,6 @@ const Welcome = () => {
       });
     }
   };
-
-  if (showLoading) {
-    return <LoadingScreen onLoadingComplete={handleLoadingComplete} />;
-  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
@@ -82,14 +71,6 @@ const Welcome = () => {
         })}
       </div>
 
-      {/* Background coin */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-20 z-5">
-        <img 
-          src={bulldogCoinLarge} 
-          alt="BDOG Coin" 
-          className="w-96 h-96 object-contain"
-        />
-      </div>
 
       {/* Main content */}
       <div className="relative z-10 text-center px-4">

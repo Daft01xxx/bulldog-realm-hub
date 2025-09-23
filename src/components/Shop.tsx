@@ -88,20 +88,7 @@ const Shop = () => {
   };
 
   return (
-    <div className="p-4 pb-24 space-y-6 relative">
-      {/* Fixed Background */}
-      <div className="fixed inset-0 bg-background">
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 z-10 opacity-20">
-          <img 
-            src={bulldogCoin} 
-            alt="BDOG Coin" 
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </div>
-      
-      {/* Content */}
-      <div className="relative z-10">
+    <div className="p-4 pb-24 space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-amber-800 mb-2">Магазин BDOG</h1>
         <div className="w-32 h-32 mx-auto mb-6">
@@ -142,7 +129,7 @@ const Shop = () => {
                 <Button 
                   onClick={() => handlePurchase("1000000000", "bones", { bones: 1000 })}
                   disabled={loading === "bones"}
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="button-gradient-gold button-glow"
                 >
                   {loading === "bones" ? "Покупаем..." : "Купить"}
                 </Button>
@@ -171,7 +158,7 @@ const Shop = () => {
                 <Button 
                   onClick={() => handlePurchase("5000000000", "vbdog", { vbdog: 5000000 })}
                   disabled={loading === "vbdog"}
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="button-gradient-gold button-glow"
                 >
                   {loading === "vbdog" ? "Покупаем..." : "Купить"}
                 </Button>
@@ -195,7 +182,7 @@ const Shop = () => {
                 <Button 
                   onClick={() => handlePurchase("3000000000", "booster", { booster: 6 })}
                   disabled={loading === "booster"}
-                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                  className="button-gradient-gold button-glow"
                 >
                   {loading === "booster" ? "Покупаем..." : "Купить"}
                 </Button>
@@ -207,10 +194,9 @@ const Shop = () => {
         {/* Weekly Gift Section */}
         <div>
           <h2 className="text-xl font-semibold text-amber-700 mb-4 text-center">
-            🎁 Еженедельный подарок
+            🎁 Ежедневный подарок
           </h2>
           <WeeklyGift />
-        </div>
         </div>
       </div>
     </div>

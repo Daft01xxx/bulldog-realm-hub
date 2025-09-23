@@ -23,7 +23,7 @@ const WeeklyGift = () => {
   const [lastClaimTime, setLastClaimTime] = useState<string | null>(null);
 
   useEffect(() => {
-    const lastClaim = localStorage.getItem('last-weekly-claim');
+    const lastClaim = localStorage.getItem('last-daily-claim');
     setLastClaimTime(lastClaim);
     
     if (lastClaim) {
@@ -32,7 +32,7 @@ const WeeklyGift = () => {
       const diff = now.getTime() - lastClaimDate.getTime();
       const hoursSinceClaim = diff / (1000 * 60 * 60);
       
-      setCanClaim(hoursSinceClaim >= 168);
+      setCanClaim(hoursSinceClaim >= 24);
     } else {
       setCanClaim(true);
     }
@@ -48,7 +48,7 @@ const WeeklyGift = () => {
     }
 
     const lastClaim = new Date(lastClaimTime);
-    const nextClaim = new Date(lastClaim.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const nextClaim = new Date(lastClaim.getTime() + 24 * 60 * 60 * 1000);
     const now = new Date();
     const diff = nextClaim.getTime() - now.getTime();
 
@@ -70,7 +70,7 @@ const WeeklyGift = () => {
     if (!canClaim) {
       toast({
         title: "Слишком рано!",
-        description: "Подарок можно забрать раз в неделю",
+        description: "Подарок можно забрать раз в день",
         variant: "destructive",
       });
       return;
@@ -79,7 +79,7 @@ const WeeklyGift = () => {
   };
 
   const clickGift = async () => {
-    const lastClaim = localStorage.getItem('last-weekly-claim');
+    const lastClaim = localStorage.getItem('last-daily-claim');
     if (lastClaim) {
       const lastClaimDate = new Date(lastClaim);
       const now = new Date();
@@ -120,12 +120,26 @@ const WeeklyGift = () => {
       };
     } else {
       const logos = [bulldogAlt1, bulldogAlt2, bulldogAlt3];
-      const randomLogo = logos[Math.floor(Math.random() * logos.length)];
-      newReward = {
-        type: 'logo',
-        logo: randomLogo,
-        text: 'Новый логотип (1/3)'
-      };
+      const availableLogos = localStorage.getItem('claimed-logos') ? 
+        JSON.parse(localStorage.getItem('claimed-logos')!) : [];
+      const unclaimed = logos.filter(logo => !availableLogos.includes(logo));
+      
+      if (unclaimed.length === 0) {
+        // If all logos claimed, give coins instead
+        newReward = {
+          type: 'bones',
+          amount: 100,
+          icon: bulldogCoin,
+          text: 'x100 косточек'
+        };
+      } else {
+        const randomLogo = unclaimed[Math.floor(Math.random() * unclaimed.length)];
+        newReward = {
+          type: 'logo',
+          logo: randomLogo,
+          text: 'Новый логотип!'
+        };
+      }
     }
     
     setReward(newReward);
@@ -141,7 +155,7 @@ const WeeklyGift = () => {
 
     try {
       const now = new Date().toISOString();
-      const updates: any = { last_weekly_claim: now };
+      const updates: any = { last_daily_claim: now };
 
       if (reward.type === 'bones') {
         updates.bone = (profile.bone || 0) + reward.amount;
@@ -149,6 +163,11 @@ const WeeklyGift = () => {
         updates.v_bdog_earned = (profile.v_bdog_earned || 0) + reward.amount;
       } else if (reward.type === 'logo') {
         updates.current_logo = reward.logo;
+        // Track claimed logos
+        const claimedLogos = localStorage.getItem('claimed-logos') ? 
+          JSON.parse(localStorage.getItem('claimed-logos')!) : [];
+        claimedLogos.push(reward.logo);
+        localStorage.setItem('claimed-logos', JSON.stringify(claimedLogos));
       }
 
       const { error } = await supabase
@@ -159,7 +178,7 @@ const WeeklyGift = () => {
       if (error) throw error;
 
       updateProfile(updates);
-      localStorage.setItem('last-weekly-claim', now);
+      localStorage.setItem('last-daily-claim', now);
       
       toast({
         title: "Награда получена!",

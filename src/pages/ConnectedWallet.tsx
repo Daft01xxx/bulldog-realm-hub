@@ -81,7 +81,7 @@ const ConnectedWallet = () => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Меню
           </Button>
-          <h1 className="text-lg font-semibold text-foreground">Кошелёк</h1>
+          <h1 className="text-lg font-semibold text-foreground animate-text-glow">Кошелёк</h1>
           <Button
             variant="ghost"
             size="sm"
@@ -119,7 +119,7 @@ const ConnectedWallet = () => {
                     <WalletIcon className="w-6 h-6 text-primary-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground">Мой кошелёк</h3>
+                    <h3 className="font-semibold text-foreground animate-text-bounce">Мой кошелёк</h3>
                     <p className="text-sm text-muted-foreground">TON Wallet</p>
                   </div>
                 </div>
@@ -149,11 +149,11 @@ const ConnectedWallet = () => {
               <Card className="card-tonkeeper p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                      <img src={customLogo} alt="TON" className="w-6 h-6 object-contain" />
+                    <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
+                      <img src={customLogo} alt="TON" className="w-6 h-6 object-contain brightness-200" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground">TON</h4>
+                      <h4 className="font-medium text-foreground animate-text-bounce">TON</h4>
                       <p className="text-xs text-muted-foreground">Toncoin</p>
                     </div>
                   </div>
@@ -174,7 +174,7 @@ const ConnectedWallet = () => {
                       <img src={bdogLogo} alt="V-BDOG" className="w-6 h-6 object-cover rounded-full" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-foreground">V-BDOG</h4>
+                      <h4 className="font-medium text-foreground animate-text-bounce">V-BDOG</h4>
                       <p className="text-xs text-muted-foreground">Виртуальный BDOG</p>
                     </div>
                   </div>
@@ -212,7 +212,7 @@ const ConnectedWallet = () => {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <ImageIcon className="w-5 h-5 text-muted-foreground" />
-                  <h4 className="font-medium text-foreground">NFT Коллекция</h4>
+                  <h4 className="font-medium text-foreground animate-text-bounce">NFT Коллекция</h4>
                 </div>
                 <Badge variant="outline" className="text-muted-foreground">
                   {walletData?.nfts?.length || 0} NFT
@@ -265,7 +265,7 @@ const ConnectedWallet = () => {
             <Card className="card-tonkeeper p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <Clock className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground">История транзакций</h3>
+                <h3 className="font-semibold text-foreground animate-text-bounce">История транзакций</h3>
               </div>
               
               <div className="text-center py-12">
@@ -283,7 +283,7 @@ const ConnectedWallet = () => {
             <Card className="card-tonkeeper p-6">
               <div className="flex items-center space-x-2 mb-6">
                 <ImageIcon className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground">NFT Коллекции</h3>
+                <h3 className="font-semibold text-foreground animate-text-bounce">NFT Коллекции</h3>
               </div>
               
               {walletData?.nfts && walletData.nfts.length > 0 ? (

@@ -6,6 +6,7 @@ import { ArrowLeft, Home, Zap, Info, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
+import { playClickSound } from "@/utils/sounds";
 import bulldogSuit from "@/assets/bulldog-suit.jpeg";
 
 const Game = () => {
@@ -275,6 +276,11 @@ const Game = () => {
       });
       return;
     }
+
+    // Play click sound
+    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmzyEVyO0vHVeScFLYPP8dmKOgcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBjWV1fHSfCYELYPP8dmKOgcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQcZZ7zs45tLEA1QpOPxtmMcBTeX1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBT2a2+/FeSUGK4DN8tiJOQ==');
+    audio.volume = 0.3;
+    audio.play().catch(() => {}); // Ignore errors if audio can't play
 
     // Simple and reliable vibration for all devices including iPhone
     if (navigator.vibrate) {

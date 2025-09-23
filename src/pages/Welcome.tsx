@@ -1,7 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { playButtonSound } from "@/utils/sounds";
+import bulldogCoinLarge from "@/assets/bulldog-coin-large.jpeg";
 
 const Welcome = () => {
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ const Welcome = () => {
 
   const handleLogin = async () => {
     try {
+      playButtonSound();
       // Always redirect to menu
       navigate("/menu");
     } catch (error) {
@@ -67,10 +70,19 @@ const Welcome = () => {
         })}
       </div>
 
+      {/* Background coin */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-20 z-5">
+        <img 
+          src={bulldogCoinLarge} 
+          alt="BDOG Coin" 
+          className="w-96 h-96 object-contain animate-slow-spin"
+        />
+      </div>
+
       {/* Main content */}
       <div className="relative z-10 text-center px-4">
         <div className="animate-bounce-in min-h-[300px] flex flex-col justify-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-gradient animate-glow-text mb-6">
+          <h1 className="text-4xl md:text-6xl font-bold text-gradient animate-glow-text animate-pulse mb-6">
             BDOG APP
           </h1>
           <div className="mb-4 h-[36px] flex items-center justify-center">
@@ -81,7 +93,7 @@ const Welcome = () => {
               Вход в аккаунт
             </Button>
           </div>
-          <p className="text-lg md:text-xl text-white-glow animate-fade-in-up opacity-80">
+          <p className="text-lg md:text-xl text-white animate-fade-in-up animate-pulse opacity-90">
             Добро пожаловать в экосистему Bulldog
           </p>
         </div>

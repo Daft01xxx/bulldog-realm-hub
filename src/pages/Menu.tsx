@@ -6,6 +6,7 @@ import { Wallet, Info, Users, Megaphone, Gift, Headphones } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
+import { playButtonSound } from "@/utils/sounds";
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
@@ -235,10 +236,10 @@ const Menu = () => {
               ID: <span className="text-gold font-semibold text-xl">{reg}</span>
             </p>
             <div className="space-y-3">
-              <p className="text-lg text-foreground text-center">
+            <p className="text-lg text-foreground text-center animate-text-glow">
                 BDOG: <span className="text-gradient font-bold text-2xl">{bdogBalance}</span>
               </p>
-              <p className="text-lg text-foreground text-center">
+              <p className="text-lg text-foreground text-center animate-text-glow">
                 V-BDOG: <span className="text-gradient font-bold text-2xl">{vBdogBalance}</span>
               </p>
             </div>
@@ -247,8 +248,11 @@ const Menu = () => {
 
         {/* Daily Gift Button */}
         <div className="text-center mb-4">
-            <Button
-            onClick={claimDailyGift}
+        <Button
+            onClick={() => {
+              playButtonSound();
+              claimDailyGift();
+            }}
             disabled={!canClaimDaily}
             className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
               animate ? 'animate-bounce-in' : 'opacity-0'
@@ -270,6 +274,7 @@ const Menu = () => {
           {menuItems.map((item, index) => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
             const handleClick = () => {
+              playButtonSound();
               if (item.external) {
                 window.open(item.path, '_blank');
               } else {
@@ -295,10 +300,10 @@ const Menu = () => {
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors animate-pulse">
+                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors animate-text-bounce">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground animate-pulse">
                       {item.description}
                     </p>
                   </div>
@@ -315,12 +320,13 @@ const Menu = () => {
           }`}
           style={{ animationDelay: '0.6s' }}
         >
-          <p className="text-gray-subtle mb-2">Твоя реклама тут,</p>
+          <p className="text-gray-subtle mb-2 animate-pulse">Твоя реклама тут,</p>
           <a 
             href="https://t.me/Deff0xq" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-gold hover:text-gold-light transition-colors underline font-semibold"
+            className="text-gold hover:text-gold-light transition-colors underline font-semibold animate-text-glow"
+            onClick={playButtonSound}
           >
             пиши нам
           </a>

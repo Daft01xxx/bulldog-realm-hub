@@ -188,6 +188,24 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes text-glow {
+    0% { 
+      text-shadow: 0 0 5px hsl(var(--gold)), 0 0 10px hsl(var(--gold)); 
+    }
+    100% { 
+      text-shadow: 0 0 10px hsl(var(--gold)), 0 0 20px hsl(var(--gold)), 0 0 30px hsl(var(--gold)); 
+    }
+  }
+
+  @keyframes text-bounce {
+    0%, 100% { 
+      transform: scale(1); 
+    }
+    50% { 
+      transform: scale(1.05); 
+    }
+  }
+
   /* Utility Classes */
   .animate-float {
     animation: float 3s ease-in-out infinite;
@@ -222,7 +240,15 @@ All colors MUST be HSL.
   }
 
   .animate-slow-spin {
-    animation: slow-spin 8s linear infinite;
+    animation: slow-spin 20s linear infinite;
+  }
+
+  .animate-text-glow {
+    animation: text-glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-text-bounce {
+    animation: text-bounce 1.5s ease-in-out infinite;
   }
 
   .animate-super-slow-spin {

@@ -206,6 +206,48 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes golden-shimmer {
+    0% { 
+      background-position: 0% 50%;
+      filter: hue-rotate(0deg) brightness(1);
+    }
+    25% { 
+      background-position: 100% 50%;
+      filter: hue-rotate(5deg) brightness(1.1);
+    }
+    50% { 
+      background-position: 200% 50%;
+      filter: hue-rotate(10deg) brightness(1.2);
+    }
+    75% { 
+      background-position: 100% 50%;
+      filter: hue-rotate(5deg) brightness(1.1);
+    }
+    100% { 
+      background-position: 0% 50%;
+      filter: hue-rotate(0deg) brightness(1);
+    }
+  }
+
+  @keyframes golden-flow {
+    0% { 
+      background-position: 0% 0%;
+      transform: scale(1);
+    }
+    33% { 
+      background-position: 100% 100%;
+      transform: scale(1.02);
+    }
+    66% { 
+      background-position: 200% 50%;
+      transform: scale(0.98);
+    }
+    100% { 
+      background-position: 0% 0%;
+      transform: scale(1);
+    }
+  }
+
   /* Utility Classes */
   .animate-float {
     animation: float 3s ease-in-out infinite;
@@ -251,6 +293,14 @@ All colors MUST be HSL.
     animation: text-bounce 1.5s ease-in-out infinite;
   }
 
+  .animate-golden-shimmer {
+    animation: golden-shimmer 3s ease-in-out infinite;
+  }
+
+  .animate-golden-flow {
+    animation: golden-flow 4s ease-in-out infinite;
+  }
+
   .animate-super-slow-spin {
     animation: super-slow-spin 24s linear infinite;
   }
@@ -264,14 +314,49 @@ All colors MUST be HSL.
     box-shadow: 0 15px 35px hsl(0 0% 0% / 0.4), 0 0 20px hsl(45 100% 50% / 0.1);
   }
 
+  /* Realistic golden text effects */
   .text-gradient {
-    background: var(--gradient-primary);
-    background-clip: text;
+    background: linear-gradient(135deg, 
+      #FFD700 0%,
+      #FFC107 15%,
+      #FFEB3B 25%,
+      #FFD700 35%,
+      #DAA520 45%,
+      #FFD700 55%,
+      #FFEB3B 65%,
+      #FFC107 75%,
+      #FFD700 85%,
+      #B8860B 95%,
+      #FFD700 100%);
+    background-size: 200% 200%;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    will-change: transform;
-    contain: layout style paint;
-    transform: translate3d(0, 0, 0);
+    animation: golden-shimmer 3s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                 0 0 20px rgba(255, 215, 0, 0.3),
+                 0 0 30px rgba(255, 215, 0, 0.2);
+    filter: drop-shadow(0 2px 4px rgba(255, 215, 0, 0.4));
+  }
+
+  .text-gold-realistic {
+    background: linear-gradient(145deg, 
+      #FFD700 0%,
+      #FFEF94 20%,
+      #B8860B 40%,
+      #FFD700 60%,
+      #DAA520 80%,
+      #FFD700 100%);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: golden-flow 4s ease-in-out infinite;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6),
+                 0 0 25px rgba(255, 215, 0, 0.4),
+                 0 2px 8px rgba(0, 0, 0, 0.3);
+    filter: drop-shadow(0 1px 3px rgba(255, 215, 0, 0.5)) 
+            drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   }
 
   .card-tonkeeper {

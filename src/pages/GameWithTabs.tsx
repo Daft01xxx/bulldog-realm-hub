@@ -7,12 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { playClickSound, playCoinsSound, playBoosterBuySound } from "@/utils/sounds";
-import bulldogSuit from "@/assets/bulldog-suit.jpeg";
+import bulldogRoundLogo from "@/assets/bulldog-round-logo.jpeg";
 import bulldogCoin from "@/assets/bulldog-coin.png";
 import tonBlackLogo from "@/assets/ton-black-logo.svg";
 import FallingCoins2D from "@/components/FallingCoins2D";
 import ShopTabs from "@/components/ShopTabs";
-import Shop from "@/components/Shop";
 import { useEffect } from "react";
 
 const GameWithTabs = () => {
@@ -32,9 +31,9 @@ const GameWithTabs = () => {
   const [boosterTimeLeft, setBoosterTimeLeft] = useState("");
   const [totalTaps, setTotalTaps] = useState(0);
   const [isClicked, setIsClicked] = useState(false);
-  const [currentTab, setCurrentTab] = useState<'game' | 'shop'>('game');
+  const [currentTab, setCurrentTab] = useState<'game'>('game');
   const [coinsTriggered, setCoinsTriggered] = useState(false);
-  const [currentBulldogLogo, setCurrentBulldogLogo] = useState(bulldogSuit);
+  const [currentBulldogLogo, setCurrentBulldogLogo] = useState(bulldogRoundLogo);
 
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
@@ -66,7 +65,7 @@ const GameWithTabs = () => {
       
       // Set current bulldog logo from profile
       if (profile.wallet_address) {
-        setCurrentBulldogLogo(bulldogSuit);
+        setCurrentBulldogLogo(bulldogRoundLogo);
       }
 
       localStorage.setItem("bdog-grow", profileGrow.toString());
@@ -328,37 +327,7 @@ const GameWithTabs = () => {
     });
   };
 
-  if (currentTab === 'shop') {
-    return (
-      <ShopTabs currentTab={currentTab} onTabChange={setCurrentTab}>
-        <div className="relative min-h-screen pb-24">
-          {/* Navigation */}
-          <div className="flex justify-between items-center mb-4 pt-4 px-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(-1)}
-              className="button-outline-gold text-xs px-2 py-1"
-            >
-              <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
-              Назад
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/menu")}
-              className="button-outline-gold text-xs px-2 py-1"
-            >
-              <Home className="w-3 h-3 mr-1 text-gold" />
-              Меню
-            </Button>
-          </div>
-          <Shop />
-        </div>
-      </ShopTabs>
-    );
-  }
-
+  // Game content only now
   return (
     <ShopTabs currentTab={currentTab} onTabChange={setCurrentTab}>
       {/* Fixed Background */}
@@ -404,17 +373,17 @@ const GameWithTabs = () => {
         <div className="grid grid-cols-3 gap-1 mb-3 max-w-sm mx-auto">
           <Card className="card-glow p-2 text-center animate-fade-in-up">
             <p className="text-xs text-muted-foreground">Рост</p>
-            <p className="text-xs font-bold text-gold">{grow.toLocaleString()}</p>
+            <p className="text-xs font-bold text-gold-realistic">{grow.toLocaleString()}</p>
           </Card>
           
           <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
             <p className="text-xs text-muted-foreground">Косточки</p>
-            <p className="text-xs font-bold text-foreground">{bone}</p>
+            <p className="text-xs font-bold text-gold-realistic">{bone}</p>
           </Card>
           
           <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
             <p className="text-xs text-muted-foreground">Сброс через</p>
-            <p className="text-xs font-bold text-gold">{timeLeft}</p>
+            <p className="text-xs font-bold text-gold-realistic">{timeLeft}</p>
           </Card>
         </div>
 
@@ -425,11 +394,11 @@ const GameWithTabs = () => {
               className={`relative cursor-pointer transition-all duration-150 ${isClicked ? 'scale-95' : 'hover:scale-105'}`}
               onClick={handleClick}
             >
-              <div className="w-40 h-40 md:w-44 md:h-44 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+              <div className="w-48 h-48 md:w-52 md:h-52 animate-fade-in-up rounded-full overflow-hidden shadow-lg" style={{animationDelay: '0.3s'}}>
                 <img 
                   src={currentBulldogLogo} 
                   alt="Bulldog" 
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
@@ -437,7 +406,7 @@ const GameWithTabs = () => {
             {clickEffect.map((effect) => (
               <div
                 key={effect.id}
-                className="absolute pointer-events-none animate-bounce-up text-gold font-bold text-lg"
+                className="absolute pointer-events-none animate-bounce-up text-gradient font-bold text-lg"
                 style={{
                   left: effect.x,
                   top: effect.y,
@@ -473,8 +442,8 @@ const GameWithTabs = () => {
           {boosterTimeLeft && (
             <Card className="card-glow p-3 text-center animate-bounce-in">
               <p className="text-xs text-muted-foreground mb-1">Ускоритель активен</p>
-              <p className="text-lg font-bold text-gold">{boosterTimeLeft}</p>
-              <p className="text-xs text-green-600">Рост x{grow1}</p>
+              <p className="text-lg font-bold text-gold-realistic">{boosterTimeLeft}</p>
+              <p className="text-xs text-gradient">Рост x{grow1}</p>
             </Card>
           )}
 

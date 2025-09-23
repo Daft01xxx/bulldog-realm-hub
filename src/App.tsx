@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
 import GoldenParticles from "./components/GoldenParticles";
+import BackgroundMusic from "./components/BackgroundMusic";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { AuthProvider } from "./hooks/useAuth";
 import Welcome from "./pages/Welcome";
@@ -74,6 +75,7 @@ function AppContent() {
   return (
     <>
       <ScrollToTop />
+      <BackgroundMusic />
       <Toaster />
       <Sonner />
       {/* Falling coins only on game and connected wallet pages */}

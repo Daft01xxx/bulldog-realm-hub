@@ -220,7 +220,7 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-6xl md:text-8xl font-bold text-gradient animate-glow-text animate-pulse mb-4 ${
+          className={`text-6xl md:text-8xl font-bold text-gold-realistic animate-golden-shimmer mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
@@ -236,7 +236,7 @@ const Menu = () => {
         >
           <div className="space-y-4">
             <p className="text-lg text-muted-foreground text-center animate-pulse">
-              ID: <span className="text-gold font-semibold text-xl">{reg}</span>
+              ID: <span className="text-gold-realistic font-semibold text-xl">{reg}</span>
             </p>
             <div className="space-y-3">
             <p className="text-lg text-foreground text-center animate-text-glow">
@@ -285,7 +285,7 @@ const Menu = () => {
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors animate-text-bounce">
+                    <h3 className="text-sm font-semibold text-gold-realistic mb-0 group-hover:text-gold transition-colors animate-text-bounce">
                       {item.title}
                     </h3>
                     <p className="text-xs text-muted-foreground animate-pulse">

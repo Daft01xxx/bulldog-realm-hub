@@ -12,11 +12,11 @@ interface ShopTabsProps {
 
 const ShopTabs = ({ currentTab, onTabChange, children }: ShopTabsProps) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-background">
       {children}
       
       {/* Bottom Tabs */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-amber-200">
+      <div className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-sm border-t border-border">
         <div className="flex justify-around items-center py-2 px-4">
           <Button
             variant="ghost"
@@ -25,8 +25,8 @@ const ShopTabs = ({ currentTab, onTabChange, children }: ShopTabsProps) => {
             className={cn(
               "flex flex-col items-center gap-1 h-auto py-3 px-6 rounded-xl transition-all",
               currentTab === 'game' 
-                ? "bg-amber-500 text-white shadow-lg" 
-                : "text-amber-600 hover:bg-amber-100"
+                ? "bg-gold text-black shadow-lg" 
+                : "text-gold hover:bg-muted"
             )}
           >
             <Gamepad2 size={24} />
@@ -40,8 +40,8 @@ const ShopTabs = ({ currentTab, onTabChange, children }: ShopTabsProps) => {
             className={cn(
               "flex flex-col items-center gap-1 h-auto py-3 px-6 rounded-xl transition-all",
               currentTab === 'shop' 
-                ? "bg-amber-500 text-white shadow-lg" 
-                : "text-amber-600 hover:bg-amber-100"
+                ? "bg-gold text-black shadow-lg" 
+                : "text-gold hover:bg-muted"
             )}
           >
             <ShoppingCart size={24} />

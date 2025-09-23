@@ -87,8 +87,33 @@ const GameWithTabs = () => {
       calculateBoosterTimeLeft();
     }, 1000);
 
+    // Load top players
+    loadTopPlayers();
+
     return () => clearInterval(timer);
   }, [profile, boosterEndTime, grow1]);
+
+  const loadTopPlayers = async () => {
+    try {
+      const { data: players, error } = await supabase
+        .from('profiles')
+        .select('reg, grow')
+        .order('grow', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+
+      if (players) {
+        const formattedPlayers = players.map((player: any) => ({
+          name: player.reg || "Аноним",
+          grow: Number(player.grow) || 0
+        }));
+        setTopPlayers(formattedPlayers);
+      }
+    } catch (error) {
+      console.error('Error loading top players:', error);
+    }
+  };
 
   const calculateTimeLeft = () => {
     const moscowTime = new Date().toLocaleString("en-US", {timeZone: "Europe/Moscow"});
@@ -314,13 +339,13 @@ const GameWithTabs = () => {
   return (
     <ShopTabs currentTab={currentTab} onTabChange={setCurrentTab}>
       {/* Fixed Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+      <div className="fixed inset-0 bg-background">
         {/* Large BDOG coin at the top */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 z-10">
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-24 h-24 z-10 opacity-20">
           <img 
             src={bulldogCoin} 
             alt="BDOG Coin" 
-            className="w-full h-full object-contain opacity-20"
+            className="w-full h-full object-contain"
           />
         </div>
       </div>
@@ -449,6 +474,39 @@ const GameWithTabs = () => {
             <div className="text-xs text-muted-foreground">
               <p>V-BDOG заработано: {profile?.v_bdog_earned?.toLocaleString() || 0}</p>
               <p>Всего кликов: {totalTaps}</p>
+            </div>
+          </Card>
+
+          {/* Top Players */}
+          <Card className="card-glow p-3 w-full animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold text-foreground">🏆 Топ роста</h3>
+              <div className="text-xs text-muted-foreground">
+                Обновляется каждую неделю
+              </div>
+            </div>
+            <div className="space-y-1">
+              {topPlayers.slice(0, 5).map((player, index) => (
+                <div 
+                  key={player.name + index} 
+                  className={`flex justify-between items-center p-2 rounded text-xs ${
+                    index === 0 ? 'bg-gold/20 border border-gold/30' : 
+                    index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
+                    index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
+                    'bg-muted/50'
+                  }`}
+                >
+                  <span className="flex items-center">
+                    <span className="font-bold mr-1 text-xs">
+                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                    </span>
+                    <span className="text-foreground">{player.name}</span>
+                  </span>
+                  <span className="text-gold font-semibold">
+                    {player.grow.toLocaleString()}
+                  </span>
+                </div>
+              ))}
             </div>
           </Card>
         </div>

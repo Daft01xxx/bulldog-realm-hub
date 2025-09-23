@@ -15,11 +15,13 @@ import {
   TrendingUp,
   Coins,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Trophy
 } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import customLogo from "@/assets/custom-logo.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
 
@@ -29,6 +31,37 @@ const ConnectedWallet = () => {
   const { profile } = useProfile();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("wallet");
+  const [topBdogUsers, setTopBdogUsers] = useState<{name: string, balance: number, address: string}[]>([]);
+
+  // Load top BDOG users
+  useEffect(() => {
+    loadTopBdogUsers();
+  }, []);
+
+  const loadTopBdogUsers = async () => {
+    try {
+      const { data: users, error } = await supabase
+        .from('profiles')
+        .select('reg, bdog_balance, wallet_address')
+        .not('wallet_address', 'is', null)
+        .gt('bdog_balance', 0)
+        .order('bdog_balance', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      if (users) {
+        const formattedUsers = users.map((user: any) => ({
+          name: user.reg || "Аноним",
+          balance: Number(user.bdog_balance) || 0,
+          address: user.wallet_address || ""
+        }));
+        setTopBdogUsers(formattedUsers);
+      }
+    } catch (error) {
+      console.error('Error loading top BDOG users:', error);
+    }
+  };
 
   // Redirect if not connected
   useEffect(() => {
@@ -330,6 +363,60 @@ const ConnectedWallet = () => {
               )}
             </Card>
           </TabsContent>
+
+          {/* Top BDOG Users Tab Content */}
+          <TabsContent value="top" className="px-4 pt-6">
+            <Card className="card-tonkeeper p-6">
+              <div className="flex items-center space-x-2 mb-6">
+                <Trophy className="w-5 h-5 text-gold" />
+                <h3 className="font-semibold text-foreground animate-text-bounce">Топ 20 BDOG</h3>
+              </div>
+              
+              {topBdogUsers.length > 0 ? (
+                <div className="space-y-2">
+                  {topBdogUsers.map((user, index) => (
+                    <div 
+                      key={user.address + index}
+                      className={`flex items-center justify-between p-3 rounded-lg ${
+                        index === 0 ? 'bg-gold/20 border border-gold/30' :
+                        index === 1 ? 'bg-gray-400/20 border border-gray-400/30' :
+                        index === 2 ? 'bg-orange-600/20 border border-orange-600/30' :
+                        'bg-muted/50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center justify-center w-8 h-8">
+                          <span className="font-bold text-sm">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">{user.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {user.address.slice(0, 8)}...{user.address.slice(-6)}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-gold">
+                          {user.balance.toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">BDOG</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <h4 className="font-medium text-foreground mb-2">Топ пользователей загружается</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Здесь будут отображены топ-20 пользователей по балансу BDOG
+                  </p>
+                </div>
+              )}
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -338,38 +425,50 @@ const ConnectedWallet = () => {
         <div className="flex">
           <button
             onClick={() => setActiveTab("history")}
-            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
               activeTab === "history" 
                 ? "text-gold" 
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <History className="w-6 h-6 mb-1" />
+            <History className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">История</span>
           </button>
           
           <button
             onClick={() => setActiveTab("wallet")}
-            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
               activeTab === "wallet" 
                 ? "text-gold" 
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <WalletIcon className="w-6 h-6 mb-1" />
+            <WalletIcon className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">Кошелёк</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("top")}
+            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
+              activeTab === "top" 
+                ? "text-gold" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Trophy className="w-5 h-5 mb-1" />
+            <span className="text-xs font-medium">Топ</span>
           </button>
           
           <button
             onClick={() => setActiveTab("collections")}
-            className={`flex-1 flex flex-col items-center py-4 px-2 transition-colors ${
+            className={`flex-1 flex flex-col items-center py-3 px-1 transition-colors ${
               activeTab === "collections" 
                 ? "text-gold" 
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <ImageIcon className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">Коллекции</span>
+            <ImageIcon className="w-5 h-5 mb-1" />
+            <span className="text-xs font-medium">NFT</span>
           </button>
         </div>
       </div>

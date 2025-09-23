@@ -28,7 +28,7 @@ import walletBulldogLogo from "@/assets/bulldog-logo-wallet.jpeg";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
-  const { walletAddress, isConnected, disconnectWallet, walletData } = useBdogTonWallet();
+  const { walletAddress, isConnected, disconnectWallet, walletData, connectionRestored } = useBdogTonWallet();
   const { profile } = useProfile();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("wallet");
@@ -66,10 +66,11 @@ const ConnectedWallet = () => {
 
   // Redirect if not connected
   useEffect(() => {
-    if (!isConnected || !walletAddress) {
+    if (connectionRestored && (!isConnected || !walletAddress)) {
+      console.log('Redirecting to wallet page - not connected:', { isConnected, walletAddress, connectionRestored });
       navigate("/wallet");
     }
-  }, [isConnected, walletAddress, navigate]);
+  }, [isConnected, walletAddress, navigate, connectionRestored]);
 
   const copyAddress = async () => {
     if (walletAddress) {
@@ -97,8 +98,29 @@ const ConnectedWallet = () => {
     return `${address.slice(0, 6)}...${address.slice(-6)}`;
   };
 
+  // Show loading while connection is being restored
+  if (!connectionRestored) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold mx-auto mb-4"></div>
+          <p className="text-gold animate-text-glow">Восстановление подключения...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isConnected || !walletAddress) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gold animate-text-glow mb-4">Кошелек не подключен</p>
+          <button onClick={() => navigate("/wallet")} className="button-gold">
+            Вернуться к подключению
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (

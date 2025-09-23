@@ -121,22 +121,22 @@ export const useProfile = () => {
         return;
       }
 
-      // Ban VPN users only if they are not explicitly unbanned by admin
-      if (isVpnDetected && (!userProfile || userProfile.ban !== 0)) {
-        if (userProfile) {
-          const { error: banError } = await supabase
-            .from('profiles')
-            .update({ ban: 1, is_vpn_user: true })
-            .eq('id', userProfile.id);
-          
-          if (banError) {
-            console.error('Failed to ban VPN user:', banError);
-          }
-        }
+      // Only ban VPN users if they don't have a profile yet (new VPN users)
+      // Don't auto-ban existing users who are using VPN
+      if (isVpnDetected && !userProfile) {
+        console.log('New VPN user detected - will create banned profile');
+        // Will create a banned profile below
+      } else if (isVpnDetected && userProfile && userProfile.ban === 0) {
+        // Existing user with VPN but not banned - just mark as VPN user, don't ban
+        console.log('Existing user using VPN - updating VPN status only');
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ is_vpn_user: true })
+          .eq('id', userProfile.id);
         
-        // Redirect to ban page
-        window.location.href = '/ban';
-        return;
+        if (updateError) {
+          console.error('Error updating VPN status:', updateError);
+        }
       }
 
       // Handle referral logic only for new users

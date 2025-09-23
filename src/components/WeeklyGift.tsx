@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogCoin from "@/assets/bulldog-coin.png";
-import bulldogSilverCoin from "@/assets/bulldog-silver-logo.jpeg";
+import bulldogSilverCoin from "@/assets/bdog-silver-logo.jpeg";
 import bulldogAlt1 from "@/assets/bulldog-alt-1.jpeg";
 import bulldogAlt2 from "@/assets/bulldog-alt-2.jpeg";
 import bulldogAlt3 from "@/assets/bulldog-alt-3.jpeg";

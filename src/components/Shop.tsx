@@ -7,7 +7,7 @@ import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogCoin from "@/assets/bulldog-coin.png";
-import bulldogSilverCoin from "@/assets/bulldog-silver-logo.jpeg";
+import bulldogSilverCoin from "@/assets/bdog-silver-logo.jpeg";
 import WeeklyGift from "./WeeklyGift";
 
 const Shop = () => {

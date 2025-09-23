@@ -211,8 +211,8 @@ const Admin = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .update({ ban: 0 })
-        .gt('ban', 0);
+        .update({ ban: 0 } as any)
+        .gt('ban' as any, 0);
 
       if (error) {
         throw error;

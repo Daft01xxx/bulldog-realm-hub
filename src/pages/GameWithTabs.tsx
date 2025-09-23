@@ -138,7 +138,7 @@ const GameWithTabs = () => {
 
   const calculateWeeklyTimeLeft = async () => {
     try {
-      const { data: nextReset } = await supabase.rpc('get_next_sunday_reset');
+      const { data: nextReset } = await supabase.rpc('get_next_sunday_reset' as any);
       
       if (!nextReset) {
         setWeeklyTimeLeft("0д 00:00:00");

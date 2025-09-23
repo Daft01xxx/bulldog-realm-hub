@@ -38,7 +38,7 @@ const Shop = () => {
         // User cancelled payment - ban them for trying to get free items
         await supabase.from('profiles').update({
           ban: 1,
-        }).eq('user_id', profile?.user_id);
+        } as any).eq('user_id', profile?.user_id);
         
         toast({
           title: "Нарушение правил",

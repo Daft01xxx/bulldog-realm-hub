@@ -175,7 +175,7 @@ const Game = () => {
   const calculateWeeklyTimeLeft = async () => {
     try {
       // Get next Sunday 10:00 AM Moscow time from database function
-      const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset');
+      const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset' as any);
       
       if (error) {
         console.error('Error getting next reset time:', error);

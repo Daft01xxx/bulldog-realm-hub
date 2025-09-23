@@ -108,7 +108,7 @@ export const useProfile = () => {
       console.log('Existing profile found:', userProfile);
 
       // Check if user is banned - redirect to ban page FIRST
-      if (userProfile && userProfile.ban === 1) {
+      if (userProfile && (userProfile as any).ban === 1) {
         console.log('User is banned, clearing data and redirecting to ban page');
         
         // Clear all user data
@@ -126,12 +126,12 @@ export const useProfile = () => {
       if (isVpnDetected && !userProfile) {
         console.log('New VPN user detected - will create banned profile');
         // Will create a banned profile below
-      } else if (isVpnDetected && userProfile && userProfile.ban === 0) {
+      } else if (isVpnDetected && userProfile && (userProfile as any).ban === 0) {
         // Existing user with VPN but not banned - just mark as VPN user, don't ban
         console.log('Existing user using VPN - updating VPN status only');
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ is_vpn_user: true })
+          .update({ is_vpn_user: true } as any)
           .eq('id', userProfile.id);
         
         if (updateError) {
@@ -148,18 +148,20 @@ export const useProfile = () => {
         console.log('Processing referral code:', referralCode);
         
         const { data: referrerResult, error: referrerError } = await supabase
-          .rpc('find_referrer_safely', { referral_code: referralCode });
+          .rpc('find_referrer_safely' as any, { referral_code: referralCode });
 
-        if (!referrerError && referrerResult && referrerResult.length > 0) {
+        if (!referrerError && referrerResult && Array.isArray(referrerResult) && referrerResult.length > 0) {
           referrerData = referrerResult[0];
           console.log('Referrer found:', referrerData);
 
           // Check if referral code was already used
-          const { data: codeUsageCheck } = await supabase
+          const codeUsageResult = await supabase
             .from('profiles')
             .select('id')
-            .eq('last_referral_code', referralCode)
+            .filter('last_referral_code', 'eq', referralCode)
             .limit(1);
+          
+          const { data: codeUsageCheck } = codeUsageResult;
 
           if (codeUsageCheck && codeUsageCheck.length > 0) {
             console.log('Referral code already used, no reward');
@@ -199,7 +201,7 @@ export const useProfile = () => {
           referral_code_used: false,
           last_referral_code: referralCode || null,
           referral_notifications: []
-        };
+        } as any;
 
         const { data: createdProfile, error: createError } = await supabase
           .from('profiles')
@@ -243,7 +245,7 @@ export const useProfile = () => {
             // Mark referral code as used
             const { error: markUsedError } = await supabase
               .from('profiles')
-              .update({ referral_code_used: true })
+              .update({ referral_code_used: true } as any)
               .eq('reg', referralCode);
             
             if (markUsedError) {
@@ -255,7 +257,7 @@ export const useProfile = () => {
         // Update existing profile with new device info if needed
         const updates: any = {};
         
-        if (userProfile.device_fingerprint !== deviceInfo.device_fingerprint) {
+        if ((userProfile as any).device_fingerprint !== deviceInfo.device_fingerprint) {
           updates.device_fingerprint = deviceInfo.device_fingerprint;
         }
         if (userProfile.ip_address !== deviceInfo.ip_address) {
@@ -282,10 +284,10 @@ export const useProfile = () => {
         bone: Number(userProfile.bone) ?? 1000,
         balance: Number(userProfile.balance) || 0,
         balance2: Number(userProfile.balance2) || 0,
-        v_bdog_earned: Number(userProfile.v_bdog_earned) || 0,
+        v_bdog_earned: Number((userProfile as any).v_bdog_earned) || 0,
         referrals: Number(userProfile.referrals) || 0,
         ip_address: userProfile.ip_address as string | null,
-        device_fingerprint: userProfile.device_fingerprint as string | null
+        device_fingerprint: (userProfile as any).device_fingerprint as string | null
       });
       
       // Sync with localStorage - ensure proper number conversion for bigint values
@@ -296,7 +298,7 @@ export const useProfile = () => {
       localStorage.setItem('bdog-grow1', String(Number(userProfile.grow1) || 1));
       localStorage.setItem('bdog-bone', String(Number(userProfile.bone) ?? 1000));
       localStorage.setItem('bdog-referrals', String(Number(userProfile.referrals) || 0));
-      localStorage.setItem('bdog-v-earned', String(Number(userProfile.v_bdog_earned) || 0));
+      localStorage.setItem('bdog-v-earned', String(Number((userProfile as any).v_bdog_earned) || 0));
 
       console.log('Profile loaded successfully:', userProfile);
 
@@ -319,17 +321,25 @@ export const useProfile = () => {
       
       // For anonymous users, update by device_fingerprint
       // For authenticated users, update by id
-      let updateQuery = supabase.from('profiles').update(updates);
+      let result;
       
       if (profile.user_id && profile.user_id !== 'anonymous') {
-        updateQuery = updateQuery.eq('id', profile.id);
+        result = await supabase
+          .from('profiles')
+          .update(updates as any)
+          .eq('id', profile.id)
+          .select()
+          .single();
       } else {
-        updateQuery = updateQuery.eq('device_fingerprint', profile.device_fingerprint);
+        result = await supabase
+          .from('profiles')
+          .update(updates as any)
+          .eq('device_fingerprint', (profile as any).device_fingerprint)
+          .select()
+          .single();
       }
       
-      const { data: updatedProfile, error } = await updateQuery
-        .select()
-        .single();
+      const { data: updatedProfile, error } = result;
 
       if (error) {
         console.error('Error updating profile:', error);
@@ -344,11 +354,11 @@ export const useProfile = () => {
         bone: Number(updatedProfile.bone) ?? 1000,
         balance: Number(updatedProfile.balance) || 0,
         balance2: Number(updatedProfile.balance2) || 0,
-        v_bdog_earned: Number(updatedProfile.v_bdog_earned) || 0,
+        v_bdog_earned: Number((updatedProfile as any).v_bdog_earned) || 0,
         referrals: Number(updatedProfile.referrals) || 0,
-        ban: Number(updatedProfile.ban) || 0,
+        ban: Number((updatedProfile as any).ban) || 0,
         ip_address: updatedProfile.ip_address as string | null,
-        device_fingerprint: updatedProfile.device_fingerprint as string | null
+        device_fingerprint: (updatedProfile as any).device_fingerprint as string | null
       });
 
       // Sync with localStorage - ensure proper number conversion

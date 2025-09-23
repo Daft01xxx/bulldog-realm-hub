@@ -6,6 +6,7 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
+import GoldenParticles from "./components/GoldenParticles";
 import { AuthProvider } from "./hooks/useAuth";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -65,7 +66,11 @@ function AppContent() {
     <>
       <Toaster />
       <Sonner />
-      {!isOnBanPage && <FallingCoins2D />}
+      {/* Falling coins only on game and connected wallet pages */}
+      {(location.pathname === '/game' || location.pathname === '/connected-wallet') && <FallingCoins2D />}
+      
+      {/* Golden particles on all pages except ban */}
+      {location.pathname !== '/ban' && <GoldenParticles />}
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/menu" element={<Menu />} />

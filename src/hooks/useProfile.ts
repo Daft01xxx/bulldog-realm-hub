@@ -176,7 +176,7 @@ export const useProfile = () => {
 
       if (!userProfile) {
         // Generate unique registration ID
-        const regId = `BDOG${Date.now()}${Math.random().toString(36).substr(2, 5)}`.toUpperCase();
+        const regId = Math.floor(Math.random() * 900000000 + 100000000).toString();
         
         console.log('Creating new profile with reg:', regId);
 
@@ -189,7 +189,7 @@ export const useProfile = () => {
           balance2: 0,
           grow: 0,
           grow1: 1,
-          bone: 0,
+          bone: 1000,
           referrals: 0,
           referred_by: referrerData?.user_id || null,
           bdog_balance: 0,
@@ -279,7 +279,7 @@ export const useProfile = () => {
         ...userProfile,
         grow: Number(userProfile.grow) || 0,
         grow1: Number(userProfile.grow1) || 1,
-        bone: Number(userProfile.bone) ?? 0,
+        bone: Number(userProfile.bone) ?? 1000,
         balance: Number(userProfile.balance) || 0,
         balance2: Number(userProfile.balance2) || 0,
         v_bdog_earned: Number(userProfile.v_bdog_earned) || 0,
@@ -294,7 +294,7 @@ export const useProfile = () => {
       localStorage.setItem('bdog-balance2', String(userProfile.balance2 || 0));
       localStorage.setItem('bdog-grow', String(Number(userProfile.grow) || 0));
       localStorage.setItem('bdog-grow1', String(Number(userProfile.grow1) || 1));
-      localStorage.setItem('bdog-bone', String(Number(userProfile.bone) ?? 0));
+      localStorage.setItem('bdog-bone', String(Number(userProfile.bone) ?? 1000));
       localStorage.setItem('bdog-referrals', String(Number(userProfile.referrals) || 0));
       localStorage.setItem('bdog-v-earned', String(Number(userProfile.v_bdog_earned) || 0));
 
@@ -341,7 +341,7 @@ export const useProfile = () => {
         ...updatedProfile,
         grow: Number(updatedProfile.grow) || 0,
         grow1: Number(updatedProfile.grow1) || 1,
-        bone: Number(updatedProfile.bone) ?? 0,
+        bone: Number(updatedProfile.bone) ?? 1000,
         balance: Number(updatedProfile.balance) || 0,
         balance2: Number(updatedProfile.balance2) || 0,
         v_bdog_earned: Number(updatedProfile.v_bdog_earned) || 0,

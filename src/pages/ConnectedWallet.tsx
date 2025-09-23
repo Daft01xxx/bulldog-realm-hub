@@ -20,7 +20,7 @@ import {
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
-import tonLogo from "@/assets/v-bdog-logo.png";
+import customLogo from "@/assets/custom-logo.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
 
 const ConnectedWallet = () => {
@@ -150,7 +150,7 @@ const ConnectedWallet = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
-                      <img src={tonLogo} alt="TON" className="w-6 h-6 object-contain" />
+                      <img src={customLogo} alt="TON" className="w-6 h-6 object-contain" />
                     </div>
                     <div>
                       <h4 className="font-medium text-foreground">TON</h4>

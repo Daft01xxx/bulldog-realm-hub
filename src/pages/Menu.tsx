@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, Headphones } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -194,11 +194,19 @@ const Menu = () => {
       delay: "0.4s"
     },
     {
+      title: "Техническая поддержка",
+      icon: Headphones,
+      path: "https://t.me/Deff0xq",
+      description: "Помощь и поддержка",
+      delay: "0.5s",
+      external: true
+    },
+    {
       title: "Реклама проекта за вознаграждение",
       icon: Megaphone,
       path: "/promotion",
       description: "Продвигайте и получайте награды",
-      delay: "0.5s"
+      delay: "0.6s"
     }
   ];
 
@@ -208,7 +216,7 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-3xl md:text-4xl font-bold text-gradient animate-glow-text mb-4 ${
+          className={`text-3xl md:text-4xl font-bold text-gradient animate-glow-text animate-pulse mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
@@ -217,21 +225,21 @@ const Menu = () => {
         
         {/* User info */}
         <Card 
-          className={`card-glow max-w-sm mx-auto p-6 mb-4 ${
+          className={`card-glow max-w-md mx-auto p-8 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
         >
           <div className="space-y-4">
-            <p className="text-base text-muted-foreground text-center">
-              <span className="text-gold font-semibold text-lg">{reg}</span>
+            <p className="text-lg text-muted-foreground text-center animate-pulse">
+              ID: <span className="text-gold font-semibold text-xl">{reg}</span>
             </p>
             <div className="space-y-3">
-              <p className="text-base text-foreground text-center">
-                BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
+              <p className="text-lg text-foreground text-center">
+                BDOG: <span className="text-gradient font-bold text-2xl">{bdogBalance}</span>
               </p>
-              <p className="text-base text-foreground text-center">
-                V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
+              <p className="text-lg text-foreground text-center">
+                V-BDOG: <span className="text-gradient font-bold text-2xl">{vBdogBalance}</span>
               </p>
             </div>
           </div>
@@ -257,29 +265,37 @@ const Menu = () => {
       </div>
 
       {/* Menu grid */}
-      <div className="max-w-sm mx-auto relative z-10">
-        <div className="grid grid-cols-1 gap-3 mb-4">
+      <div className="max-w-md mx-auto relative z-10">
+        <div className="grid grid-cols-1 gap-2 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
+            const handleClick = () => {
+              if (item.external) {
+                window.open(item.path, '_blank');
+              } else {
+                navigate(item.path);
+              }
+            };
+            
             return (
               <Card
                 key={item.title}
-                className={`card-glow p-4 cursor-pointer hover-lift group ${
+                className={`card-glow p-3 cursor-pointer hover-lift group ${
                   animate ? 'animate-slide-in-right' : 'opacity-0'
                 }`}
                 style={{ animationDelay: item.delay }}
-                onClick={() => navigate(item.path)}
+                onClick={handleClick}
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogLogo} alt="BDOG" className="w-6 h-6 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                      <img src={bdogLogo} alt="BDOG" className="w-5 h-5 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : (
-                      <IconComponent className="w-6 h-6 icon-gold" />
+                      <IconComponent className="w-5 h-5 icon-gold" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors">
+                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors animate-pulse">
                       {item.title}
                     </h3>
                     <p className="text-xs text-muted-foreground">

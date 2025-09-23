@@ -103,18 +103,11 @@ const Referral = () => {
       </Card>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 max-w-md mx-auto mb-8">
+      <div className="grid grid-cols-1 gap-4 max-w-md mx-auto mb-8">
         <Card className="card-glow p-6 text-center animate-fade-in-up">
           <Users className="w-8 h-8 text-gold mx-auto mb-2" />
           <p className="text-sm text-muted-foreground mb-1">Приглашено</p>
           <p className="text-2xl font-bold text-foreground">{referredCount}</p>
-        </Card>
-        
-        <Card className="card-glow p-6 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-          <Gift className="w-8 h-8 text-gold mx-auto mb-2" />
-          <p className="text-sm text-muted-foreground mb-1">Заработано</p>
-          <p className="text-2xl font-bold text-gradient">{earnedVBDOG.toLocaleString()}</p>
-          <p className="text-xs text-muted-foreground">V-BDOG</p>
         </Card>
       </div>
 

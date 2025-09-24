@@ -35,9 +35,15 @@ export default function Tasks() {
   const [tapCount, setTapCount] = useState(0);
   const [dailyStreak, setDailyStreak] = useState(0);
 
-  // Load completed tasks from localStorage and setup real-time updates
+  // Load completed tasks from profile and localStorage, setup real-time updates
   useEffect(() => {
-    const completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
+    // Load completed tasks from profile first, then fallback to localStorage
+    let completed = [];
+    if (profile?.completed_tasks) {
+      completed = JSON.parse(profile.completed_tasks);
+    } else {
+      completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
+    }
     setCompletedTasks(completed);
     
     // Update tap count and daily streak
@@ -109,6 +115,11 @@ export default function Tasks() {
     } else if (task.reward.type === 'bone') {
       updates.bone = (profile.bone || 1000) + task.reward.amount;
     }
+
+    // Save completed task to profile to persist across sessions
+    const currentCompletedTasks = profile.completed_tasks ? JSON.parse(profile.completed_tasks) : [];
+    const newCompletedTasks = [...currentCompletedTasks, task.id];
+    updates.completed_tasks = JSON.stringify(newCompletedTasks);
 
     await updateProfile(updates);
 

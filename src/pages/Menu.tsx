@@ -6,6 +6,7 @@ import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
+import { AudioManager } from '@/components/AudioManager';
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
@@ -52,7 +53,8 @@ const Menu = () => {
         const timeRemaining = nextGiftTime - now;
         const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
         const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-        setTimeUntilNextGift(`${hours}ч ${minutes}м`);
+        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+        setTimeUntilNextGift(`${hours}ч ${minutes}м ${seconds}с`);
       } else {
         // Cooldown expired, can claim again
         setCanClaimDaily(true);
@@ -81,7 +83,8 @@ const Menu = () => {
           const timeRemaining = nextGiftTime - now;
           const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
           const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-          setTimeUntilNextGift(`${hours}ч ${minutes}м`);
+          const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+          setTimeUntilNextGift(`${hours}ч ${minutes}м ${seconds}с`);
           setCanClaimDaily(false);
         } else {
           setTimeUntilNextGift("");
@@ -204,6 +207,7 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
+      <AudioManager backgroundMusic={true} volume={0.05} />
       
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">

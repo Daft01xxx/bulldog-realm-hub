@@ -14,45 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      audit_logs: {
-        Row: {
-          action: string
-          created_at: string | null
-          id: string
-          ip_address: unknown | null
-          new_values: Json | null
-          old_values: Json | null
-          record_id: string | null
-          table_name: string | null
-          user_agent: string | null
-          user_id: string | null
-        }
-        Insert: {
-          action: string
-          created_at?: string | null
-          id?: string
-          ip_address?: unknown | null
-          new_values?: Json | null
-          old_values?: Json | null
-          record_id?: string | null
-          table_name?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          action?: string
-          created_at?: string | null
-          id?: string
-          ip_address?: unknown | null
-          new_values?: Json | null
-          old_values?: Json | null
-          record_id?: string | null
-          table_name?: string | null
-          user_agent?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           balance: number | null
@@ -61,6 +22,7 @@ export type Database = {
           bdog_balance: number | null
           bone: number | null
           booster_expires_at: string | null
+          completed_tasks: string | null
           created_at: string
           device_fingerprint: string | null
           grow: number | null
@@ -86,6 +48,7 @@ export type Database = {
           bdog_balance?: number | null
           bone?: number | null
           booster_expires_at?: string | null
+          completed_tasks?: string | null
           created_at?: string
           device_fingerprint?: string | null
           grow?: number | null
@@ -111,6 +74,7 @@ export type Database = {
           bdog_balance?: number | null
           bone?: number | null
           booster_expires_at?: string | null
+          completed_tasks?: string | null
           created_at?: string
           device_fingerprint?: string | null
           grow?: number | null
@@ -139,34 +103,12 @@ export type Database = {
           },
         ]
       }
-      user_roles: {
-        Row: {
-          created_at: string | null
-          id: string
-          role: Database["public"]["Enums"]["user_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
       wallet_data: {
         Row: {
           balance: number | null
           id: string
           last_updated: string
           nft_data: Json | null
-          user_id: string | null
           wallet_address: string
         }
         Insert: {
@@ -174,7 +116,6 @@ export type Database = {
           id?: string
           last_updated?: string
           nft_data?: Json | null
-          user_id?: string | null
           wallet_address: string
         }
         Update: {
@@ -182,7 +123,6 @@ export type Database = {
           id?: string
           last_updated?: string
           nft_data?: Json | null
-          user_id?: string | null
           wallet_address?: string
         }
         Relationships: []
@@ -195,51 +135,20 @@ export type Database = {
       find_referrer_safely: {
         Args: { referral_code: string }
         Returns: {
+          referral_notifications: Json
           referrals: number
+          reg: string
           user_id: string
           v_bdog_earned: number
         }[]
-      }
-      get_moscow_time: {
-        Args: Record<PropertyKey, never>
-        Returns: string
       }
       get_next_sunday_reset: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      has_active_booster: {
-        Args: { user_profile_id: string }
-        Returns: boolean
-      }
-      has_role: {
-        Args: {
-          check_role: Database["public"]["Enums"]["user_role"]
-          check_user_id: string
-        }
-        Returns: boolean
-      }
-      log_audit_event: {
-        Args: {
-          p_action: string
-          p_new_values?: Json
-          p_old_values?: Json
-          p_record_id?: string
-          p_table_name?: string
-        }
-        Returns: undefined
-      }
-      reset_expired_boosters: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      validate_referral_code: {
-        Args: { referral_code: string }
-        Returns: string
-      }
     }
     Enums: {
-      user_role: "admin" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -366,8 +275,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      user_role: ["admin", "user"],
-    },
+    Enums: {},
   },
 } as const

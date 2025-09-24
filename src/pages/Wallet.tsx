@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
+import { AudioManager } from '@/components/AudioManager';
 import bdogLogo from "@/assets/bdog-logo.jpeg";
 
 const Wallet = () => {
@@ -47,9 +48,10 @@ const Wallet = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-gold/5 px-2 py-4">
+    <div className="min-h-screen bg-background px-1 py-2">
+      <AudioManager backgroundMusic={true} volume={0.05} />
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-4 pt-4">
+      <div className="flex justify-between items-center mb-3 pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -71,24 +73,24 @@ const Wallet = () => {
       </div>
 
       {/* Hero Section */}
-      <div className="text-center mb-6 relative">
+      <div className="text-center mb-4 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-transparent rounded-3xl blur-3xl"></div>
         <div className="relative">
-          <h1 className="text-2xl md:text-3xl font-bold text-gradient animate-glow-text mb-2">
+          <h1 className="text-xl font-bold text-gradient animate-glow-text mb-2">
             Кошелёк BDOG
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Управляй своими токенами и NFT
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-sm mx-auto space-y-4">
+      <div className="max-w-xs mx-auto space-y-3">
         {/* Connection Status Card */}
-        <Card className="card-glow p-6 text-center animate-fade-in-up">
+        <Card className="card-glow p-4 text-center animate-fade-in-up">
           <div className="relative">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
               <img 
                 src={bdogLogo} 
                 alt="BDOG Coin" 
@@ -96,11 +98,11 @@ const Wallet = () => {
               />
             </div>
             
-            <h2 className="text-xl font-bold text-gradient mb-3">
+            <h2 className="text-lg font-bold text-gradient mb-2">
               {isConnected ? "🔗 Кошелек подключен" : "🔌 Подключить кошелек"}
             </h2>
             
-            <p className="text-muted-foreground text-sm mb-6 leading-relaxed">
+            <p className="text-muted-foreground text-xs mb-4 leading-relaxed">
               {isConnected 
                 ? `Адрес: ${walletAddress?.slice(0, 8)}...${walletAddress?.slice(-6)}`
                 : "Подключи свой TON кошелек для управления BDOG токенами и NFT"
@@ -109,7 +111,7 @@ const Wallet = () => {
 
             <Button
               onClick={handleConnect}
-              className="button-gold text-base py-3 px-6 animate-bounce-in"
+              className="button-gold text-sm py-2 px-4 animate-bounce-in"
             >
               {isConnected ? "🚀 Открыть кошелек" : "⚡ Подключить TON"}
             </Button>
@@ -117,31 +119,31 @@ const Wallet = () => {
         </Card>
 
         {/* Action Cards */}
-        <div className="grid grid-cols-1 gap-3 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-          <Card className="card-glow p-4 hover-lift group">
+        <div className="grid grid-cols-1 gap-2 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+          <Card className="card-glow p-3 hover-lift group">
             <div className="text-center">
-              <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                <ExternalLink className="w-4 h-4 text-white" />
+              <div className="w-6 h-6 mx-auto mb-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                <ExternalLink className="w-3 h-3 text-white" />
               </div>
-              <h3 className="text-sm font-bold mb-2 group-hover:text-blue-400 transition-colors">Купить BDOG</h3>
+              <h3 className="text-xs font-bold mb-2 group-hover:text-blue-400 transition-colors">Купить BDOG</h3>
               <Button
                 onClick={() => window.open("https://t.me/blum/app?startapp=memepadjetton_BDOG_Y28d0-ref_wg9QjmgoJX", "_blank")}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 text-xs px-3 py-1"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0 text-xs px-2 py-1"
               >
                 Открыть Blum
               </Button>
             </div>
           </Card>
           
-          <Card className="card-glow p-4 hover-lift group">
+          <Card className="card-glow p-3 hover-lift group">
             <div className="text-center">
-              <div className="w-8 h-8 mx-auto mb-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
-                <ExternalLink className="w-4 h-4 text-white" />
+              <div className="w-6 h-6 mx-auto mb-2 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                <ExternalLink className="w-3 h-3 text-white" />
               </div>
-              <h3 className="text-sm font-bold mb-2 group-hover:text-purple-400 transition-colors">NFT Collection</h3>
+              <h3 className="text-xs font-bold mb-2 group-hover:text-purple-400 transition-colors">NFT Collection</h3>
               <Button
                 onClick={() => window.open("https://getgems.io/collection/EQBBQyriB8oloKQbrumUgvmyQF5iFweNInGHPio0PB_kbVDQ", "_blank")}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0 text-xs px-3 py-1"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white border-0 text-xs px-2 py-1"
               >
                 Открыть GetGems
               </Button>

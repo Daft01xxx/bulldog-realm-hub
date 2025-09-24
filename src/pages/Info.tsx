@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
+import { AudioManager } from '@/components/AudioManager';
 
 const Info = () => {
   const navigate = useNavigate();
@@ -28,9 +29,10 @@ const Info = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background px-2 py-4">
+    <div className="min-h-screen bg-background px-1 py-2">
+      <AudioManager backgroundMusic={true} volume={0.05} />
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-4 pt-4">
+      <div className="flex justify-between items-center mb-3 pt-2">
         <Button
           variant="outline"
           size="sm"
@@ -52,27 +54,27 @@ const Info = () => {
       </div>
 
       {/* Social links */}
-      <div className="max-w-sm mx-auto mb-4">
-        <h2 className="text-lg font-bold text-foreground text-center mb-3 animate-fade-in-up">
+      <div className="max-w-xs mx-auto mb-3">
+        <h2 className="text-base font-bold text-foreground text-center mb-2 animate-fade-in-up">
           Наши социальные сети
         </h2>
         
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 gap-2">
           {socialLinks.map((link, index) => (
             <Card 
               key={link.name}
-              className="card-glow p-3 hover-lift cursor-pointer animate-slide-in-right"
+              className="card-glow p-2 hover-lift cursor-pointer animate-slide-in-right"
               style={{animationDelay: `${index * 0.1}s`}}
               onClick={() => window.open(link.url, "_blank")}
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="text-lg">{link.icon}</div>
-                  <span className="text-sm font-semibold text-foreground">
+                <div className="flex items-center space-x-2">
+                  <div className="text-sm">{link.icon}</div>
+                  <span className="text-xs font-semibold text-foreground">
                     {link.name}
                   </span>
                 </div>
-                <ExternalLink className="w-4 h-4 text-gold" />
+                <ExternalLink className="w-3 h-3 text-gold" />
               </div>
             </Card>
           ))}
@@ -80,16 +82,16 @@ const Info = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-sm mx-auto space-y-4 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
-        <Card className="card-glow p-6">
-          <h2 className="text-2xl font-bold text-gradient mb-6 text-center">
+      <div className="max-w-xs mx-auto space-y-3 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+        <Card className="card-glow p-4">
+          <h2 className="text-lg font-bold text-gradient mb-4 text-center">
             Bulldog Multichain Ecosystem
           </h2>
           
-          <div className="space-y-6 text-foreground">
+          <div className="space-y-4 text-foreground">
             <div>
-              <h3 className="text-xl font-semibold text-gold mb-3">2-й квартал 2025 года — запуск экосистемы</h3>
-              <ul className="space-y-2 text-muted-foreground ml-4">
+              <h3 className="text-base font-semibold text-gold mb-2">2-й квартал 2025 года — запуск экосистемы</h3>
+              <ul className="space-y-1 text-xs text-muted-foreground ml-3">
                 <li>• Запуск токена BDOG в приложении Blum (28 марта 2025 года) — завершён</li>
                 <li>• Первоначальная настройка сообщества: веб-сайт, Telegram-канал и чат</li>
                 <li>• Создание и запуск коллекций NFT: стикеры Bulldog</li>
@@ -97,8 +99,8 @@ const Info = () => {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold text-gold mb-3">4-й квартал 2025 года — выход на рынок</h3>
-              <ul className="space-y-2 text-muted-foreground ml-4">
+              <h3 className="text-base font-semibold text-gold mb-2">4-й квартал 2025 года — выход на рынок</h3>
+              <ul className="space-y-1 text-xs text-muted-foreground ml-3">
                 <li>• Листинг BDOG на DEX (TON)</li>
                 <li>• Создание пулов ликвидности BDOG/USD и BDOG/TON</li>
                 <li>• Распределение вознаграждений NFT</li>
@@ -106,8 +108,8 @@ const Info = () => {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold text-gold mb-3">4-й квартал 2025 года — расширение мультичейна I</h3>
-              <ul className="space-y-2 text-muted-foreground ml-4">
+              <h3 className="text-base font-semibold text-gold mb-2">4-й квартал 2025 года — расширение мультичейна I</h3>
+              <ul className="space-y-1 text-xs text-muted-foreground ml-3">
                 <li>• Интеграция в экосистему TRON</li>
                 <li>• Запуск пулов BDOG/TRON и BDOG/USD (TRON)</li>
                 <li>• Балансировка цены BDOG с помощью межсетевого механизма 1:1</li>
@@ -115,8 +117,8 @@ const Info = () => {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold text-gold mb-3">4-й квартал 2025 года — расширение Multichain II</h3>
-              <ul className="space-y-2 text-muted-foreground ml-4">
+              <h3 className="text-base font-semibold text-gold mb-2">4-й квартал 2025 года — расширение Multichain II</h3>
+              <ul className="space-y-1 text-xs text-muted-foreground ml-3">
                 <li>• Расширение на BNB Chain и Solana</li>
                 <li>• Пулы ликвидности: BDOG/BNB, BDOG/SOL, BDOG/USD</li>
                 <li>• Укрепление сообщества: новые стикеры NFT</li>
@@ -124,8 +126,8 @@ const Info = () => {
             </div>
 
             <div>
-              <h3 className="text-xl font-semibold text-gold mb-3">1-й квартал 2026 года — Ethereum и глобальный запуск</h3>
-              <ul className="space-y-2 text-muted-foreground ml-4">
+              <h3 className="text-base font-semibold text-gold mb-2">1-й квартал 2026 года — Ethereum и глобальный запуск</h3>
+              <ul className="space-y-1 text-xs text-muted-foreground ml-3">
                 <li>• Запуск на Ethereum (Launchpool)</li>
                 <li>• Создание пулов BDOG/ETH и BDOG/USDT</li>
                 <li>• Полная мультичейн-интеграция (TON, TRON, BNB, SOL, ETH)</li>
@@ -134,12 +136,12 @@ const Info = () => {
           </div>
         </Card>
 
-        <Card className="card-glow p-6">
-          <h2 className="text-2xl font-bold text-gradient mb-6">
+        <Card className="card-glow p-4">
+          <h2 className="text-lg font-bold text-gradient mb-4">
             Кто мы? И каковы наши ценности?
           </h2>
           
-          <div className="space-y-4 text-muted-foreground">
+          <div className="space-y-3 text-xs text-muted-foreground">
             <p>
               Мы — команда трудолюбивых людей, финансовых экспертов и разработчиков игр. 
               Наше кредо — честность и порядочность по отношению ко всему сообществу!

@@ -39,8 +39,8 @@ export default function Tasks() {
   useEffect(() => {
     // Load completed tasks from profile first, then fallback to localStorage
     let completed = [];
-    if (profile?.completed_tasks) {
-      completed = JSON.parse(profile.completed_tasks);
+    if ((profile as any)?.completed_tasks) {
+      completed = JSON.parse((profile as any).completed_tasks as string);
     } else {
       completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
     }
@@ -117,9 +117,9 @@ export default function Tasks() {
     }
 
     // Save completed task to profile to persist across sessions
-    const currentCompletedTasks = profile.completed_tasks ? JSON.parse(profile.completed_tasks) : [];
+    const currentCompletedTasks = (profile as any).completed_tasks ? JSON.parse((profile as any).completed_tasks as string) : [];
     const newCompletedTasks = [...currentCompletedTasks, task.id];
-    updates.completed_tasks = JSON.stringify(newCompletedTasks);
+    (updates as any).completed_tasks = JSON.stringify(newCompletedTasks);
 
     await updateProfile(updates);
 

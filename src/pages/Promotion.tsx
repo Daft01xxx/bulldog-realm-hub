@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, TrendingUp, Eye, MessageSquare } from "lucide-react";
+import { AudioManager } from '@/components/AudioManager';
 
 const Promotion = () => {
   const navigate = useNavigate();
@@ -39,16 +40,17 @@ const Promotion = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20 px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20 px-2 py-4">
+      <AudioManager backgroundMusic={true} volume={0.05} />
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-8 pt-8">
+      <div className="flex justify-between items-center mb-4 pt-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(-1)}
           className="button-outline-gold shadow-gold"
         >
-          <ArrowLeft className="w-4 h-4 mr-2 icon-gold" />
+          <ArrowLeft className="w-3 h-3 mr-1 icon-gold" />
           Назад
         </Button>
         <Button
@@ -57,31 +59,31 @@ const Promotion = () => {
           onClick={() => navigate("/menu")}
           className="button-outline-gold shadow-gold"
         >
-          <Home className="w-4 h-4 mr-2 icon-gold" />
+          <Home className="w-3 h-3 mr-1 icon-gold" />
           Меню
         </Button>
       </div>
 
       {/* Hero Section */}
-      <div className="text-center mb-12 relative">
+      <div className="text-center mb-6 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-gold/20 to-transparent rounded-3xl blur-3xl"></div>
         <div className="relative">
-          <h1 className="text-4xl md:text-6xl font-bold text-gradient animate-glow-text mb-6">
+          <h1 className="text-2xl font-bold text-gradient animate-glow-text mb-4">
             💰 Заработай на рекламе
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
             Стань промоутером BDOG и получай крутые награды за качественный контент в социальных сетях
           </p>
         </div>
       </div>
 
       {/* Promotion Tasks */}
-      <div className="max-w-6xl mx-auto mb-16">
-        <h2 className="text-3xl font-bold text-center text-gradient mb-8 animate-fade-in-up">
+      <div className="max-w-xs mx-auto mb-6">
+        <h2 className="text-lg font-bold text-center text-gradient mb-4 animate-fade-in-up">
           🎯 Доступные задания
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-4">
           {promotionTasks.map((task, index) => {
             const IconComponent = task.icon;
             return (
@@ -93,21 +95,21 @@ const Promotion = () => {
                 {/* Background gradient */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${task.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
                 
-                <div className="relative p-8 text-center">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-gold/80 to-gold flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-500">
-                    <IconComponent className="w-10 h-10 text-black" />
+                <div className="relative p-4 text-center">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-gold/80 to-gold flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-500">
+                    <IconComponent className="w-6 h-6 text-black" />
                   </div>
                   
-                  <h3 className="text-xl font-bold text-foreground mb-4 group-hover:text-gold transition-colors">
+                  <h3 className="text-sm font-bold text-foreground mb-2 group-hover:text-gold transition-colors">
                     {task.title}
                   </h3>
                   
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                  <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
                     {task.description}
                   </p>
                   
-                  <div className="bg-gradient-to-r from-gold to-gold-light rounded-xl p-4 shadow-lg">
-                    <p className="text-black font-bold text-xl">
+                  <div className="bg-gradient-to-r from-gold to-gold-light rounded-lg p-2 shadow-lg">
+                    <p className="text-black font-bold text-sm">
                       💎 {task.reward}
                     </p>
                   </div>

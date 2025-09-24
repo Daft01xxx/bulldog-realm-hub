@@ -6,7 +6,8 @@ import { ArrowLeft, Home, Zap, Info, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
-import bulldogSuit from "@/assets/bulldog-suit.jpeg";
+import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
+import { AudioManager, playTapSound, playLogoClickSound } from '@/components/AudioManager';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -280,6 +281,9 @@ const Game = () => {
       navigator.vibrate(100);
     }
 
+    // Play tap sound
+    playTapSound();
+
     // Click animation effect
     setIsClicked(true);
     setTimeout(() => setIsClicked(false), 150);
@@ -288,6 +292,16 @@ const Game = () => {
     const currentGrow1 = Number(grow1) || 1;
     const currentBone = Number(bone) || 0;
     const currentTotalTaps = Number(totalTaps) || 0;
+    
+    // Check again if bone count is valid before processing tap
+    if (currentBone <= 0) {
+      toast({
+        title: "Закончились косточки",
+        description: "Подождите до завтра для восстановления",
+        variant: "destructive",
+      });
+      return;
+    }
     
     const newGrow = currentGrow + currentGrow1;
     const newBone = Math.max(0, currentBone - 1);
@@ -387,6 +401,7 @@ const Game = () => {
 
   return (
     <div className="min-h-screen bg-background px-2 py-4">
+      <AudioManager backgroundMusic={true} volume={0.1} />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-4 pt-4">
         <Button
@@ -441,10 +456,13 @@ const Game = () => {
         <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
           <div 
             className="relative cursor-pointer group"
-            onClick={handleClick}
+            onClick={(e) => {
+              handleClick(e);
+              playLogoClickSound();
+            }}
           >
             <img 
-              src={bulldogSuit}
+              src={bulldogLogoTransparent}
               alt="BDOG"
               className={`w-40 h-40 mx-auto rounded-full object-cover transition-all duration-150 ease-out ${
                 isClicked 

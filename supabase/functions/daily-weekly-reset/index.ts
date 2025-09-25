@@ -15,17 +15,11 @@ interface Database {
           grow: number
           bone: number
           v_bdog_earned: number
-          grow1: number
-          booster_expires_at: string | null
-          ban: number
         }
         Update: {
           grow?: number
           bone?: number
           v_bdog_earned?: number
-          grow1?: number
-          booster_expires_at?: string | null
-          ban?: number
         }
       }
     }
@@ -58,24 +52,23 @@ Deno.serve(async (req) => {
     console.log(`Starting ${resetType} reset at ${new Date().toISOString()} (Moscow: ${moscowTime})`)
 
     if (resetType === 'daily') {
-      // Daily reset: set bone values to 1000 only for users who have bone = 0
-      // This ensures that users with bones > 0 keep their current amount until they reach 0
+      // Daily reset: set all bone values to 1000
       const { error: dailyError } = await supabaseClient
         .from('profiles')
         .update({ bone: 1000 })
-        .eq('bone', 0)
+        .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
 
       if (dailyError) {
         console.error('Daily reset error:', dailyError)
         throw dailyError
       }
 
-      console.log('Daily reset completed: All bones with value 0 reset to 1000')
+      console.log('Daily reset completed: All bones reset to 1000')
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'Daily reset completed: All bones with value 0 reset to 1000',
+          message: 'Daily reset completed: All bones reset to 1000',
           timestamp: new Date().toISOString()
         }),
         { 
@@ -171,12 +164,12 @@ Deno.serve(async (req) => {
       )
     }
 
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Reset function error:', error)
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+        error: error.message 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

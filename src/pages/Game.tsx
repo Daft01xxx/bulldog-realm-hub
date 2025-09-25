@@ -454,20 +454,21 @@ const Game = () => {
 
       {/* Game area */}
       <div className="text-center mb-4">
-        <Card className="card-glow p-1 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
-            <div 
+        <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
+          <div 
             className="relative cursor-pointer group"
-            onClick={handleClick}
+            onClick={(e) => {
+              handleClick(e);
+            }}
           >
             <img 
               src={bulldogLogoTransparent}
               alt="BDOG"
-              className={`w-full h-full mx-auto object-cover transition-all duration-150 ease-out ${
+              className={`w-40 h-40 mx-auto rounded-full object-cover transition-all duration-150 ease-out ${
                 isClicked 
                   ? 'scale-110 brightness-105' 
                   : 'scale-100 hover:scale-105'
               }`}
-              style={{ minHeight: '200px', minWidth: '200px' }}
             />
             
             {/* Click effects */}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Home, Trash2, RefreshCw, Users, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -30,12 +30,59 @@ const Admin = () => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
   const [updateValues, setUpdateValues] = useState({
     grow: "",
     bone: "",
     v_bdog_earned: "",
     grow1: ""
   });
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password === "Gnomdoma04022012") {
+      setIsAuthenticated(true);
+      toast({
+        title: "Доступ разрешен",
+        description: "Добро пожаловать в админ панель",
+      });
+    } else {
+      toast({
+        title: "Неверный пароль",
+        description: "Попробуйте еще раз",
+        variant: "destructive",
+      });
+      setPassword("");
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <h1 className="text-2xl font-bold text-foreground">🔒 Админ панель</h1>
+            <p className="text-muted-foreground">Введите пароль для доступа</p>
+          </CardHeader>
+          <div className="p-6">
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <Input
+                type="password"
+                placeholder="Пароль"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full"
+              />
+              <Button type="submit" className="w-full">
+                Войти
+              </Button>
+            </form>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   useEffect(() => {
     loadUsers();

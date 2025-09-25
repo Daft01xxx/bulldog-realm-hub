@@ -80,17 +80,17 @@ export const useProfile = () => {
         throw new Error('Failed to get device information');
       }
 
-      // Check for VPN - DISABLED
-      // const vpnCheck = await supabase.functions.invoke('detect-vpn', {
-      //   body: { ip_address: deviceInfo.ip_address }
-      // });
+      // Check for VPN
+      const vpnCheck = await supabase.functions.invoke('detect-vpn', {
+        body: { ip_address: deviceInfo.ip_address }
+      });
 
-      // if (vpnCheck.error) {
-      //   console.error('VPN check failed:', vpnCheck.error);
-      // }
+      if (vpnCheck.error) {
+        console.error('VPN check failed:', vpnCheck.error);
+      }
 
-      const isVpnDetected = false; // Always false - no VPN banning
-      console.log('VPN detection disabled - no banning:', isVpnDetected);
+      const isVpnDetected = vpnCheck.data?.is_vpn || false;
+      console.log('VPN detection result:', isVpnDetected);
 
       // Check if profile exists based on device fingerprint or ip
       let { data: existingProfiles, error: fetchError } = await supabase
@@ -121,27 +121,23 @@ export const useProfile = () => {
         return;
       }
 
-      // VPN banning disabled - users will not be banned for VPN
       // Ban VPN users only if they are not explicitly unbanned by admin
-      // if (isVpnDetected && (!userProfile || userProfile.ban !== 0)) {
-      //   if (userProfile) {
-      //     const { error: banError } = await supabase
-      //       .from('profiles')
-      //       .update({ ban: 1, is_vpn_user: true })
-      //       .eq('id', userProfile.id);
-      //     
-      //     if (banError) {
-      //       console.error('Failed to ban VPN user:', banError);
-      //     }
-      //   }
-      //   
-      //   console.log('VPN detected - user would be banned but banning is disabled');
-      //   // Force redirect to ban page
-      //   // setTimeout(() => {
-      //   //   window.location.href = '/ban';
-      //   // }, 100);
-      //   // return;
-      // }
+      if (isVpnDetected && (!userProfile || userProfile.ban !== 0)) {
+        if (userProfile) {
+          const { error: banError } = await supabase
+            .from('profiles')
+            .update({ ban: 1, is_vpn_user: true })
+            .eq('id', userProfile.id);
+          
+          if (banError) {
+            console.error('Failed to ban VPN user:', banError);
+          }
+        }
+        
+        // Redirect to ban page
+        window.location.href = '/ban';
+        return;
+      }
 
       // Handle referral logic only for new users
       const urlParams = new URLSearchParams(window.location.search);
@@ -220,7 +216,7 @@ export const useProfile = () => {
         console.log('New profile created:', userProfile);
 
         // Award referral bonus and send notification
-        if (referrerData && !isVpnDetected) { // Keep check but isVpnDetected is always false now
+        if (referrerData && !isVpnDetected) {
           console.log('Awarding referral bonus to referrer:', referrerData.user_id);
           
           const notifications = referrerData.referral_notifications || [];

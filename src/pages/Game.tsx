@@ -459,6 +459,7 @@ const Game = () => {
             className="relative cursor-pointer group"
             onClick={(e) => {
               handleClick(e);
+              playLogoClickSound();
             }}
           >
             <img 

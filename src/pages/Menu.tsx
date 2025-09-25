@@ -6,12 +6,10 @@ import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
-import { AudioManager, playLogoClickSound } from '@/components/AudioManager';
-import FallingCoins2D from '@/components/FallingCoins2D';
+import { AudioManager } from '@/components/AudioManager';
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
-import bdogMainLogo from "@/assets/bdog-main-logo.jpeg";
 
 const Menu = () => {
   const navigate = useNavigate();
@@ -23,7 +21,6 @@ const Menu = () => {
   const [animate, setAnimate] = useState(false);
   const [canClaimDaily, setCanClaimDaily] = useState(false);
   const [timeUntilNextGift, setTimeUntilNextGift] = useState("");
-  const [showCoins, setShowCoins] = useState(false);
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -170,12 +167,6 @@ const Menu = () => {
     }
   };
 
-  const handleLogoClick = () => {
-    playLogoClickSound();
-    setShowCoins(true);
-    setTimeout(() => setShowCoins(false), 3000); // Hide coins after 3 seconds
-  };
-
   const menuItems = [
     {
       title: "Кошелёк BDOG",
@@ -217,7 +208,6 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
       <AudioManager backgroundMusic={true} volume={0.05} />
-      {showCoins && <FallingCoins2D count={8} />}
       
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
@@ -228,24 +218,6 @@ const Menu = () => {
         >
           BDOG APP
         </h1>
-
-        {/* BDOG Logo */}
-        <div 
-          className={`mb-6 cursor-pointer ${
-            animate ? 'animate-fade-in' : 'opacity-0'
-          }`}
-          style={{ animationDelay: '0.2s' }}
-          onClick={handleLogoClick}
-        >
-          <img 
-            src={bdogMainLogo} 
-            alt="BDOG" 
-            className="w-32 h-32 mx-auto rounded-full shadow-2xl hover:scale-105 transition-transform duration-300"
-            style={{
-              filter: 'drop-shadow(0 0 20px hsl(var(--gold) / 0.5))'
-            }}
-          />
-        </div>
         
         {/* User info */}
         <Card 

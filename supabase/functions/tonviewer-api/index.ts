@@ -125,8 +125,8 @@ serve(async (req) => {
         } else {
           console.log(`NFT API returned ${nftResponse.status}: ${nftResponse.statusText}`);
         }
-      } catch (nftApiError) {
-        console.log('NFT API failed:', nftApiError.message);
+      } catch (nftApiError: unknown) {
+        console.log('NFT API failed:', nftApiError instanceof Error ? nftApiError.message : 'Unknown error');
       }
       
       if (nftResult && nftResult.nft_items && Array.isArray(nftResult.nft_items)) {

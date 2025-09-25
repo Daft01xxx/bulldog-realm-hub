@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { AudioManager } from '@/components/AudioManager';
-import bdogLogo from "@/assets/bdog-logo.jpeg";
+import tonLogo from "@/assets/ton-new-logo.jpeg";
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -90,10 +90,10 @@ const Wallet = () => {
         {/* Connection Status Card */}
         <Card className="card-glow p-4 text-center animate-fade-in-up">
           <div className="relative">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl overflow-hidden">
               <img 
-                src={bdogLogo} 
-                alt="BDOG Coin" 
+                src={tonLogo} 
+                alt="TON Logo" 
                 className="w-full h-full object-cover rounded-full"
               />
             </div>

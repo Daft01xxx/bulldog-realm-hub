@@ -94,20 +94,23 @@ export const playTapSound = () => {
 };
 
 export const playLogoClickSound = () => {
-  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-  
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.15);
-  
-  gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-  gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
-  
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + 0.15);
+  const audio = new Audio('/bulldog-click.mp3');
+  audio.volume = 0.3;
+  audio.play().catch(e => console.log('Audio play failed:', e));
 };
+
+export const playButtonClickSound = () => {
+  const audio = new Audio('/button-click.mp3');
+  audio.volume = 0.2;
+  audio.play().catch(e => console.log('Audio play failed:', e));
+};
+
+// Add global button click listener
+if (typeof window !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'BUTTON' || target.closest('button')) {
+      playButtonClickSound();
+    }
+  });
+}

@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
-import { AudioManager, playTapSound, playLogoClickSound } from '@/components/AudioManager';
+import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ const Game = () => {
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
       let profileGrow1 = Number(profile.grow1) || 1;
-      const profileBone = Math.min(1000, Number(profile.bone) || 1000);
+      const profileBone = Number(profile.bone) || 0;
       
       // Check if booster is active and adjust grow1 accordingly
       const profileBoosterExpires = profile.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : null;
@@ -92,7 +92,7 @@ const Game = () => {
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
       
       setGrow(savedGrow);
-      setBone(Math.min(1000, savedBone));
+      setBone(savedBone);
       
       // Check if booster is still active from localStorage
       if (savedBoosterEndTime) {
@@ -203,7 +203,8 @@ const Game = () => {
       const diff = resetTime.getTime() - now.getTime();
       
       if (diff <= 0) {
-        setWeeklyTimeLeft("0д 00:00:00");
+        // Timer expired, calculate next reset automatically
+        await calculateWeeklyTimeLeft();
         return;
       }
       
@@ -352,7 +353,7 @@ const Game = () => {
   };
 
   const buyBooster = async () => {
-    const currentBone = Math.min(1000, profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone);
+    const currentBone = profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone;
     if (currentBone < 500) {
       toast({
         title: "Ошибка!",
@@ -364,7 +365,7 @@ const Game = () => {
 
     setIsUpdatingFromClick(true);
 
-    const newBone = Math.min(1000, currentBone - 500);
+    const newBone = currentBone - 500;
     const newGrow1 = grow1 * 2;
     const expirationTime = new Date(Date.now() + (60 * 60 * 1000)); // 1 hour from now
     

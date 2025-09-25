@@ -212,7 +212,7 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-3xl md:text-4xl font-bold text-gradient animate-glow-text mb-4 ${
+          className={`text-5xl md:text-6xl font-bold text-gradient animate-glow-text mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >

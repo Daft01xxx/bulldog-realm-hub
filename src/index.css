@@ -56,19 +56,24 @@ All colors MUST be HSL.
     --surface: 235 30% 12%;
     --surface-elevated: 240 25% 15%;
     --surface-muted: 230 35% 10%;
-    --surface: 0 0% 11%;
-    --surface-elevated: 0 0% 16%;
-    --surface-muted: 0 0% 8%;
     
-    /* Tonkeeper-style gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(43 98% 38%) 0%, hsl(45 96% 53%) 50%, hsl(46 94% 68%) 100%);
-    --gradient-surface: linear-gradient(145deg, hsl(0 0% 11%) 0%, hsl(0 0% 16%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(45 96% 53% / 0.1) 0%, hsl(46 94% 68% / 0.05) 100%);
-    
-    /* Refined shadows */
-    --shadow-primary: 0 4px 20px hsl(45 96% 53% / 0.25);
-    --shadow-elevated: 0 8px 40px hsl(0 0% 0% / 0.5), 0 2px 10px hsl(0 0% 0% / 0.3);
-    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.15);
+    /* Cosmic Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(240 100% 70%), hsl(270 100% 70%));
+    --gradient-surface: linear-gradient(135deg, hsl(235 30% 12%), hsl(240 25% 15%));
+    --gradient-accent: linear-gradient(135deg, hsl(50 100% 65%), hsl(55 100% 75%));
+    --gradient-gold: linear-gradient(135deg, hsl(50 100% 65%), hsl(55 100% 75%));
+    --gradient-cosmic: radial-gradient(circle at center, hsl(240 100% 70% / 0.3), hsl(270 100% 70% / 0.1) 50%, transparent 80%);
+    --gradient-space: linear-gradient(180deg, hsl(230 30% 8%), hsl(240 35% 15%) 50%, hsl(250 40% 20%));
+    --gradient-nebula: radial-gradient(ellipse at top, hsl(270 100% 70% / 0.2), hsl(180 100% 60% / 0.1) 60%, transparent);
+
+    /* Cosmic Shadows */
+    --shadow-primary: 0 10px 30px -5px hsl(240 100% 70% / 0.4);
+    --shadow-elevated: 0 20px 50px -10px hsl(230 30% 4% / 0.8);
+    --shadow-subtle: 0 2px 10px -2px hsl(230 30% 4% / 0.5);
+    --shadow-gold: 0 8px 32px -8px hsl(50 100% 65% / 0.4);
+    --shadow-neon: 0 0 20px hsl(240 100% 70% / 0.6), 0 0 40px hsl(270 100% 70% / 0.3);
+    --shadow-cosmic: 0 15px 60px -15px hsl(240 100% 70% / 0.5);
+    --shadow-nebula: 0 0 40px hsl(180 100% 60% / 0.3), 0 0 80px hsl(270 100% 70% / 0.2);
     
     /* Smooth transitions */
     --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -91,8 +96,31 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-sans overflow-x-hidden;
-    background: radial-gradient(ellipse at center, hsl(0 0% 5%) 0%, hsl(0 0% 0%) 100%);
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    background: var(--gradient-space);
+    color: hsl(var(--foreground));
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-nebula);
+    pointer-events: none;
+    z-index: -1;
   }
 
   /* Custom Animations */
@@ -103,11 +131,11 @@ All colors MUST be HSL.
 
   @keyframes pulse-gold {
     0%, 100% { 
-      box-shadow: 0 0 30px hsl(42 100% 50% / 0.5), 0 0 60px hsl(44 100% 65% / 0.3);
+      box-shadow: 0 0 30px hsl(50 100% 65% / 0.5), 0 0 60px hsl(55 100% 75% / 0.3);
       transform: scale(1);
     }
     50% { 
-      box-shadow: 0 0 50px hsl(42 100% 50% / 0.9), 0 0 100px hsl(44 100% 65% / 0.6), 0 0 150px hsl(46 100% 80% / 0.3);
+      box-shadow: 0 0 50px hsl(50 100% 65% / 0.9), 0 0 100px hsl(55 100% 75% / 0.6), 0 0 150px hsl(60 100% 85% / 0.3);
       transform: scale(1.04);
     }
   }
@@ -136,10 +164,10 @@ All colors MUST be HSL.
 
   @keyframes glow-text {
     0%, 100% {
-      text-shadow: 0 0 20px hsl(42 100% 50% / 0.8), 0 0 40px hsl(44 100% 65% / 0.6), 0 0 60px hsl(46 100% 80% / 0.4);
+      text-shadow: 0 0 20px hsl(50 100% 65% / 0.8), 0 0 40px hsl(55 100% 75% / 0.6), 0 0 60px hsl(60 100% 85% / 0.4);
     }
     50% {
-      text-shadow: 0 0 30px hsl(42 100% 50% / 1), 0 0 60px hsl(44 100% 65% / 0.8), 0 0 90px hsl(46 100% 80% / 0.6), 0 0 120px hsl(45 100% 90% / 0.3);
+      text-shadow: 0 0 30px hsl(50 100% 65% / 1), 0 0 60px hsl(55 100% 75% / 0.8), 0 0 90px hsl(60 100% 85% / 0.6), 0 0 120px hsl(50 100% 90% / 0.3);
     }
   }
 
@@ -163,17 +191,11 @@ All colors MUST be HSL.
 
   @keyframes fall-coin {
     0% {
-      transform: translateY(-100vh) rotate(0deg) rotateX(0deg) rotateY(0deg);
-      opacity: 0;
-    }
-    10% {
-      opacity: 1;
-    }
-    90% {
-      opacity: 1;
+      transform: translateY(-100vh) rotate(0deg);
+      opacity: 0.8;
     }
     100% {
-      transform: translateY(100vh) rotate(360deg) rotateX(360deg) rotateY(360deg);
+      transform: translateY(100vh) rotate(360deg);
       opacity: 0;
     }
   }
@@ -187,16 +209,7 @@ All colors MUST be HSL.
     }
   }
 
-  @keyframes super-slow-spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  /* Utility Classes */
+  /* Animation utility classes */
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
@@ -215,14 +228,10 @@ All colors MUST be HSL.
 
   .animate-glow-text {
     animation: glow-text 2s ease-in-out infinite;
-    will-change: text-shadow;
-    transform: translate3d(0, 0, 0);
   }
 
   .animate-bounce-in {
-    animation: bounce-in 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
-    will-change: transform, opacity;
-    contain: layout;
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
   }
 
   .animate-fall-coin {
@@ -233,70 +242,40 @@ All colors MUST be HSL.
     animation: slow-spin 8s linear infinite;
   }
 
-  .animate-super-slow-spin {
-    animation: super-slow-spin 24s linear infinite;
-  }
-
+  /* Hover effects */
   .hover-lift {
     transition: var(--transition-smooth);
   }
 
   .hover-lift:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 15px 35px hsl(0 0% 0% / 0.4), 0 0 20px hsl(45 100% 50% / 0.1);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-elevated);
   }
 
+  /* Text gradients */
   .text-gradient {
-    background: var(--gradient-primary);
+    background: var(--gradient-gold);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    will-change: transform;
-    contain: layout style paint;
-    transform: translate3d(0, 0, 0);
+    background-size: 200% 200%;
+    animation: glow-text 3s ease-in-out infinite;
   }
 
+  .gray-subtle {
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Tonkeeper-style components */
   .card-tonkeeper {
-    background: var(--gradient-surface);
+    background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-elevated);
-    backdrop-filter: blur(10px);
     border-radius: var(--radius);
+    box-shadow: var(--shadow-subtle);
+    transition: var(--transition-smooth);
   }
 
   .card-tonkeeper:hover {
-    border-color: hsl(var(--gold) / 0.3);
-    box-shadow: var(--shadow-elevated), 0 0 20px hsl(var(--gold) / 0.1);
-    transform: translateY(-2px);
-    transition: var(--transition-smooth);
-  }
-
-  .button-tonkeeper-primary {
-    background: var(--gradient-primary);
-    border: none;
-    color: hsl(var(--primary-foreground));
-    border-radius: var(--radius);
-    font-weight: 600;
-    box-shadow: var(--shadow-primary);
-    transition: var(--transition-smooth);
-  }
-
-  .button-tonkeeper-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-primary), var(--shadow-elevated);
-  }
-
-  .button-tonkeeper-secondary {
-    background: hsl(var(--surface-elevated));
-    border: 1px solid hsl(var(--border));
-    color: hsl(var(--foreground));
-    border-radius: var(--radius);
-    font-weight: 500;
-    transition: var(--transition-smooth);
-  }
-
-  .button-tonkeeper-secondary:hover {
-    background: hsl(var(--surface-elevated));
     border-color: hsl(var(--gold) / 0.4);
     transform: translateY(-1px);
     box-shadow: var(--shadow-subtle);
@@ -317,17 +296,17 @@ All colors MUST be HSL.
 
   /* Custom Button styles for BDOG APP */
   .button-gradient-gold {
-    background: var(--gradient-primary);
+    background: var(--gradient-gold);
     border: none;
     color: hsl(var(--primary-foreground));
     font-weight: 600;
-    box-shadow: var(--shadow-primary);
+    box-shadow: var(--shadow-gold);
     transition: var(--transition-smooth);
   }
   
   .button-gradient-gold:hover {
     transform: translateY(-1px);
-    box-shadow: var(--shadow-primary), var(--shadow-elevated);
+    box-shadow: var(--shadow-gold), var(--shadow-elevated);
   }
   
   .button-outline-gold {
@@ -345,6 +324,21 @@ All colors MUST be HSL.
     color: hsl(var(--gold-light));
     transform: translateY(-1px);
     box-shadow: var(--shadow-subtle);
+  }
+
+  .button-gold {
+    background: var(--gradient-gold);
+    border: none;
+    color: hsl(var(--background));
+    font-weight: 600;
+    box-shadow: var(--shadow-gold);
+    transition: var(--transition-smooth);
+  }
+  
+  .button-gold:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-gold), var(--shadow-elevated);
+    filter: brightness(1.1);
   }
 
   /* Golden glow effects for all icons and buttons */
@@ -370,21 +364,25 @@ All colors MUST be HSL.
   }
 
   .shadow-glow {
-    box-shadow: var(--shadow-primary);
+    box-shadow: var(--shadow-gold);
   }
 
   .card-glow {
-    background: var(--gradient-surface);
-    border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-elevated);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius);
-    transition: var(--transition-smooth);
+    @apply shadow-lg border border-border/50;
+    background: linear-gradient(135deg, hsl(var(--card) / 0.9), hsl(var(--surface-elevated) / 0.8));
+    backdrop-filter: blur(12px);
+    box-shadow: 
+      0 0 0 1px hsl(var(--border) / 0.5),
+      var(--shadow-nebula),
+      inset 0 1px 0 hsl(255 255 255 / 0.1);
   }
 
   .card-glow:hover {
-    border-color: hsl(var(--gold) / 0.3);
-    box-shadow: var(--shadow-elevated), 0 0 20px hsl(var(--gold) / 0.1);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+    box-shadow: 
+      0 0 0 1px hsl(var(--border) / 0.7),
+      var(--shadow-nebula),
+      var(--shadow-cosmic),
+      inset 0 1px 0 hsl(255 255 255 / 0.15);
   }
 }

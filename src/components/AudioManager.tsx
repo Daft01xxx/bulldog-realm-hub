@@ -1,71 +1,46 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface AudioManagerProps {
   backgroundMusic?: boolean;
   volume?: number;
 }
 
-export const AudioManager = ({ backgroundMusic = true, volume = 0.1 }: AudioManagerProps) => {
+let globalAudioInstance: HTMLAudioElement | null = null;
+
+export const AudioManager = ({ backgroundMusic = true, volume = 0.15 }: AudioManagerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    if (backgroundMusic && audioRef.current) {
-      // Create a subtle ambient background music using Web Audio API
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Create oscillators for ambient sound
-      const createAmbientSound = () => {
-        const oscillator1 = audioContext.createOscillator();
-        const oscillator2 = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator1.type = 'sine';
-        oscillator1.frequency.setValueAtTime(80, audioContext.currentTime);
-        oscillator2.type = 'sine';
-        oscillator2.frequency.setValueAtTime(82, audioContext.currentTime);
-        
-        gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
-        
-        oscillator1.connect(gainNode);
-        oscillator2.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator1.start();
-        oscillator2.start();
-        
-        // Create gentle fade in/out
-        const duration = 8000; // 8 seconds
-        setTimeout(() => {
-          gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2);
-          setTimeout(() => {
-            oscillator1.stop();
-            oscillator2.stop();
-            if (backgroundMusic) createAmbientSound(); // Loop
-          }, 2000);
-        }, duration);
-      };
+    if (backgroundMusic) {
+      // Create or use existing global audio instance
+      if (!globalAudioInstance) {
+        globalAudioInstance = new Audio('/cosmic-ambient.mp3');
+        globalAudioInstance.loop = true;
+        globalAudioInstance.volume = volume;
+        globalAudioInstance.preload = 'auto';
+      } else {
+        globalAudioInstance.volume = volume;
+      }
 
-      // Start ambient sound with user interaction
+      // Start playing on user interaction
       const startAudio = () => {
-        if (audioContext.state === 'suspended') {
-          audioContext.resume();
+        if (globalAudioInstance && globalAudioInstance.paused) {
+          globalAudioInstance.play().catch(e => console.log('Audio play failed:', e));
         }
-        createAmbientSound();
-        setIsPlaying(true);
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
+        document.removeEventListener('keydown', startAudio);
       };
 
+      // Add multiple event listeners for different types of user interaction
       document.addEventListener('click', startAudio);
       document.addEventListener('touchstart', startAudio);
+      document.addEventListener('keydown', startAudio);
 
       return () => {
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
-        if (audioContext.state !== 'closed') {
-          audioContext.close();
-        }
+        document.removeEventListener('keydown', startAudio);
       };
     }
   }, [backgroundMusic, volume]);

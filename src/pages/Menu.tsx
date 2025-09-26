@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, InfoIcon } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -25,7 +25,6 @@ const Menu = () => {
   const [canClaimDaily, setCanClaimDaily] = useState(false);
   const [timeUntilNextGift, setTimeUntilNextGift] = useState("");
   const [showCoins, setShowCoins] = useState(false);
-  const [showAppInfo, setShowAppInfo] = useState(false);
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -226,7 +225,7 @@ const Menu = () => {
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
-      <AudioManager backgroundMusic={true} volume={0.05} />
+      {showCoins && <FallingCoins2D count={8} />}
       <TopNavigation />
       {showCoins && <FallingCoins2D count={8} />}
       
@@ -240,48 +239,22 @@ const Menu = () => {
           BDOG APP
         </h1>
 
-        {/* BDOG Logo with Info Button */}
-        <div className="relative mb-6 flex justify-center items-center max-w-sm mx-auto">
-          <div 
-            className={`cursor-pointer transition-all duration-500 ${
-              animate ? 'animate-fade-in' : 'opacity-0'
-            } ${showAppInfo ? 'transform -translate-x-8 md:-translate-x-12' : ''}`}
-            style={{ animationDelay: '0.2s' }}
-            onClick={handleLogoClick}
-          >
-            <img 
-              src={bdogMainLogo} 
-              alt="BDOG" 
-              className="w-32 h-32 rounded-full shadow-2xl hover:scale-105 transition-transform duration-300"
-              style={{
-                filter: 'drop-shadow(0 0 20px hsl(var(--gold) / 0.5))'
-              }}
-            />
-          </div>
-          
-          {/* Info Button */}
-          <button
-            onClick={() => setShowAppInfo(!showAppInfo)}
-            className={`absolute top-0 right-0 w-6 h-6 rounded-full bg-gradient-to-r from-gold to-gold-light shadow-lg hover:shadow-gold/50 transition-all duration-300 flex items-center justify-center hover:scale-110 z-10 ${
-              animate ? 'animate-fade-in' : 'opacity-0'
-            }`}
-            style={{ animationDelay: '0.4s' }}
-          >
-            <InfoIcon className="w-3 h-3 text-background" />
-          </button>
-          
-          {/* App Info Panel - Always to the right */}
-          <div 
-            className={`absolute left-full top-2 ml-2 transition-all duration-500 z-50 ${
-              showAppInfo ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
-            }`}
-          >
-            <div className="bg-background border-2 border-gold/30 rounded-lg p-3 shadow-2xl backdrop-blur-sm w-40">
-              <h3 className="text-gold font-bold text-base mb-1">BDOG APP</h3>
-              <p className="text-foreground text-xs mb-1">Версия - beta</p>
-              <p className="text-foreground text-xs">Разработчик @deff0xq</p>
-            </div>
-          </div>
+        {/* BDOG Logo */}
+        <div 
+          className={`mb-6 cursor-pointer ${
+            animate ? 'animate-fade-in' : 'opacity-0'
+          }`}
+          style={{ animationDelay: '0.2s' }}
+          onClick={handleLogoClick}
+        >
+          <img 
+            src={bdogMainLogo} 
+            alt="BDOG" 
+            className="w-32 h-32 mx-auto rounded-full shadow-2xl hover:scale-105 transition-transform duration-300"
+            style={{
+              filter: 'drop-shadow(0 0 20px hsl(var(--gold) / 0.5))'
+            }}
+          />
         </div>
         
         {/* User info */}

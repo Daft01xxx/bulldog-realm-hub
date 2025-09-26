@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
 import PageTransition from "./components/PageTransition";
+import { AudioManager } from "./components/AudioManager";
 import { AuthProvider } from "./hooks/useAuth";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -64,6 +65,7 @@ function AppContent() {
 
   return (
     <>
+      <AudioManager backgroundMusic={true} volume={0.15} />
       <Toaster />
       <Sonner />
       {location.pathname === '/menu' && <FallingCoins2D />}

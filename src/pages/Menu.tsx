@@ -272,14 +272,14 @@ const Menu = () => {
           
           {/* App Info Panel */}
           <div 
-            className={`absolute left-full top-4 ml-4 transition-all duration-500 z-20 ${
+            className={`absolute left-full top-0 ml-2 transition-all duration-500 z-50 ${
               showAppInfo ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
             }`}
           >
-            <div className="bg-card/95 backdrop-blur-sm border border-gold/20 rounded-lg p-3 shadow-2xl min-w-44">
+            <div className="bg-background border-2 border-gold/30 rounded-lg p-3 shadow-2xl min-w-44">
               <h3 className="text-gold font-bold text-base mb-1">BDOG APP</h3>
-              <p className="text-muted-foreground text-xs mb-1">Версия - beta</p>
-              <p className="text-muted-foreground text-xs">Разработчик @deff0xq</p>
+              <p className="text-foreground text-xs mb-1">Версия - beta</p>
+              <p className="text-foreground text-xs">Разработчик @deff0xq</p>
             </div>
           </div>
         </div>

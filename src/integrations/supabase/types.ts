@@ -146,6 +146,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      reset_expired_boosters: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

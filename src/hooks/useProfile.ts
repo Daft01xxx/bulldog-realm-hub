@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,6 +38,7 @@ export const useProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const hasLoadedRef = useRef(false);
 
   // Get device info (IP + fingerprint) for unique account identification
   const getDeviceInfo = useCallback(async (): Promise<DeviceInfo> => {
@@ -66,8 +67,9 @@ export const useProfile = () => {
   }, []);
 
   const loadProfile = useCallback(async () => {
-    if (loading) return;
+    if (loading || hasLoadedRef.current) return;
     
+    hasLoadedRef.current = true;
     setLoading(true);
     console.log('Starting profile load...');
 
@@ -417,13 +419,14 @@ export const useProfile = () => {
   }, [profile, updateProfile, toast]);
 
   const reloadProfile = useCallback(() => {
+    hasLoadedRef.current = false;
     setProfile(null);
     loadProfile();
   }, [loadProfile]);
 
-  // Load profile only once on mount, avoid constant reloads
+  // Load profile only once on mount to prevent infinite loops
   useEffect(() => {
-    if (!profile && !loading) {
+    if (!hasLoadedRef.current && !loading) {
       loadProfile();
     }
   }, []);

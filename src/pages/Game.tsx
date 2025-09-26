@@ -457,9 +457,9 @@ const Game = () => {
 
       {/* Game area */}
       <div className="text-center mb-4">
-        <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
+        <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in bg-transparent border-transparent">
           <div 
-            className="relative cursor-pointer group"
+            className="relative cursor-pointer group bg-transparent"
             onClick={(e) => {
               handleClick(e);
             }}
@@ -473,7 +473,8 @@ const Game = () => {
                   : 'scale-100 hover:scale-105'
               }`}
               style={{
-                backgroundColor: 'transparent'
+                backgroundColor: 'transparent',
+                imageRendering: 'crisp-edges'
               }}
             />
             

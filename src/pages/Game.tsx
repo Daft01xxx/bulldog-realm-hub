@@ -268,7 +268,10 @@ const Game = () => {
   };
 
   const handleClick = async (event: React.MouseEvent) => {
-    if (bone <= 0) {
+    const currentBone = Number(bone) || 0;
+    
+    // Strict check - prevent any action if bones are 0 or less
+    if (currentBone <= 0) {
       toast({
         title: "Закончились косточки",
         description: "Подождите до завтра для восстановления",
@@ -291,10 +294,9 @@ const Game = () => {
 
     const currentGrow = Number(grow) || 0;
     const currentGrow1 = Number(grow1) || 1;
-    const currentBone = Number(bone) || 0;
     const currentTotalTaps = Number(totalTaps) || 0;
     
-    // Check again if bone count is valid before processing tap
+    // Double check again before processing - prevent race conditions
     if (currentBone <= 0) {
       toast({
         title: "Закончились косточки",
@@ -305,7 +307,7 @@ const Game = () => {
     }
     
     const newGrow = currentGrow + currentGrow1;
-    const newBone = Math.max(0, currentBone - 1);
+    const newBone = currentBone - 1; // Remove Math.max to ensure proper bone tracking
     const newTotalTaps = currentTotalTaps + 1;
     
     console.log('Click debug:', {

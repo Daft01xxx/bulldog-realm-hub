@@ -241,11 +241,11 @@ const Menu = () => {
         </h1>
 
         {/* BDOG Logo with Info Button */}
-        <div className="relative mb-6 flex justify-center items-center">
+        <div className="relative mb-6 flex justify-center items-center max-w-sm mx-auto">
           <div 
             className={`cursor-pointer transition-all duration-500 ${
               animate ? 'animate-fade-in' : 'opacity-0'
-            } ${showAppInfo ? 'transform -translate-x-16' : ''}`}
+            } ${showAppInfo ? 'transform -translate-x-12' : ''}`}
             style={{ animationDelay: '0.2s' }}
             onClick={handleLogoClick}
           >
@@ -262,24 +262,24 @@ const Menu = () => {
           {/* Info Button */}
           <button
             onClick={() => setShowAppInfo(!showAppInfo)}
-            className={`absolute -top-2 -right-16 w-8 h-8 rounded-full bg-gradient-to-r from-gold to-gold-light shadow-lg hover:shadow-gold/50 transition-all duration-300 flex items-center justify-center hover:scale-110 ${
+            className={`absolute top-0 right-0 w-6 h-6 rounded-full bg-gradient-to-r from-gold to-gold-light shadow-lg hover:shadow-gold/50 transition-all duration-300 flex items-center justify-center hover:scale-110 z-10 ${
               animate ? 'animate-fade-in' : 'opacity-0'
             }`}
             style={{ animationDelay: '0.4s' }}
           >
-            <InfoIcon className="w-4 h-4 text-background" />
+            <InfoIcon className="w-3 h-3 text-background" />
           </button>
           
           {/* App Info Panel */}
           <div 
-            className={`absolute left-1/2 top-0 transition-all duration-500 ${
-              showAppInfo ? 'opacity-100 translate-x-8' : 'opacity-0 translate-x-full pointer-events-none'
+            className={`absolute left-full top-4 ml-4 transition-all duration-500 z-20 ${
+              showAppInfo ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
             }`}
           >
-            <div className="bg-card/95 backdrop-blur-sm border border-gold/20 rounded-lg p-4 shadow-2xl min-w-48">
-              <h3 className="text-gold font-bold text-lg mb-2">BDOG APP</h3>
-              <p className="text-muted-foreground text-sm mb-1">Версия - beta</p>
-              <p className="text-muted-foreground text-sm">Разработчик @deff0xq</p>
+            <div className="bg-card/95 backdrop-blur-sm border border-gold/20 rounded-lg p-3 shadow-2xl min-w-44">
+              <h3 className="text-gold font-bold text-base mb-1">BDOG APP</h3>
+              <p className="text-muted-foreground text-xs mb-1">Версия - beta</p>
+              <p className="text-muted-foreground text-xs">Разработчик @deff0xq</p>
             </div>
           </div>
         </div>

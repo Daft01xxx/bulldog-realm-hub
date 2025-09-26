@@ -86,7 +86,8 @@ const Game = () => {
       // Load from localStorage only if we're not loading and don't have any data yet
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
-      const savedBone = Number(localStorage.getItem("bdog-bone")) || 1000;
+      const savedBoneStr = localStorage.getItem("bdog-bone");
+      const savedBone = savedBoneStr !== null ? Number(savedBoneStr) : 1000; // Preserve 0 bones
       const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
       
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });

@@ -285,7 +285,7 @@ export const useProfile = () => {
         ...userProfile,
         grow: Number(userProfile.grow) || 0,
         grow1: Number(userProfile.grow1) || 1,
-        bone: Number(userProfile.bone) >= 0 ? Number(userProfile.bone) : 1000, // Only default to 1000 if bone is negative/null
+        bone: userProfile.bone !== null && userProfile.bone !== undefined ? Number(userProfile.bone) : 1000, // Preserve 0 bones
         balance: Number(userProfile.balance) || 0,
         balance2: Number(userProfile.balance2) || 0,
         v_bdog_earned: Number(userProfile.v_bdog_earned) || 0,
@@ -300,7 +300,7 @@ export const useProfile = () => {
       localStorage.setItem('bdog-balance2', String(userProfile.balance2 || 0));
       localStorage.setItem('bdog-grow', String(Number(userProfile.grow) || 0));
       localStorage.setItem('bdog-grow1', String(Number(userProfile.grow1) || 1));
-      localStorage.setItem('bdog-bone', String(Number(userProfile.bone) >= 0 ? Number(userProfile.bone) : 1000)); // Only default to 1000 if bone is negative/null
+      localStorage.setItem('bdog-bone', String(userProfile.bone !== null && userProfile.bone !== undefined ? Number(userProfile.bone) : 1000)); // Preserve 0 bones
       localStorage.setItem('bdog-referrals', String(Number(userProfile.referrals) || 0));
       localStorage.setItem('bdog-v-earned', String(Number(userProfile.v_bdog_earned) || 0));
 

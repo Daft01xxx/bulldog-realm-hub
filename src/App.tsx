@@ -6,6 +6,7 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
+import PageTransition from "./components/PageTransition";
 import { AuthProvider } from "./hooks/useAuth";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -65,23 +66,25 @@ function AppContent() {
     <>
       <Toaster />
       <Sonner />
-      {!isOnBanPage && <FallingCoins2D />}
-      <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/wallet" element={<Wallet />} />
-        <Route path="/connected-wallet" element={<ConnectedWallet />} />
-        <Route path="/game" element={<Game />} />
-        <Route path="/info" element={<Info />} />
-        <Route path="/referral" element={<Referral />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/bdogpay" element={<BdogPay />} />
-        <Route path="/promotion" element={<Promotion />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/ban" element={<Ban />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {location.pathname === '/menu' && <FallingCoins2D />}
+      <PageTransition>
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/wallet" element={<Wallet />} />
+          <Route path="/connected-wallet" element={<ConnectedWallet />} />
+          <Route path="/game" element={<Game />} />
+          <Route path="/info" element={<Info />} />
+          <Route path="/referral" element={<Referral />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/bdogpay" element={<BdogPay />} />
+          <Route path="/promotion" element={<Promotion />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/ban" element={<Ban />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </PageTransition>
     </>
   );
 }

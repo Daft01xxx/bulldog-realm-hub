@@ -2,8 +2,6 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import TonLogo from "@/components/TonLogo";
-import BackgroundFallingCoins3D from "@/components/BackgroundFallingCoins3D";
 const Welcome = () => {
   const navigate = useNavigate();
   const {
@@ -35,9 +33,6 @@ const Welcome = () => {
     }
   };
   return <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
-      {/* Background 3D falling coins */}
-      <BackgroundFallingCoins3D count={30} />
-      
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-dark"></div>
       
@@ -117,9 +112,6 @@ const Welcome = () => {
       {/* Main content */}
       <div className="relative z-10 text-center px-4">
         <div className="animate-bounce-in min-h-[300px] flex flex-col justify-center">
-          <div className="mb-4 flex justify-center">
-            <TonLogo size="xl" className="animate-pulse-gold" />
-          </div>
           <h1 className="text-4xl font-bold text-gradient animate-glow-text mb-6 md:text-7xl">
             BDOG APP
           </h1>

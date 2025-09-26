@@ -15,9 +15,10 @@ function FallingCoin({ id, delay, duration, leftPosition, size }: CoinProps) {
       className="fixed pointer-events-none z-10 opacity-70"
       style={{
         left: `${leftPosition}%`,
-        top: '-60px',
+        top: '-80px',
         animationDelay: `${delay}s`,
         animationDuration: `${duration}s`,
+        willChange: 'transform',
       }}
     >
       <img
@@ -25,8 +26,8 @@ function FallingCoin({ id, delay, duration, leftPosition, size }: CoinProps) {
         alt=""
         className="animate-fall-coin animate-slow-spin"
         style={{
-          width: `${size}px`,
-          height: `${size}px`,
+          width: `${Math.max(size * 0.8, 24)}px`, // Minimum size on mobile
+          height: `${Math.max(size * 0.8, 24)}px`,
           filter: 'drop-shadow(0 0 8px hsl(var(--gold) / 0.3))',
         }}
       />
@@ -38,7 +39,7 @@ interface FallingCoins2DProps {
   count?: number;
 }
 
-export default function FallingCoins2D({ count = 12 }: FallingCoins2DProps) {
+export default function FallingCoins2D({ count = 8 }: FallingCoins2DProps) {
   const [coins, setCoins] = useState<CoinProps[]>([]);
 
   useEffect(() => {

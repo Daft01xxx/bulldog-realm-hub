@@ -270,16 +270,16 @@ const Menu = () => {
             <InfoIcon className="w-3 h-3 text-background" />
           </button>
           
-          {/* App Info Panel */}
+          {/* App Info Panel - Mobile Optimized */}
           <div 
-            className={`absolute left-full top-0 ml-2 transition-all duration-500 z-50 ${
-              showAppInfo ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
+            className={`fixed top-20 left-4 right-4 transition-all duration-500 z-50 md:absolute md:left-full md:top-0 md:ml-2 md:right-auto md:w-44 ${
+              showAppInfo ? 'opacity-100 translate-y-0 md:translate-x-0' : 'opacity-0 -translate-y-4 md:translate-x-4 pointer-events-none'
             }`}
           >
-            <div className="bg-background border-2 border-gold/30 rounded-lg p-3 shadow-2xl min-w-44">
-              <h3 className="text-gold font-bold text-base mb-1">BDOG APP</h3>
-              <p className="text-foreground text-xs mb-1">Версия - beta</p>
-              <p className="text-foreground text-xs">Разработчик @deff0xq</p>
+            <div className="bg-background border-2 border-gold/30 rounded-lg p-4 shadow-2xl backdrop-blur-sm">
+              <h3 className="text-gold font-bold text-lg mb-2 text-center md:text-left">BDOG APP</h3>
+              <p className="text-foreground text-sm mb-1 text-center md:text-left">Версия - beta</p>
+              <p className="text-foreground text-sm text-center md:text-left">Разработчик @deff0xq</p>
             </div>
           </div>
         </div>

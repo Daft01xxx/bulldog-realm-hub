@@ -191,11 +191,17 @@ All colors MUST be HSL.
 
   @keyframes fall-coin {
     0% {
-      transform: translateY(-100vh) rotate(0deg);
+      transform: translateY(-120px) rotate(0deg);
       opacity: 0.8;
     }
+    10% {
+      opacity: 0.9;
+    }
+    90% {
+      opacity: 0.3;
+    }
     100% {
-      transform: translateY(100vh) rotate(360deg);
+      transform: translateY(calc(100vh + 120px)) rotate(360deg);
       opacity: 0;
     }
   }

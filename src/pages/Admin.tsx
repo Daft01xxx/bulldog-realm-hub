@@ -39,6 +39,13 @@ const Admin = () => {
     grow1: ""
   });
 
+  // All hooks must be called before any conditional returns
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadUsers();
+    }
+  }, [isAuthenticated]);
+
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === "Gnomdoma04022012") {
@@ -83,10 +90,6 @@ const Admin = () => {
       </div>
     );
   }
-
-  useEffect(() => {
-    loadUsers();
-  }, []);
 
   const loadUsers = async () => {
     setLoading(true);

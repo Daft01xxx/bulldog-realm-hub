@@ -272,11 +272,11 @@ const Menu = () => {
           
           {/* App Info Panel - Mobile Optimized */}
           <div 
-            className={`fixed top-20 left-4 right-4 transition-all duration-500 z-50 md:absolute md:left-full md:top-0 md:ml-2 md:right-auto md:w-44 ${
+            className={`fixed top-32 left-1/2 transform -translate-x-1/2 transition-all duration-500 z-50 md:absolute md:left-full md:top-0 md:ml-2 md:right-auto md:w-44 md:transform-none ${
               showAppInfo ? 'opacity-100 translate-y-0 md:translate-x-0' : 'opacity-0 -translate-y-4 md:translate-x-4 pointer-events-none'
             }`}
           >
-            <div className="bg-background border-2 border-gold/30 rounded-lg p-4 shadow-2xl backdrop-blur-sm">
+            <div className="bg-background border-2 border-gold/30 rounded-lg p-4 shadow-2xl backdrop-blur-sm mx-4 md:mx-0">
               <h3 className="text-gold font-bold text-lg mb-2 text-center md:text-left">BDOG APP</h3>
               <p className="text-foreground text-sm mb-1 text-center md:text-left">Версия - beta</p>
               <p className="text-foreground text-sm text-center md:text-left">Разработчик @deff0xq</p>

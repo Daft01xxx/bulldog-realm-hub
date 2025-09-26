@@ -8,46 +8,54 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Tonkeeper-style Theme - Elegant Black & Rich Gold */
-    --background: 0 0% 6%;
-    --foreground: 0 0% 96%;
+    /* Cosmic Space Theme */
+    --background: 230 30% 8%;
+    --foreground: 210 20% 98%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 0 0% 96%;
+    --card: 235 30% 12%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 235 30% 12%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 45 96% 53%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 240 100% 70%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 18%;
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 220 30% 20%;
+    --secondary-foreground: 210 20% 98%;
 
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 63%;
+    --muted: 220 30% 20%;
+    --muted-foreground: 215 20% 70%;
 
-    --accent: 45 96% 64%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 220 30% 20%;
+    --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 75% 58%;
-    --destructive-foreground: 0 0% 96%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 22%;
-    --input: 0 0% 18%;
-    --ring: 45 96% 53%;
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
+    --ring: 240 100% 70%;
 
     --radius: 1rem;
 
-    /* Tonkeeper Gold System - Rich & Elegant */
-    --gold: 45 96% 53%;
-    --gold-light: 46 94% 68%;
-    --gold-dark: 43 98% 38%;
-    --gold-muted: 45 85% 45%;
-    --gold-bright: 47 100% 78%;
-    --gold-accent: 44 92% 62%;
+    /* Cosmic Gold Colors */
+    --gold: 50 100% 65%;
+    --gold-light: 55 100% 75%;
+    --gold-dark: 45 100% 55%;
+    --gold-muted: 48 80% 60%;
+    --gold-bright: 52 100% 80%;
+    --gold-accent: 60 100% 85%;
     
-    /* Background variations */
+    /* Cosmic Space Colors */
+    --cosmic-blue: 240 100% 70%;
+    --cosmic-purple: 270 100% 70%;
+    --cosmic-cyan: 180 100% 60%;
+    
+    /* Surface Colors */
+    --surface: 235 30% 12%;
+    --surface-elevated: 240 25% 15%;
+    --surface-muted: 230 35% 10%;
     --surface: 0 0% 11%;
     --surface-elevated: 0 0% 16%;
     --surface-muted: 0 0% 8%;

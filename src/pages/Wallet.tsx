@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
+import TopNavigation from "@/components/TopNavigation";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { AudioManager } from '@/components/AudioManager';
 import bdogLogo from "@/assets/bdog-logo.jpeg";
@@ -50,6 +51,7 @@ const Wallet = () => {
   return (
     <div className="min-h-screen bg-background px-1 py-2">
       <AudioManager backgroundMusic={true} volume={0.05} />
+      <TopNavigation />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-3 pt-2">
         <Button
@@ -90,11 +92,14 @@ const Wallet = () => {
         {/* Connection Status Card */}
         <Card className="card-glow p-4 text-center animate-fade-in-up">
           <div className="relative">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-gold to-gold-light flex items-center justify-center shadow-xl overflow-hidden">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-xl overflow-hidden">
               <img 
                 src={bdogLogo} 
                 alt="BDOG Coin" 
-                className="w-full h-full object-cover rounded-full"
+                className="w-12 h-12 object-cover rounded-full bg-white p-1"
+                style={{
+                  filter: 'invert(1) brightness(0) contrast(100%)'
+                }}
               />
             </div>
             

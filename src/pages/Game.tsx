@@ -8,6 +8,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
+import TopNavigation from '@/components/TopNavigation';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -253,10 +254,7 @@ const Game = () => {
       setBoosterEndTime(null);
       setBoosterTimeLeft("");
       
-      toast({
-        title: "Ускоритель закончился",
-        description: "Рост вернулся к нормальному значению",
-      });
+      // Removed toast notification for booster expiration
       return;
     }
 
@@ -406,6 +404,7 @@ const Game = () => {
   return (
     <div className="min-h-screen bg-background px-2 py-4">
       <AudioManager backgroundMusic={true} volume={0.1} />
+      <TopNavigation />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-4 pt-4">
         <Button
@@ -467,16 +466,13 @@ const Game = () => {
             <img 
               src={bulldogLogoTransparent}
               alt="BDOG"
-              className={`w-40 h-40 mx-auto rounded-full object-cover transition-all duration-150 ease-out bg-transparent ${
+              className={`w-40 h-40 mx-auto rounded-full object-contain transition-all duration-150 ease-out ${
                 isClicked 
-                  ? 'scale-110 brightness-105' 
+                  ? 'scale-110 brightness-110' 
                   : 'scale-100 hover:scale-105'
               }`}
               style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                outline: 'none',
-                mixBlendMode: 'multiply'
+                filter: 'brightness(1.2) contrast(1.1) saturate(1.2) drop-shadow(0 0 20px hsl(var(--gold) / 0.6))'
               }}
             />
             

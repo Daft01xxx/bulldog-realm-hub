@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
 import { AudioManager, playLogoClickSound } from '@/components/AudioManager';
 import FallingCoins2D from '@/components/FallingCoins2D';
+import TopNavigation from '@/components/TopNavigation';
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
@@ -211,12 +212,21 @@ const Menu = () => {
       path: "/promotion",
       description: "Продвигайте и получайте награды",
       delay: "0.5s"
+    },
+    {
+      title: "Поддержка",
+      icon: "support",
+      path: "https://t.me/Deff0xq",
+      description: "Связаться с поддержкой",
+      delay: "0.6s",
+      external: true
     }
   ];
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
       <AudioManager backgroundMusic={true} volume={0.05} />
+      <TopNavigation />
       {showCoins && <FallingCoins2D count={8} />}
       
       {/* Header with title */}
@@ -305,12 +315,20 @@ const Menu = () => {
                   animate ? 'animate-slide-in-right' : 'opacity-0'
                 }`}
                 style={{ animationDelay: item.delay }}
-                onClick={() => navigate(item.path)}
+                onClick={() => {
+                  if (item.external) {
+                    window.open(item.path, '_blank');
+                  } else {
+                    navigate(item.path);
+                  }
+                }}
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
                       <img src={bdogLogo} alt="BDOG" className="w-6 h-6 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                    ) : item.icon === "support" ? (
+                      <HeadphonesIcon className="w-6 h-6 icon-gold" />
                     ) : (
                       <IconComponent className="w-6 h-6 icon-gold" />
                     )}

@@ -245,7 +245,7 @@ const Menu = () => {
           <div 
             className={`cursor-pointer transition-all duration-500 ${
               animate ? 'animate-fade-in' : 'opacity-0'
-            } ${showAppInfo ? 'transform -translate-x-12' : ''}`}
+            } ${showAppInfo ? 'transform -translate-x-8 md:-translate-x-12' : ''}`}
             style={{ animationDelay: '0.2s' }}
             onClick={handleLogoClick}
           >
@@ -270,16 +270,16 @@ const Menu = () => {
             <InfoIcon className="w-3 h-3 text-background" />
           </button>
           
-          {/* App Info Panel - Mobile Optimized */}
+          {/* App Info Panel - Always to the right */}
           <div 
-            className={`fixed top-32 left-1/2 transform -translate-x-1/2 transition-all duration-500 z-50 md:absolute md:left-full md:top-0 md:ml-2 md:right-auto md:w-44 md:transform-none ${
-              showAppInfo ? 'opacity-100 translate-y-0 md:translate-x-0' : 'opacity-0 -translate-y-4 md:translate-x-4 pointer-events-none'
+            className={`absolute left-full top-2 ml-2 transition-all duration-500 z-50 ${
+              showAppInfo ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'
             }`}
           >
-            <div className="bg-background border-2 border-gold/30 rounded-lg p-4 shadow-2xl backdrop-blur-sm mx-4 md:mx-0">
-              <h3 className="text-gold font-bold text-lg mb-2 text-center md:text-left">BDOG APP</h3>
-              <p className="text-foreground text-sm mb-1 text-center md:text-left">Версия - beta</p>
-              <p className="text-foreground text-sm text-center md:text-left">Разработчик @deff0xq</p>
+            <div className="bg-background border-2 border-gold/30 rounded-lg p-3 shadow-2xl backdrop-blur-sm w-40">
+              <h3 className="text-gold font-bold text-base mb-1">BDOG APP</h3>
+              <p className="text-foreground text-xs mb-1">Версия - beta</p>
+              <p className="text-foreground text-xs">Разработчик @deff0xq</p>
             </div>
           </div>
         </div>

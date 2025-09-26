@@ -90,13 +90,13 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('VPN detection error:', error);
     
     return new Response(
       JSON.stringify({ 
         error: 'VPN detection failed',
-        details: error.message
+        details: error?.message || 'Unknown error occurred'
       }),
       { 
         status: 500,

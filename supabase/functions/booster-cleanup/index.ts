@@ -5,29 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface Database {
-  public: {
-    Tables: {
-      profiles: {
-        Row: {
-          id: string
-          grow1: number
-          booster_expires_at: string | null
-        }
-        Update: {
-          grow1?: number
-          booster_expires_at?: string | null
-        }
-      }
-    }
-    Functions: {
-      reset_expired_boosters: {
-        Returns: number
-      }
-    }
-  }
-}
-
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -35,7 +12,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient<Database>(
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
@@ -72,12 +49,12 @@ Deno.serve(async (req) => {
       }
     )
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Booster cleanup function error:', error)
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error?.message || 'Unknown error occurred'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

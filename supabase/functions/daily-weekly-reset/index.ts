@@ -5,27 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-interface Database {
-  public: {
-    Tables: {
-      profiles: {
-        Row: {
-          id: string
-          reg: string | null
-          grow: number
-          bone: number
-          v_bdog_earned: number
-        }
-        Update: {
-          grow?: number
-          bone?: number
-          v_bdog_earned?: number
-        }
-      }
-    }
-  }
-}
-
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -33,7 +12,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabaseClient = createClient<Database>(
+    const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
@@ -164,12 +143,12 @@ Deno.serve(async (req) => {
       )
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Reset function error:', error)
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: error?.message || 'Unknown error occurred'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

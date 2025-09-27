@@ -204,18 +204,30 @@ export const BackgroundMusic = ({ enabled = true, volume = 0.1 }: BackgroundMusi
     const startMusic = async () => {
       if (!hasStarted.current && globalMusicGenerator) {
         hasStarted.current = true;
-        console.log('User interaction detected, starting background music');
+        console.log('Starting background music');
         await globalMusicGenerator.start();
       }
     };
 
-    // Ждём первого взаимодействия пользователя
-    const events = ['click', 'touchstart', 'keydown'];
-    events.forEach(event => {
-      document.addEventListener(event, startMusic, { once: true });
-    });
+    // Пытаемся запустить музыку сразу
+    const tryAutoStart = async () => {
+      try {
+        await startMusic();
+      } catch (error) {
+        console.log('Autoplay blocked, waiting for user interaction');
+        // Если автозапуск заблокирован, ждём взаимодействия пользователя
+        const events = ['click', 'touchstart', 'keydown'];
+        events.forEach(event => {
+          document.addEventListener(event, startMusic, { once: true });
+        });
+      }
+    };
+
+    tryAutoStart();
 
     return () => {
+      // Очистка event listeners
+      const events = ['click', 'touchstart', 'keydown'];
       events.forEach(event => {
         document.removeEventListener(event, startMusic);
       });

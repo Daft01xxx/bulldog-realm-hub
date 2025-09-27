@@ -19,7 +19,7 @@ All colors MUST be HSL.
     --popover-foreground: 210 20% 98%;
 
     --primary: 240 100% 70%;
-    --primary-foreground: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
 
     --secondary: 220 30% 20%;
     --secondary-foreground: 210 20% 98%;
@@ -358,7 +358,7 @@ All colors MUST be HSL.
   .button-gradient-gold {
     background: var(--gradient-gold);
     border: none;
-    color: hsl(var(--primary-foreground));
+    color: hsl(var(--background));
     font-weight: 600;
     box-shadow: var(--shadow-gold);
     transition: var(--transition-smooth);

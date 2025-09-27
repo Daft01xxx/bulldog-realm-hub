@@ -12,7 +12,7 @@ interface BoneFarmGameProps {
   onRecordUpdate: (record: number) => void;
 }
 
-const GRID_SIZE = 7;
+const GRID_SIZE = 9;
 
 interface Block {
   id: number;
@@ -475,7 +475,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <Card className="card-glow p-6 text-center mb-6">
             <h2 className="text-2xl font-bold mb-4 text-gold">Фарм косточек</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              Размещайте блоки на сетке 7x7. Очищайте полные линии чтобы заработать косточки!
+              Размещайте блоки на сетке 9x9. Очищайте полные линии чтобы заработать косточки!
             </p>
             <p className="text-lg mb-4">Ключи: <span className="font-bold text-gold">∞</span></p>
             
@@ -512,8 +512,8 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           </div>
 
         {/* Game Grid */}
-        <Card className="card-glow p-3 mb-4">
-          <div ref={gameGridRef} className="grid grid-cols-7 gap-1 mb-4">
+        <Card className="card-glow p-2 mb-4">
+          <div ref={gameGridRef} className="grid grid-cols-9 gap-0.5 mb-4">
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака
@@ -537,7 +537,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                     key={`${rowIndex}-${colIndex}`}
                     data-row={rowIndex}
                     data-col={colIndex}
-                    className={`aspect-square border border-muted-foreground/20 rounded-sm ${
+                    className={`aspect-square border border-muted-foreground/20 rounded-sm w-7 h-7 ${
                       cell.filled 
                         ? cell.color 
                         : isGhostCell 
@@ -563,7 +563,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
               }`}
               onTouchStart={(e) => handleTouchStart(e, block)}
             >
-              <div className="grid gap-0.5 max-w-[80px] mx-auto" style={{
+              <div className="grid gap-0.5 max-w-[60px] mx-auto" style={{
                 gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
                 gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`
               }}>
@@ -574,7 +574,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                       className={`aspect-square rounded-sm ${
                         cell ? block.color : 'bg-transparent'
                       }`}
-                      style={{ minWidth: '8px', minHeight: '8px' }}
+                      style={{ minWidth: '6px', minHeight: '6px' }}
                     />
                   ))
                 )}

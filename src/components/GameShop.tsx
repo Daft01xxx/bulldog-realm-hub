@@ -93,7 +93,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
     console.log('[GameShop] Processing transaction...');
 
     try {
-      // Original user's TON wallet address  
+      // User's TON wallet address for receiving payments
       const originalAddress = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
       
       // Convert UQ address to EQ format for wallet transactions

@@ -80,8 +80,8 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
     setIsProcessing(true);
 
     try {
-      // Send transaction to BDOG merchant wallet
-      const merchantWallet = "EQBvI0aFLnw2QbZgjMPCLRdtRHxhUyinQudg6sdiohIwg5b0"; // BDOG official wallet
+      // Send transaction to user's TON wallet
+      const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"; // User's TON wallet
       const result = await sendTransaction(
         merchantWallet,
         item.price,

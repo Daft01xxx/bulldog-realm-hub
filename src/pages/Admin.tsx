@@ -415,7 +415,7 @@ const Admin = () => {
           <div className="grid gap-4">
             {profiles.map((profile) => (
               <Card key={profile.id} className="card-glow p-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <strong>ID:</strong><br/>
                     <span className="text-xs font-mono">{profile.id.substring(0, 8)}...</span>

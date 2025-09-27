@@ -87,7 +87,7 @@ const Wallet = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-xs mx-auto space-y-3">
+      <div className="mx-auto space-y-3">
         {/* Connection Status Card */}
         <Card className="card-glow p-4 text-center animate-fade-in-up">
           <div className="relative">

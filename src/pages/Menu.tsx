@@ -241,7 +241,7 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-5xl md:text-6xl font-bold text-gradient animate-glow-text mb-4 ${
+          className={`text-5xl font-bold text-gradient animate-glow-text mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
@@ -268,7 +268,7 @@ const Menu = () => {
         
         {/* User info */}
         <Card 
-          className={`card-glow max-w-sm mx-auto p-6 mb-4 ${
+          className={`card-glow mx-auto p-6 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
@@ -313,7 +313,7 @@ const Menu = () => {
       </div>
 
       {/* Menu grid */}
-      <div className="max-w-sm mx-auto relative z-10">
+      <div className="mx-auto relative z-10">
         <div className="grid grid-cols-1 gap-3 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;

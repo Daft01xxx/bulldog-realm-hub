@@ -56,7 +56,7 @@ const Index = () => {
       <FloatingCosmicCoins />
       <AudioManager backgroundMusic={true} volume={0.3} />
       
-      <div className="container mx-auto px-4 py-8 relative z-10">
+      <div className="mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
         <div className="text-center mb-8">
           <div className="mb-6">
@@ -69,7 +69,7 @@ const Index = () => {
               }}
             />
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-gradient animate-glow-text mb-4">
+          <h1 className="text-4xl font-bold text-gradient animate-glow-text mb-4">
             BDOG ECOSYSTEM
           </h1>
           <p className="text-xl text-muted-foreground mb-6">
@@ -78,7 +78,7 @@ const Index = () => {
         </div>
 
         {/* Current Miner Display */}
-        <Card className="card-glow p-6 mb-6 max-w-md mx-auto">
+        <Card className="card-glow p-6 mb-6 mx-auto">
           <div className="text-center">
             <h2 className="text-lg font-semibold text-gold mb-4">Ваш майнер</h2>
             <div className="relative w-20 h-20 mx-auto mb-4">
@@ -133,7 +133,7 @@ const Index = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 gap-4 mx-auto">
           <Card className="card-glow p-4 text-center">
             <Gamepad2 className="w-8 h-8 text-gold mx-auto mb-2" />
             <h3 className="font-semibold text-foreground mb-1">BDOG Game</h3>
@@ -156,7 +156,7 @@ const Index = () => {
         </div>
 
         {/* Info Section */}
-        <Card className="card-glow p-6 mt-8 max-w-2xl mx-auto text-center bg-gradient-to-br from-gold/5 to-primary/5 border-gold/20">
+        <Card className="card-glow p-6 mt-8 mx-auto text-center bg-gradient-to-br from-gold/5 to-primary/5 border-gold/20">
           <h2 className="text-xl font-bold text-gradient mb-4">
             Космическая экосистема BDOG
           </h2>

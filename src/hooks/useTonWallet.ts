@@ -3,6 +3,7 @@ import { useTonConnectUI, useTonWallet, useTonAddress, useIsConnectionRestored }
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfile } from '@/hooks/useProfile';
+import { Address } from '@ton/core';
 
 interface WalletData {
   address: string;
@@ -185,12 +186,24 @@ export const useBdogTonWallet = () => {
       const nanoAmount = (parseFloat(amount) * 1000000000).toString();
       console.log('[TON Wallet] Converting amount:', { original: amount, nano: nanoAmount });
 
+      // Convert address to proper format for TON Connect
+      let formattedAddress: string;
+      try {
+        // Parse address and ensure it's in the correct format
+        const parsedAddress = Address.parse(to);
+        formattedAddress = parsedAddress.toString();
+        console.log('[TON Wallet] Converting address:', { original: to, formatted: formattedAddress });
+      } catch (e) {
+        console.error('[TON Wallet] Invalid address format:', e);
+        throw new Error(`Invalid address format: ${to}`);
+      }
+
       // Basic transaction without payload for now (comment support can be added later)
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 360, // Valid for 6 minutes
         messages: [
           {
-            address: to,
+            address: formattedAddress,
             amount: nanoAmount
             // Removed payload for now to simplify debugging
           }

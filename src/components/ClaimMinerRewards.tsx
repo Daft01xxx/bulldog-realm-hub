@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfileContext } from '@/components/ProfileProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Gift } from 'lucide-react';
 
 const ClaimMinerRewards: React.FC = () => {
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile } = useProfileContext();
   const [claiming, setClaiming] = useState(false);
 
   const canClaimReward = () => {

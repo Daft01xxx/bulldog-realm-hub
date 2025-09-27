@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfileContext } from '@/components/ProfileProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const AutoMinerRewards: React.FC = () => {
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile } = useProfileContext();
 
   useEffect(() => {
     if (!profile) return;

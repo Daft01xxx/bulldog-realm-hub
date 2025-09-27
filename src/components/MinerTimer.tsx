@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useProfile } from '@/hooks/useProfile';
+import { useProfileContext } from '@/components/ProfileProvider';
 
 const MinerTimer: React.FC = () => {
-  const { profile } = useProfile();
+  const { profile } = useProfileContext();
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      console.log('MinerTimer: profile data:', profile);
-      console.log('MinerTimer: last_miner_reward_at:', profile?.last_miner_reward_at);
-      
       if (!profile?.last_miner_reward_at) {
-        setTimeLeft('00:00:00');
+        setTimeLeft('Награда готова!');
         return;
       }
 
@@ -33,13 +30,18 @@ const MinerTimer: React.FC = () => {
       setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
     };
 
+    // Calculate immediately
     calculateTimeLeft();
+    
+    // Then update every second
     const interval = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(interval);
   }, [profile?.last_miner_reward_at]);
 
   const getCurrentMinerIncome = () => {
+    if (!profile) return 100;
+    
     const minerType = profile?.current_miner || 'default';
     const minerLevel = profile?.miner_level || 1;
     
@@ -61,6 +63,15 @@ const MinerTimer: React.FC = () => {
 
     return (incomeRates[minerType] || 100) * minerLevel;
   };
+
+  // Don't render if no profile
+  if (!profile) {
+    return (
+      <div className="bg-card/50 backdrop-blur-sm border border-border/20 rounded-xl p-4 text-center">
+        <div className="text-muted-foreground">Загрузка профиля...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card/50 backdrop-blur-sm border border-border/20 rounded-xl p-4 text-center">

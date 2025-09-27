@@ -271,11 +271,14 @@ export const useProfile = () => {
 
     } catch (error) {
       console.error('Error in loadProfile:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось загрузить профиль пользователя",
-        variant: "destructive",
-      });
+      // Don't show toast error on mount to prevent spam
+      if (error instanceof Error && !error.message.includes('Failed to authenticate')) {
+        toast({
+          title: "Ошибка",
+          description: "Не удалось загрузить профиль пользователя",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -357,15 +360,26 @@ export const useProfile = () => {
     }
   }, [profile, updateProfile, toast]);
 
-  const reloadProfile = useCallback(() => {
-    hasLoadedRef.current = false;
+  const reloadProfile = useCallback(async () => {
     setProfile(null);
-    loadProfile();
+    await loadProfile();
   }, [loadProfile]);
 
   // Load profile only once on mount to prevent infinite loops
   useEffect(() => {
-    loadProfile();
+    let isMounted = true;
+    
+    const initProfile = async () => {
+      if (isMounted) {
+        await loadProfile();
+      }
+    };
+    
+    initProfile();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return {

@@ -12,6 +12,8 @@ import { AudioManager } from "./components/AudioManager";
 import FloatingCosmicCoins from "./components/FloatingCosmicCoins";
 import { AuthProvider } from "./hooks/useAuth";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { ProfileProvider } from "./components/ProfileProvider";
+import AutoMinerRewards from "./components/AutoMinerRewards";
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -77,6 +79,7 @@ function AppContent() {
     <>
       <FloatingCosmicCoins />
       <AudioManager backgroundMusic={false} volume={0.1} />
+      <AutoMinerRewards />
       <FloatingParticles />
       <Toaster />
       <Sonner />
@@ -113,9 +116,11 @@ const App = () => (
       <TooltipProvider>
         <ThemeProvider>
           <AuthProvider>
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
+            <ProfileProvider>
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </ProfileProvider>
           </AuthProvider>
         </ThemeProvider>
       </TooltipProvider>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pickaxe, TrendingUp, Gamepad2, Play, RefreshCw } from "lucide-react";
-import { useProfile } from '@/hooks/useProfile';
+import { useProfileContext } from '@/components/ProfileProvider';
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import MinerDebug from '@/components/MinerDebug';
@@ -25,7 +25,7 @@ const minerTypes = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const { profile, reloadProfile } = useProfile();
+  const { profile, reloadProfile } = useProfileContext();
   const [currentMiner, setCurrentMiner] = useState('default');
   const [minerLevel, setMinerLevel] = useState(1);
   const [vBdogEarned, setVBdogEarned] = useState(0);

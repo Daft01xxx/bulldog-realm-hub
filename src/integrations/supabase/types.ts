@@ -34,6 +34,7 @@ export type Database = {
           is_vpn_user: boolean | null
           keys: number | null
           last_key_reset: string | null
+          last_miner_reward_at: string | null
           last_referral_code: string | null
           miner_level: number | null
           referral_code_used: boolean | null
@@ -65,6 +66,7 @@ export type Database = {
           is_vpn_user?: boolean | null
           keys?: number | null
           last_key_reset?: string | null
+          last_miner_reward_at?: string | null
           last_referral_code?: string | null
           miner_level?: number | null
           referral_code_used?: boolean | null
@@ -96,6 +98,7 @@ export type Database = {
           is_vpn_user?: boolean | null
           keys?: number | null
           last_key_reset?: string | null
+          last_miner_reward_at?: string | null
           last_referral_code?: string | null
           miner_level?: number | null
           referral_code_used?: boolean | null
@@ -163,6 +166,10 @@ export type Database = {
         Args: { reward_amount?: number; task_id: string }
         Returns: boolean
       }
+      distribute_miner_rewards: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       find_referrer_safely: {
         Args: { referral_code: string }
         Returns: {
@@ -172,6 +179,10 @@ export type Database = {
           user_id: string
           v_bdog_earned: number
         }[]
+      }
+      get_miner_hourly_income: {
+        Args: { miner_level: number; miner_type: string }
+        Returns: number
       }
       get_next_sunday_reset: {
         Args: Record<PropertyKey, never>

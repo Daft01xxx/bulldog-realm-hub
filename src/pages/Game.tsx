@@ -100,14 +100,22 @@ const Game = () => {
       setBoneFarmRecord(profileBoneFarmRecord);
       
       // Check if keys need daily reset
-      const lastReset = profileData.last_key_reset ? new Date(profileData.last_key_reset) : new Date();
+      const lastReset = profileData.last_key_reset ? new Date(profileData.last_key_reset) : null;
       const today = new Date();
-      if (today.toDateString() !== lastReset.toDateString()) {
+      const todayStr = today.toISOString().split('T')[0];
+      
+      // Only reset if we have a last reset date and it's different from today
+      if (lastReset && lastReset.toDateString() !== today.toDateString()) {
         // Reset keys to 3 and update last reset date
         setKeys(3);
         updateProfile({ 
           keys: 3, 
-          last_key_reset: today.toISOString().split('T')[0] 
+          last_key_reset: todayStr 
+        } as any);
+      } else if (!lastReset) {
+        // Set initial reset date without changing keys
+        updateProfile({ 
+          last_key_reset: todayStr 
         } as any);
       }
       

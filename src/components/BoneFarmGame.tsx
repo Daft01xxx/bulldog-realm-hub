@@ -239,20 +239,16 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
       });
     }
 
-    // Generate new blocks if all are placed (check after state update)
+    // Check game over first
     setTimeout(() => {
-      setCurrentBlocks(prev => {
-        console.log('Current blocks after placement:', prev);
-        if (prev.length === 0) {
-          console.log('Generating new blocks...');
-          generateRandomBlocks();
-        }
-        return prev;
-      });
+      checkGameOver(newGrid);
+      
+      // Generate new blocks if all are placed and game is not over
+      if (currentBlocks.length === 0) {
+        console.log('Generating new blocks...');
+        generateRandomBlocks();
+      }
     }, 100);
-
-    // Check game over
-    setTimeout(() => checkGameOver(newGrid), 200);
   };
 
   const checkGameOver = (currentGrid: GridCell[][]) => {
@@ -465,25 +461,12 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   return (
     <div className="min-h-screen bg-background px-2 py-4">
       <div className="max-w-md mx-auto">
-        <div className="flex justify-between items-center mb-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={endGame}
-            className="button-outline-gold"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Назад
-          </Button>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">Косточки</p>
-            <p className="font-bold text-gold">{bonesEarned}</p>
-            {/* Отладочная информация */}
-            <p className="text-xs text-red-500">
-              Драг: {isDragging ? 'Да' : 'Нет'} | Блок: {draggedBlock?.id || 'Нет'}
-            </p>
+          <div className="flex justify-center items-center mb-4">
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">Косточки</p>
+              <p className="font-bold text-gold">{bonesEarned}</p>
+            </div>
           </div>
-        </div>
 
         {/* Game Grid */}
         <Card className="card-glow p-3 mb-4">

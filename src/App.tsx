@@ -35,6 +35,11 @@ function AppContent() {
   const isOnAuthPage = location.pathname === '/auth';
   const banRedirectProcessed = useRef(false);
 
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   // Handle ban redirect only once per session
   // useEffect(() => {
   //   if (profile?.ban === 1 && !isOnBanPage && !banRedirectProcessed.current && !loading) {

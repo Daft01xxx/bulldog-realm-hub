@@ -135,16 +135,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   }, []);
 
   const startGame = () => {
-    if (keys <= 0) {
-      toast({
-        title: "Недостаточно ключей",
-        description: "Подождите до завтра для восстановления ключей",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    onKeysUpdate(keys - 1);
+    // Keys are now infinite, no need to check
     setGameActive(true);
     setGameOver(false);
     setBonesEarnedLocal(0);
@@ -486,12 +477,12 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
             <p className="text-sm text-muted-foreground mb-4">
               Размещайте блоки на сетке 7x7. Очищайте полные линии чтобы заработать косточки!
             </p>
-            <p className="text-lg mb-4">Ключи: <span className="font-bold text-gold">{keys}</span></p>
+            <p className="text-lg mb-4">Ключи: <span className="font-bold text-gold">∞</span></p>
             
             <Button 
               onClick={startGame} 
               className="button-gold w-full"
-              disabled={keys <= 0}
+              disabled={false}
             >
               Играть
             </Button>

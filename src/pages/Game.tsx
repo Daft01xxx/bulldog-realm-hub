@@ -46,18 +46,6 @@ const Game = () => {
       console.log('Profile is loading, skipping data load');
       return;
     }
-    
-    // Persist keys data in localStorage for persistence across page changes
-    const persistKeysData = () => {
-      if (keys !== null) {
-        localStorage.setItem("bdog-keys", keys.toString());
-      }
-    };
-    
-    // Save keys data on change
-    useEffect(() => {
-      persistKeysData();
-    }, [keys]);
 
     // Load game data from profile or localStorage ONLY once when profile is loaded
     if (profile && !isUpdatingFromClick) {
@@ -111,25 +99,7 @@ const Game = () => {
       setKeys(profileKeys);
       setBoneFarmRecord(profileBoneFarmRecord);
       
-      // Check if keys need daily reset
-      const lastReset = profileData.last_key_reset ? new Date(profileData.last_key_reset) : null;
-      const today = new Date();
-      const todayStr = today.toISOString().split('T')[0];
-      
-      // Only reset if we have a last reset date and it's different from today
-      if (lastReset && lastReset.toDateString() !== today.toDateString()) {
-        // Reset keys to 3 and update last reset date
-        setKeys(3);
-        updateProfile({ 
-          keys: 3, 
-          last_key_reset: todayStr 
-        } as any);
-      } else if (!lastReset) {
-        // Set initial reset date without changing keys
-        updateProfile({ 
-          last_key_reset: todayStr 
-        } as any);
-      }
+      // Keys are now infinite, no need for daily reset logic
       
     } else if (!profile && !loading && !isUpdatingFromClick && grow === 0) {
       // Load from localStorage only if we're not loading and don't have any data yet
@@ -180,6 +150,13 @@ const Game = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, [profile, loading]); // Added loading dependency
+
+  // Separate useEffect for persisting keys data
+  useEffect(() => {
+    if (keys !== null) {
+      localStorage.setItem("bdog-keys", keys.toString());
+    }
+  }, [keys]);
 
   const loadTopPlayers = async () => {
     try {
@@ -433,8 +410,7 @@ const Game = () => {
   };
 
   const handleKeysUpdate = (newKeys: number) => {
-    setKeys(newKeys);
-    updateProfile({ keys: newKeys } as any);
+    // Keys are now infinite, no need to update
   };
 
   const handleBonesEarned = (bones: number) => {

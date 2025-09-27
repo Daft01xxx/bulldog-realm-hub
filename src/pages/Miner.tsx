@@ -233,13 +233,6 @@ const Miner = () => {
           </div>
 
           <div className="flex gap-3 mt-6 justify-center">
-            <Button
-              onClick={() => navigate('/game?tab=shop&section=miners')}
-              className="button-gradient-gold"
-            >
-              <Pickaxe className="w-4 h-4 mr-2" />
-              Купить майнер
-            </Button>
             
             <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
               <DialogTrigger asChild>

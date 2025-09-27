@@ -260,23 +260,62 @@ const ConnectedWallet = () => {
             </Card>
           </TabsContent>
 
-          {/* History Tab Content */}
-          <TabsContent value="history" className="px-4 pt-6">
-            <Card className="card-tonkeeper p-6">
-              <div className="flex items-center space-x-2 mb-6">
-                <Clock className="w-5 h-5 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground">История транзакций</h3>
-              </div>
-              
-              <div className="text-center py-12">
-                <History className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h4 className="font-medium text-foreground mb-2">Транзакций не обнаружено</h4>
-                <p className="text-sm text-muted-foreground">
-                  История всех транзакций BDOG будет отображаться здесь
-                </p>
-              </div>
-            </Card>
-          </TabsContent>
+            <TabsContent value="history" className="px-4 pt-6">
+              <Card className="card-tonkeeper p-6">
+                <div className="flex items-center space-x-2 mb-6">
+                  <Clock className="w-5 h-5 text-muted-foreground" />
+                  <h3 className="font-semibold text-foreground">История транзакций</h3>
+                </div>
+                
+                <div className="space-y-3">
+                  {walletData?.walletInfo?.transactionHistory?.length > 0 ? (
+                    walletData.walletInfo.transactionHistory.map((tx: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-surface-elevated rounded-lg">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            tx.type === 'in' ? 'bg-green-500/20' : 'bg-red-500/20'
+                          }`}>
+                            {tx.type === 'in' ? (
+                              <TrendingUp className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Send className="w-4 h-4 text-red-500" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-foreground">
+                              {tx.type === 'in' ? 'Получено' : 'Отправлено'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(tx.timestamp).toLocaleDateString('ru-RU')}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className={`text-sm font-bold ${
+                            tx.type === 'in' ? 'text-green-500' : 'text-red-500'
+                          }`}>
+                            {tx.type === 'in' ? '+' : '-'}{tx.amount} {tx.currency}
+                          </p>
+                          {tx.fee && (
+                            <p className="text-xs text-muted-foreground">
+                              Комиссия: {tx.fee} TON
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-12">
+                      <History className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <h4 className="font-medium text-foreground mb-2">История загружается</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Все транзакции подключенного кошелька будут отображаться здесь
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </TabsContent>
 
           {/* Collections Tab Content */}
           <TabsContent value="collections" className="px-4 pt-6">

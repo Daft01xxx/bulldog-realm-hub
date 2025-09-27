@@ -17,7 +17,8 @@ export default function BdogPay() {
     walletData, 
     loading, 
     connectWallet, 
-    sendTransaction 
+    sendTransaction,
+    calculateTransactionFee
   } = useBdogTonWallet();
   
   const [recipientAddress, setRecipientAddress] = useState('');
@@ -40,11 +41,20 @@ export default function BdogPay() {
       ? parseFloat(walletData?.tonBalance || "0")
       : parseFloat(walletData?.bdogBalance || "0");
     const sendAmount = parseFloat(amount);
+    const feeAmount = calculateTransactionFee(amount, currency);
+    const totalRequired = currency === 'ton' ? sendAmount + feeAmount : feeAmount;
 
-    if (sendAmount > availableBalance) {
+    if (currency === 'ton' && availableBalance < totalRequired) {
+      toast({
+        title: "Недостаточно TON",
+        description: `Нужно ${totalRequired.toFixed(2)} TON (${sendAmount} + ${feeAmount} комиссия)`,
+        variant: "destructive",
+      });
+      return;
+    } else if (currency === 'bdog' && (sendAmount > parseFloat(walletData?.bdogBalance || "0") || availableBalance < feeAmount)) {
       toast({
         title: "Недостаточно средств",
-        description: `Доступно: ${availableBalance} ${currency.toUpperCase()}`,
+        description: `Нужно ${sendAmount} BDOG и ${feeAmount} TON для комиссии`,
         variant: "destructive",
       });
       return;
@@ -54,7 +64,7 @@ export default function BdogPay() {
     
     let result;
     if (currency === 'ton') {
-      result = await sendTransaction(recipientAddress, amount, comment || undefined);
+      result = await sendTransaction(recipientAddress, amount, comment || undefined, 'ton');
     } else {
       // For BDOG tokens, we'll use a placeholder function for now
       // This would need to be implemented based on the specific BDOG token contract
@@ -177,7 +187,7 @@ export default function BdogPay() {
                       className="mt-1"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Доступно: {walletData?.tonBalance || "0"} TON
+                      Доступно: {walletData?.tonBalance || "0"} TON | Комиссия: {calculateTransactionFee(amount || "0", 'ton')} TON
                     </p>
                   </div>
 
@@ -232,7 +242,7 @@ export default function BdogPay() {
                       className="mt-1"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
-                      Доступно: {walletData?.bdogBalance || "0"} BDOG
+                      Доступно: {walletData?.bdogBalance || "0"} BDOG | Комиссия: {calculateTransactionFee(amount || "0", 'bdog')} TON
                     </p>
                   </div>
 

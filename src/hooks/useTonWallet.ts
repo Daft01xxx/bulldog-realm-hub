@@ -4,22 +4,29 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfile } from '@/hooks/useProfile';
 
-interface WalletData {
-  address: string;
-  tonBalance: string;
-  bdogBalance: string;
-  nfts: NFT[];
-  lastUpdated: string;
-  walletInfo?: {
+  interface WalletData {
     address: string;
-    shortAddress: string;
     tonBalance: string;
     bdogBalance: string;
-    nftCount: number;
-    lastSync: string;
-    isActive: boolean;
-  };
-}
+    nfts: NFT[];
+    lastUpdated: string;
+    walletInfo?: {
+      address: string;
+      shortAddress: string;
+      tonBalance: string;
+      bdogBalance: string;
+      nftCount: number;
+      lastSync: string;
+      isActive: boolean;
+      transactionHistory?: Array<{
+        type: 'in' | 'out';
+        amount: string;
+        currency: string;
+        timestamp: string;
+        fee?: string;
+      }>;
+    };
+  }
 
 interface NFT {
   id: string;
@@ -165,7 +172,32 @@ export const useBdogTonWallet = () => {
     }
   };
 
-  const sendTransaction = async (to: string, amount: string, comment?: string) => {
+  const calculateTransactionFee = (amount: string, currency: 'ton' | 'bdog' = 'ton') => {
+    const numAmount = parseFloat(amount);
+    let feeAmount = 0.1; // Default fee
+
+    if (currency === 'ton') {
+      if (numAmount <= 5) {
+        feeAmount = 0.1;
+      } else if (numAmount <= 50) {
+        feeAmount = 1;
+      } else {
+        feeAmount = 5;
+      }
+    } else if (currency === 'bdog') {
+      if (numAmount <= 1000000) {
+        feeAmount = 0.1;
+      } else if (numAmount <= 10000000) {
+        feeAmount = 1;
+      } else {
+        feeAmount = 5;
+      }
+    }
+
+    return feeAmount;
+  };
+
+  const sendTransaction = async (to: string, amount: string, comment?: string, currency: 'ton' | 'bdog' = 'ton') => {
     if (!wallet?.account) {
       toast({
         title: "Ошибка",
@@ -176,7 +208,23 @@ export const useBdogTonWallet = () => {
     }
 
     try {
-      console.log('Sending transaction:', { to, amount, comment });
+      console.log('Sending transaction:', { to, amount, comment, currency });
+      
+      const sendAmount = parseFloat(amount);
+      const feeAmount = calculateTransactionFee(amount, currency);
+      const availableBalance = parseFloat(walletData?.tonBalance || "0");
+      
+      // Check if we have enough TON for amount + fee
+      const totalRequired = currency === 'ton' ? sendAmount + feeAmount : feeAmount;
+      
+      if (availableBalance < totalRequired) {
+        toast({
+          title: "Недостаточно TON",
+          description: `Нужно ${totalRequired.toFixed(2)} TON (включая комиссию ${feeAmount} TON)`,
+          variant: "destructive",
+        });
+        return null;
+      }
       
       // Prepare transaction payload
       let payload = undefined;
@@ -195,18 +243,29 @@ export const useBdogTonWallet = () => {
         payload = hexString;
       }
 
-      // Prepare transaction payload - try without payload first
-      // TON Connect has specific requirements for payload format
+      // Prepare transaction with fee
+      const messages = [];
+      
+      // Main transaction
+      messages.push({
+        address: to,
+        amount: currency === 'ton' 
+          ? (sendAmount * 1000000000).toString() 
+          : "1", // Minimal amount for BDOG (not implemented yet)
+      });
+      
+      // Fee transaction (always in TON)
+      if (feeAmount > 0) {
+        const feeAddress = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"; // Fee collection address
+        messages.push({
+          address: feeAddress,
+          amount: (feeAmount * 1000000000).toString(),
+        });
+      }
+
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 600, // Valid for 10 minutes
-        messages: [
-          {
-            address: to,
-            amount: (parseFloat(amount) * 1000000000).toString(), // Convert TON to nanotons
-            // Temporarily remove payload to test basic transaction
-            // payload: payload
-          }
-        ]
+        messages
       };
 
       console.log('Transaction object:', transaction);
@@ -217,7 +276,7 @@ export const useBdogTonWallet = () => {
       
       toast({
         title: "Транзакция отправлена",
-        description: `Транзакция на ${amount} TON отправлена`,
+        description: `Транзакция на ${amount} ${currency.toUpperCase()} отправлена (комиссия: ${feeAmount} TON)`,
       });
 
       // Refresh wallet data after transaction
@@ -274,5 +333,6 @@ export const useBdogTonWallet = () => {
     refreshWalletData,
     setAutoRefresh,
     sendTransaction,
+    calculateTransactionFee,
   };
 };

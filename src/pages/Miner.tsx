@@ -41,8 +41,8 @@ const Miner = () => {
 
   useEffect(() => {
     if (profile) {
-      setCurrentMiner(profile.current_miner || 'default');
-      setMinerLevel(profile.miner_level || 1);
+      setCurrentMiner((profile as any).current_miner || 'default');
+      setMinerLevel((profile as any).miner_level || 1);
     } else {
       setCurrentMiner(localStorage.getItem("bdog-current-miner") || 'default');
       setMinerLevel(parseInt(localStorage.getItem("bdog-miner-level") || "1"));
@@ -101,7 +101,7 @@ const Miner = () => {
         };
 
         if (profile) {
-          await updateProfile(updateData);
+          await updateProfile(updateData as any);
         } else {
           localStorage.setItem("bdog-current-miner", miner.id);
           localStorage.setItem("bdog-miner-level", "1");
@@ -157,7 +157,7 @@ const Miner = () => {
       };
 
       if (profile) {
-        await updateProfile(updateData);
+        await updateProfile(updateData as any);
       } else {
         localStorage.setItem("bdog-miner-level", (minerLevel + 1).toString());
       }

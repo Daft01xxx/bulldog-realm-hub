@@ -9,12 +9,15 @@ import FallingCoins2D from "./components/FallingCoins2D";
 import FloatingParticles from "./components/FloatingParticles";
 import PageTransition from "./components/PageTransition";
 import { AudioManager } from "./components/AudioManager";
+import FloatingCosmicCoins from "./components/FloatingCosmicCoins";
 import { AuthProvider } from "./hooks/useAuth";
+import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
 import Wallet from "./pages/Wallet";
 import ConnectedWallet from "./pages/ConnectedWallet";
 import Game from "./pages/Game";
+import Miner from "./pages/Miner";
 import Info from "./pages/Info";
 import Referral from "./pages/Referral";
 import Tasks from "./pages/Tasks";
@@ -71,6 +74,7 @@ function AppContent() {
 
   return (
     <>
+      <FloatingCosmicCoins />
       <AudioManager backgroundMusic={true} volume={0.15} />
       <FloatingParticles />
       <Toaster />
@@ -78,11 +82,13 @@ function AppContent() {
       {location.pathname === '/menu' && <FallingCoins2D />}
       <PageTransition>
         <Routes>
-          <Route path="/" element={<Welcome />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/wallet" element={<Wallet />} />
           <Route path="/connected-wallet" element={<ConnectedWallet />} />
           <Route path="/game" element={<Game />} />
+          <Route path="/miner" element={<Miner />} />
           <Route path="/info" element={<Info />} />
           <Route path="/referral" element={<Referral />} />
           <Route path="/tasks" element={<Tasks />} />

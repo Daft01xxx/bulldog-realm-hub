@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ShoppingCart, Coins, Wallet, Zap } from 'lucide-react';
+import { ShoppingCart, Coins, Wallet, Zap, Pickaxe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useBdogTonWallet } from '@/hooks/useTonWallet';
 import { useProfile } from '@/hooks/useProfile';
@@ -375,6 +375,31 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
               </div>
             </Card>
           ))}
+        </div>
+
+        {/* Miners Section */}
+        <div className="space-y-3">
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Pickaxe className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">Майнеры</h3>
+            <p className="text-sm text-muted-foreground">Автоматический заработок V-BDOG</p>
+          </div>
+          
+          <Card className="card-glow p-4 text-center bg-gold/5 border-gold/20">
+            <Pickaxe className="w-12 h-12 text-gold mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-gradient mb-2">Майнеры BDOG</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Покупайте майнеры для пассивного дохода V-BDOG
+            </p>
+            <Button
+              onClick={() => window.location.href = '/miner'}
+              className="button-gradient-gold"
+            >
+              Перейти к майнерам
+            </Button>
+          </Card>
         </div>
       </div>
 

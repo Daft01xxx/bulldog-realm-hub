@@ -25,6 +25,7 @@ export type Database = {
           booster_expires_at: string | null
           completed_tasks: string | null
           created_at: string
+          current_miner: string | null
           device_fingerprint: string | null
           grow: number | null
           grow1: number | null
@@ -34,6 +35,7 @@ export type Database = {
           keys: number | null
           last_key_reset: string | null
           last_referral_code: string | null
+          miner_level: number | null
           referral_code_used: boolean | null
           referral_notifications: Json | null
           referrals: number | null
@@ -54,6 +56,7 @@ export type Database = {
           booster_expires_at?: string | null
           completed_tasks?: string | null
           created_at?: string
+          current_miner?: string | null
           device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
@@ -63,6 +66,7 @@ export type Database = {
           keys?: number | null
           last_key_reset?: string | null
           last_referral_code?: string | null
+          miner_level?: number | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
           referrals?: number | null
@@ -83,6 +87,7 @@ export type Database = {
           booster_expires_at?: string | null
           completed_tasks?: string | null
           created_at?: string
+          current_miner?: string | null
           device_fingerprint?: string | null
           grow?: number | null
           grow1?: number | null
@@ -92,6 +97,7 @@ export type Database = {
           keys?: number | null
           last_key_reset?: string | null
           last_referral_code?: string | null
+          miner_level?: number | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
           referrals?: number | null

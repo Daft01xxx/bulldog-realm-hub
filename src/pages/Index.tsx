@@ -29,9 +29,9 @@ const Index = () => {
 
   useEffect(() => {
     if (profile) {
-      setCurrentMiner(profile.current_miner || 'default');
-      setMinerLevel(profile.miner_level || 1);
-      setVBdogEarned(profile.v_bdog_earned || 0);
+      setCurrentMiner((profile as any).current_miner || 'default');
+      setMinerLevel((profile as any).miner_level || 1);
+      setVBdogEarned((profile as any).v_bdog_earned || 0);
     } else {
       setCurrentMiner(localStorage.getItem("bdog-current-miner") || 'default');
       setMinerLevel(parseInt(localStorage.getItem("bdog-miner-level") || "1"));

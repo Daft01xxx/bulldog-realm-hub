@@ -14,7 +14,7 @@ export const AudioManager = ({ backgroundMusic = true, volume = 0.15 }: AudioMan
     if (backgroundMusic) {
       // Create or use existing global audio instance
       if (!globalAudioInstance) {
-        globalAudioInstance = new Audio('/cosmic-ambient.mp3');
+        globalAudioInstance = new Audio('/cosmic-music.ogg');
         globalAudioInstance.loop = true;
         globalAudioInstance.volume = volume;
         globalAudioInstance.preload = 'auto';

@@ -47,6 +47,18 @@ const Game = () => {
       return;
     }
     
+    // Persist keys data in localStorage for persistence across page changes
+    const persistKeysData = () => {
+      if (keys !== null) {
+        localStorage.setItem("bdog-keys", keys.toString());
+      }
+    };
+    
+    // Save keys data on change
+    useEffect(() => {
+      persistKeysData();
+    }, [keys]);
+
     // Load game data from profile or localStorage ONLY once when profile is loaded
     if (profile && !isUpdatingFromClick) {
       const profileGrow = Number(profile.grow) || 0;
@@ -496,11 +508,11 @@ const Game = () => {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/game')}
           className="button-outline-gold text-xs px-2 py-1"
         >
           <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
-          Назад
+          В меню
         </Button>
         <Button
           variant="outline"

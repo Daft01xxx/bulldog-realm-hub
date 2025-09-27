@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2 } from "lucide-react";
+import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
 import TopNavigation from '@/components/TopNavigation';
 import GameShop from '@/components/GameShop';
+import { BoneFarmGame } from '@/components/BoneFarmGame';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -30,6 +31,10 @@ const Game = () => {
   const [totalTaps, setTotalTaps] = useState(0);
   const [isClicked, setIsClicked] = useState(false);
   const [activeTab, setActiveTab] = useState("game");
+  const [keys, setKeys] = useState(3);
+  const [boneFarmRecord, setBoneFarmRecord] = useState(0);
+  const [activeTouches, setActiveTouches] = useState<Set<number>>(new Set());
+  const [lastUpdateTime, setLastUpdateTime] = useState(0);
 
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
@@ -84,6 +89,26 @@ const Game = () => {
       if (Math.abs(bone - profileBone) > 0) {
         console.log('Updating bone from profile:', profileBone);
         setBone(profileBone);
+      }
+      
+      // Load new bone farming fields (using any to avoid type errors)
+      const profileData = profile as any;
+      const profileKeys = Number(profileData.keys) || 3;
+      const profileBoneFarmRecord = Number(profileData.bone_farm_record) || 0;
+      
+      setKeys(profileKeys);
+      setBoneFarmRecord(profileBoneFarmRecord);
+      
+      // Check if keys need daily reset
+      const lastReset = profileData.last_key_reset ? new Date(profileData.last_key_reset) : new Date();
+      const today = new Date();
+      if (today.toDateString() !== lastReset.toDateString()) {
+        // Reset keys to 3 and update last reset date
+        setKeys(3);
+        updateProfile({ 
+          keys: 3, 
+          last_key_reset: today.toISOString().split('T')[0] 
+        } as any);
       }
       
     } else if (!profile && !loading && !isUpdatingFromClick && grow === 0) {
@@ -272,6 +297,7 @@ const Game = () => {
   const handleClick = async (event: React.MouseEvent | React.TouchEvent) => {
     // Prevent default touch behaviors
     event.preventDefault();
+    event.stopPropagation();
     
     const currentBone = Number(bone) || 0;
     
@@ -285,9 +311,43 @@ const Game = () => {
       return;
     }
 
+    let clickCount = 1;
+    let touchPoints: { x: number, y: number }[] = [];
+
+    // Handle multi-touch
+    if ('touches' in event) {
+      const touchEvent = event as React.TouchEvent;
+      clickCount = touchEvent.touches.length;
+      
+      // Get all touch points for visual effects
+      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      for (let i = 0; i < touchEvent.touches.length; i++) {
+        const touch = touchEvent.touches[i];
+        touchPoints.push({
+          x: touch.clientX - rect.left,
+          y: touch.clientY - rect.top,
+        });
+      }
+    } else {
+      // Mouse event - single point
+      const mouseEvent = event as React.MouseEvent;
+      const rect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
+      touchPoints.push({
+        x: mouseEvent.clientX - rect.left,
+        y: mouseEvent.clientY - rect.top,
+      });
+    }
+
+    // Check if we have enough bones for all clicks
+    if (currentBone < clickCount) {
+      clickCount = currentBone; // Only use as many clicks as we have bones
+    }
+
+    if (clickCount <= 0) return;
+
     // Simple and reliable vibration for all devices including iPhone
     if (navigator.vibrate) {
-      navigator.vibrate(50); // Shorter vibration for multi-touch
+      navigator.vibrate([50]); // Single vibration for multiple touches
     }
 
     // Play tap sound
@@ -295,33 +355,24 @@ const Game = () => {
 
     // Click animation effect
     setIsClicked(true);
-    setTimeout(() => setIsClicked(false), 100); // Faster for multi-touch
+    setTimeout(() => setIsClicked(false), 100);
 
     const currentGrow = Number(grow) || 0;
     const currentGrow1 = Number(grow1) || 1;
     const currentTotalTaps = Number(totalTaps) || 0;
     
-    // Double check again before processing - prevent race conditions
-    if (currentBone <= 0) {
-      toast({
-        title: "Закончились косточки",
-        description: "Подождите до завтра для восстановления",
-        variant: "destructive",
-      });
-      return;
-    }
+    const growPerClick = currentGrow1;
+    const newGrow = currentGrow + (growPerClick * clickCount);
+    const newBone = currentBone - clickCount;
+    const newTotalTaps = currentTotalTaps + clickCount;
     
-    const newGrow = currentGrow + currentGrow1;
-    const newBone = currentBone - 1; // Remove Math.max to ensure proper bone tracking
-    const newTotalTaps = currentTotalTaps + 1;
-    
-    console.log('Click debug:', {
+    console.log('Multi-touch click debug:', {
+      clickCount,
       currentGrow,
-      currentGrow1,
+      growPerClick,
       newGrow,
       currentBone,
       newBone,
-      localStorage_grow: localStorage.getItem("bdog-grow")
     });
     
     // Set flag to prevent profile reload from overriding our changes
@@ -335,39 +386,49 @@ const Game = () => {
     localStorage.setItem("bdog-bone", String(newBone));
     localStorage.setItem("bdog-total-taps", String(newTotalTaps));
     
-    // Update profile in database
-    await updateProfile({
-      grow: newGrow,
-      bone: newBone
-    });
-    
-    // Reset the flag after a delay to allow profile updates again
-    setTimeout(() => {
-      setIsUpdatingFromClick(false);
-    }, 1000); // Faster reset for multi-touch
-
-    // Click effect animation - handle both mouse and touch events
-    let x, y;
-    if ('touches' in event && event.touches.length > 0) {
-      // Touch event
-      const touch = event.touches[0];
-      const rect = (event.target as HTMLElement).getBoundingClientRect();
-      x = touch.clientX - rect.left;
-      y = touch.clientY - rect.top;
-    } else {
-      // Mouse event
-      const mouseEvent = event as React.MouseEvent;
-      const rect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
-      x = mouseEvent.clientX - rect.left;
-      y = mouseEvent.clientY - rect.top;
+    // Throttle database updates - only update if enough time has passed
+    const now = Date.now();
+    if (now - lastUpdateTime > 500) { // Update DB max every 500ms
+      setLastUpdateTime(now);
+      updateProfile({
+        grow: newGrow,
+        bone: newBone
+      });
     }
     
-    const effectId = Date.now() + Math.random(); // More unique IDs for multi-touch
-    setClickEffect(prev => [...prev, { id: effectId, x, y }]);
-    
+    // Reset the flag faster for better responsiveness
     setTimeout(() => {
-      setClickEffect(prev => prev.filter(effect => effect.id !== effectId));
-    }, 300); // Faster effect removal for multi-touch
+      setIsUpdatingFromClick(false);
+    }, 300);
+
+    // Create click effects for all touch points
+    touchPoints.forEach((point, index) => {
+      const effectId = Date.now() + Math.random() + index;
+      setClickEffect(prev => [...prev, { id: effectId, x: point.x, y: point.y }]);
+      
+      setTimeout(() => {
+        setClickEffect(prev => prev.filter(effect => effect.id !== effectId));
+      }, 300);
+    });
+  };
+
+  const handleKeysUpdate = (newKeys: number) => {
+    setKeys(newKeys);
+    updateProfile({ keys: newKeys } as any);
+  };
+
+  const handleBonesEarned = (bones: number) => {
+    const newBone = bone + bones;
+    setBone(newBone);
+    localStorage.setItem("bdog-bone", String(newBone));
+    updateProfile({ bone: newBone });
+  };
+
+  const handleRecordUpdate = (record: number) => {
+    if (record > boneFarmRecord) {
+      setBoneFarmRecord(record);
+      updateProfile({ bone_farm_record: record } as any);
+    }
   };
 
   const buyBooster = async () => {
@@ -455,7 +516,7 @@ const Game = () => {
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger 
             value="game" 
             className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
@@ -469,6 +530,13 @@ const Game = () => {
           >
             <ShoppingCart className="w-4 h-4" />
             Магазин
+          </TabsTrigger>
+          <TabsTrigger 
+            value="bonefarm" 
+            className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
+          >
+            <Coins className="w-4 h-4" />
+            Фарм
           </TabsTrigger>
         </TabsList>
 
@@ -631,6 +699,15 @@ const Game = () => {
               profile={profile}
             />
           </div>
+        </TabsContent>
+
+        <TabsContent value="bonefarm">
+          <BoneFarmGame 
+            keys={keys}
+            onKeysUpdate={handleKeysUpdate}
+            onBonesEarned={handleBonesEarned}
+            onRecordUpdate={handleRecordUpdate}
+          />
         </TabsContent>
       </Tabs>
 

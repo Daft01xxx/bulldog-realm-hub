@@ -1,0 +1,324 @@
+import React, { useState, useCallback, useEffect } from 'react';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { ArrowLeft, Trophy } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from './ui/use-toast';
+
+interface BoneFarmGameProps {
+  keys: number;
+  onKeysUpdate: (newKeys: number) => void;
+  onBonesEarned: (bones: number) => void;
+  onRecordUpdate: (record: number) => void;
+}
+
+const GRID_SIZE = 10;
+
+interface Block {
+  id: number;
+  shape: boolean[][];
+  color: string;
+}
+
+const BLOCK_SHAPES = [
+  { shape: [[true]], color: 'bg-yellow-500' },
+  { shape: [[true, true]], color: 'bg-blue-500' },
+  { shape: [[true], [true]], color: 'bg-green-500' },
+  { shape: [[true, true, true]], color: 'bg-red-500' },
+  { shape: [[true], [true], [true]], color: 'bg-purple-500' },
+  { shape: [[true, true], [true, true]], color: 'bg-orange-500' },
+];
+
+export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
+  keys,
+  onKeysUpdate,
+  onBonesEarned,
+  onRecordUpdate,
+}) => {
+  const navigate = useNavigate();
+  const [grid, setGrid] = useState<boolean[][]>(() => 
+    Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false))
+  );
+  const [currentBlocks, setCurrentBlocks] = useState<Block[]>([]);
+  const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
+  const [bonesEarned, setBonesEarnedLocal] = useState(0);
+  const [gameActive, setGameActive] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
+
+  const generateRandomBlocks = useCallback(() => {
+    const blocks = [];
+    for (let i = 0; i < 3; i++) {
+      const randomShape = BLOCK_SHAPES[Math.floor(Math.random() * BLOCK_SHAPES.length)];
+      blocks.push({
+        id: i,
+        shape: randomShape.shape,
+        color: randomShape.color,
+      });
+    }
+    setCurrentBlocks(blocks);
+  }, []);
+
+  const startGame = () => {
+    if (keys <= 0) {
+      toast({
+        title: "Недостаточно ключей",
+        description: "Подождите до завтра для восстановления ключей",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onKeysUpdate(keys - 1);
+    setGameActive(true);
+    setGameOver(false);
+    setBonesEarnedLocal(0);
+    setGrid(Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false)));
+    generateRandomBlocks();
+  };
+
+  const canPlaceBlock = (grid: boolean[][], block: Block, row: number, col: number): boolean => {
+    const { shape } = block;
+    for (let r = 0; r < shape.length; r++) {
+      for (let c = 0; c < shape[r].length; c++) {
+        if (shape[r][c]) {
+          const newRow = row + r;
+          const newCol = col + c;
+          if (newRow >= GRID_SIZE || newCol >= GRID_SIZE || grid[newRow][newCol]) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  };
+
+  const placeBlock = (row: number, col: number) => {
+    if (!selectedBlock || !canPlaceBlock(grid, selectedBlock, row, col)) return;
+
+    const newGrid = grid.map(row => [...row]);
+    const { shape } = selectedBlock;
+    
+    for (let r = 0; r < shape.length; r++) {
+      for (let c = 0; c < shape[r].length; c++) {
+        if (shape[r][c]) {
+          newGrid[row + r][col + c] = true;
+        }
+      }
+    }
+
+    setGrid(newGrid);
+    setCurrentBlocks(prev => prev.filter(block => block.id !== selectedBlock.id));
+    setSelectedBlock(null);
+
+    // Check for completed lines
+    checkAndClearLines(newGrid);
+  };
+
+  const checkAndClearLines = (currentGrid: boolean[][]) => {
+    let newGrid = [...currentGrid];
+    let linesCleared = 0;
+
+    // Check rows
+    for (let row = 0; row < GRID_SIZE; row++) {
+      if (newGrid[row].every(cell => cell)) {
+        newGrid[row] = Array(GRID_SIZE).fill(false);
+        linesCleared++;
+      }
+    }
+
+    // Check columns
+    for (let col = 0; col < GRID_SIZE; col++) {
+      if (newGrid.every(row => row[col])) {
+        newGrid.forEach(row => row[col] = false);
+        linesCleared++;
+      }
+    }
+
+    if (linesCleared > 0) {
+      const bonesEarned = linesCleared;
+      setBonesEarnedLocal(prev => prev + bonesEarned);
+      setGrid(newGrid);
+      
+      toast({
+        title: `+${bonesEarned} косточек!`,
+        description: `Очищено линий: ${linesCleared}`,
+      });
+    }
+
+    // Generate new blocks if all are placed
+    if (currentBlocks.length === 1) {
+      generateRandomBlocks();
+    }
+
+    // Check game over
+    setTimeout(() => checkGameOver(newGrid), 100);
+  };
+
+  const checkGameOver = (currentGrid: boolean[][]) => {
+    const hasValidMoves = currentBlocks.some(block => {
+      for (let row = 0; row < GRID_SIZE; row++) {
+        for (let col = 0; col < GRID_SIZE; col++) {
+          if (canPlaceBlock(currentGrid, block, row, col)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    });
+
+    if (!hasValidMoves && currentBlocks.length > 0) {
+      setGameOver(true);
+      setGameActive(false);
+      onBonesEarned(bonesEarned);
+      onRecordUpdate(bonesEarned);
+      
+      toast({
+        title: "Игра окончена!",
+        description: `Заработано косточек: ${bonesEarned}`,
+      });
+    }
+  };
+
+  const endGame = () => {
+    setGameActive(false);
+    setGameOver(false);
+    navigate('/game');
+  };
+
+  if (gameOver) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <Card className="card-glow p-8 max-w-md w-full text-center">
+          <Trophy className="w-16 h-16 mx-auto mb-4 text-gold" />
+          <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
+          <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
+          <div className="flex gap-2 mt-6">
+            <Button onClick={() => navigate('/game')} className="button-gold flex-1">
+              Назад в BDOG GAME
+            </Button>
+            <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold flex-1">
+              Меню
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!gameActive) {
+    return (
+      <div className="min-h-screen bg-background px-4 py-8">
+        <div className="max-w-md mx-auto">
+          <div className="flex items-center mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/game')}
+              className="button-outline-gold"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Назад
+            </Button>
+          </div>
+
+          <Card className="card-glow p-6 text-center mb-6">
+            <h2 className="text-2xl font-bold mb-4 text-gold">Фарм косточек</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Размещайте блоки на сетке 10x10. Очищайте полные линии чтобы заработать косточки!
+            </p>
+            <p className="text-lg mb-4">Ключи: <span className="font-bold text-gold">{keys}</span></p>
+            
+            <Button 
+              onClick={startGame} 
+              className="button-gold w-full"
+              disabled={keys <= 0}
+            >
+              Играть
+            </Button>
+          </Card>
+
+          {/* Leaderboard placeholder */}
+          <Card className="card-glow p-4">
+            <h3 className="font-semibold mb-3 text-gold">Топ 10 игроков</h3>
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex justify-between text-sm">
+                  <span>Игрок {i + 1}</span>
+                  <span className="text-gold">{Math.floor(Math.random() * 100)} косточек</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background px-2 py-4">
+      <div className="max-w-md mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={endGame}
+            className="button-outline-gold"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Назад
+          </Button>
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">Косточки</p>
+            <p className="font-bold text-gold">{bonesEarned}</p>
+          </div>
+        </div>
+
+        {/* Game Grid */}
+        <Card className="card-glow p-4 mb-4">
+          <div className="grid grid-cols-10 gap-1 mb-4">
+            {grid.map((row, rowIndex) =>
+              row.map((cell, colIndex) => (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`aspect-square border border-muted-foreground/20 ${
+                    cell ? 'bg-gold/30' : 'bg-muted/20'
+                  } ${selectedBlock ? 'cursor-pointer hover:bg-gold/10' : ''}`}
+                  onClick={() => selectedBlock && placeBlock(rowIndex, colIndex)}
+                />
+              ))
+            )}
+          </div>
+        </Card>
+
+        {/* Available Blocks */}
+        <div className="grid grid-cols-3 gap-2">
+          {currentBlocks.map((block) => (
+            <Card
+              key={block.id}
+              className={`card-glow p-2 cursor-pointer transition-all ${
+                selectedBlock?.id === block.id ? 'ring-2 ring-gold' : ''
+              }`}
+              onClick={() => setSelectedBlock(block)}
+            >
+              <div className="grid gap-1" style={{
+                gridTemplateColumns: `repeat(${block.shape[0].length}, 1fr)`,
+                gridTemplateRows: `repeat(${block.shape.length}, 1fr)`
+              }}>
+                {block.shape.map((row, rowIndex) =>
+                  row.map((cell, colIndex) => (
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className={`aspect-square ${
+                        cell ? block.color : 'bg-transparent'
+                      }`}
+                    />
+                  ))
+                )}
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -21,6 +21,7 @@ export type Database = {
           ban: number | null
           bdog_balance: number | null
           bone: number | null
+          bone_farm_record: number | null
           booster_expires_at: string | null
           completed_tasks: string | null
           created_at: string
@@ -30,6 +31,8 @@ export type Database = {
           id: string
           ip_address: unknown | null
           is_vpn_user: boolean | null
+          keys: number | null
+          last_key_reset: string | null
           last_referral_code: string | null
           referral_code_used: boolean | null
           referral_notifications: Json | null
@@ -47,6 +50,7 @@ export type Database = {
           ban?: number | null
           bdog_balance?: number | null
           bone?: number | null
+          bone_farm_record?: number | null
           booster_expires_at?: string | null
           completed_tasks?: string | null
           created_at?: string
@@ -56,6 +60,8 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           is_vpn_user?: boolean | null
+          keys?: number | null
+          last_key_reset?: string | null
           last_referral_code?: string | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
@@ -73,6 +79,7 @@ export type Database = {
           ban?: number | null
           bdog_balance?: number | null
           bone?: number | null
+          bone_farm_record?: number | null
           booster_expires_at?: string | null
           completed_tasks?: string | null
           created_at?: string
@@ -82,6 +89,8 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           is_vpn_user?: boolean | null
+          keys?: number | null
+          last_key_reset?: string | null
           last_referral_code?: string | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null

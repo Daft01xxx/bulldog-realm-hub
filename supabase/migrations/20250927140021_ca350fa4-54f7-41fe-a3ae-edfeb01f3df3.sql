@@ -1,0 +1,5 @@
+-- Добавляем поля для фарма косточек
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS keys INTEGER DEFAULT 3,
+ADD COLUMN IF NOT EXISTS bone_farm_record INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS last_key_reset DATE DEFAULT CURRENT_DATE;

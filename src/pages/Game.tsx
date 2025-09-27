@@ -11,7 +11,6 @@ import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
 import TopNavigation from '@/components/TopNavigation';
 import GameShop from '@/components/GameShop';
-import TransactionTracker from '@/components/TransactionTracker';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -611,14 +610,12 @@ const Game = () => {
         </TabsContent>
 
         <TabsContent value="shop">
-          <div className="max-w-sm mx-auto space-y-4">
+          <div className="max-w-sm mx-auto">
             <GameShop 
               bone={bone}
               setBone={setBone}
               profile={profile}
             />
-            
-            <TransactionTracker />
           </div>
         </TabsContent>
       </Tabs>

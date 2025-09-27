@@ -202,30 +202,10 @@ export const useBdogTonWallet = () => {
       const result = await tonConnectUI.sendTransaction(transaction);
       console.log('[TON Wallet] TonConnect result:', result);
       
-      // Add transaction tracking
-      if (result && result.boc) {
-        console.log('[TON Wallet] Transaction BOC (for tracking):', result.boc);
-        
-        toast({
-          title: "Транзакция отправлена",
-          description: `Транзакция на ${amount} TON отправлена${comment ? ` с комментарием: ${comment}` : ''}`,
-        });
-        
-        // Try to extract transaction hash if possible
-        try {
-          // This is a simplified approach to get some transaction info
-          console.log('[TON Wallet] Full transaction result:', JSON.stringify(result, null, 2));
-        } catch (e) {
-          console.log('[TON Wallet] Could not stringify result');
-        }
-      } else {
-        console.log('[TON Wallet] No BOC in result, transaction might have failed');
-        toast({
-          title: "Внимание",
-          description: "Транзакция отправлена, но не получен результат. Проверьте кошелек.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Транзакция отправлена",
+        description: `Транзакция на ${amount} TON отправлена${comment ? ` с комментарием: ${comment}` : ''}`,
+      });
 
       // Refresh wallet data after transaction
       setTimeout(() => {

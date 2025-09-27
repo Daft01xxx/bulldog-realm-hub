@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { ArrowLeft, Trophy } from 'lucide-react';
@@ -17,6 +17,11 @@ const GRID_SIZE = 7;
 interface Block {
   id: number;
   shape: boolean[][];
+  color: string;
+}
+
+interface GridCell {
+  filled: boolean;
   color: string;
 }
 
@@ -62,14 +67,15 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   onRecordUpdate,
 }) => {
   const navigate = useNavigate();
-  const [grid, setGrid] = useState<boolean[][]>(() => 
-    Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false))
+  const [grid, setGrid] = useState<GridCell[][]>(() => 
+    Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null).map(() => ({ filled: false, color: '' })))
   );
   const [currentBlocks, setCurrentBlocks] = useState<Block[]>([]);
-  const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
+  const [draggedBlock, setDraggedBlock] = useState<Block | null>(null);
   const [bonesEarned, setBonesEarnedLocal] = useState(0);
   const [gameActive, setGameActive] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const dragRef = useRef<HTMLDivElement>(null);
 
   const generateRandomBlocks = useCallback(() => {
     const blocks = [];
@@ -98,18 +104,18 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     setGameActive(true);
     setGameOver(false);
     setBonesEarnedLocal(0);
-    setGrid(Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false)));
+    setGrid(Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null).map(() => ({ filled: false, color: '' }))));
     generateRandomBlocks();
   };
 
-  const canPlaceBlock = (grid: boolean[][], block: Block, row: number, col: number): boolean => {
+  const canPlaceBlock = (grid: GridCell[][], block: Block, row: number, col: number): boolean => {
     const { shape } = block;
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (shape[r][c]) {
           const newRow = row + r;
           const newCol = col + c;
-          if (newRow >= GRID_SIZE || newCol >= GRID_SIZE || grid[newRow][newCol]) {
+          if (newRow >= GRID_SIZE || newCol >= GRID_SIZE || grid[newRow][newCol].filled) {
             return false;
           }
         }
@@ -118,44 +124,44 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     return true;
   };
 
-  const placeBlock = (row: number, col: number) => {
-    if (!selectedBlock || !canPlaceBlock(grid, selectedBlock, row, col)) return;
+  const placeBlock = (row: number, col: number, block: Block) => {
+    if (!canPlaceBlock(grid, block, row, col)) return;
 
-    const newGrid = grid.map(row => [...row]);
-    const { shape } = selectedBlock;
+    const newGrid = grid.map(row => row.map(cell => ({ ...cell })));
+    const { shape, color } = block;
     
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (shape[r][c]) {
-          newGrid[row + r][col + c] = true;
+          newGrid[row + r][col + c] = { filled: true, color };
         }
       }
     }
 
     setGrid(newGrid);
-    setCurrentBlocks(prev => prev.filter(block => block.id !== selectedBlock.id));
-    setSelectedBlock(null);
+    setCurrentBlocks(prev => prev.filter(b => b.id !== block.id));
+    setDraggedBlock(null);
 
     // Check for completed lines
     checkAndClearLines(newGrid);
   };
 
-  const checkAndClearLines = (currentGrid: boolean[][]) => {
-    let newGrid = [...currentGrid];
+  const checkAndClearLines = (currentGrid: GridCell[][]) => {
+    let newGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
     let linesCleared = 0;
 
     // Check rows
     for (let row = 0; row < GRID_SIZE; row++) {
-      if (newGrid[row].every(cell => cell)) {
-        newGrid[row] = Array(GRID_SIZE).fill(false);
+      if (newGrid[row].every(cell => cell.filled)) {
+        newGrid[row] = Array(GRID_SIZE).fill(null).map(() => ({ filled: false, color: '' }));
         linesCleared++;
       }
     }
 
     // Check columns
     for (let col = 0; col < GRID_SIZE; col++) {
-      if (newGrid.every(row => row[col])) {
-        newGrid.forEach(row => row[col] = false);
+      if (newGrid.every(row => row[col].filled)) {
+        newGrid.forEach(row => row[col] = { filled: false, color: '' });
         linesCleared++;
       }
     }
@@ -180,7 +186,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     setTimeout(() => checkGameOver(newGrid), 100);
   };
 
-  const checkGameOver = (currentGrid: boolean[][]) => {
+  const checkGameOver = (currentGrid: GridCell[][]) => {
     const hasValidMoves = currentBlocks.some(block => {
       for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
@@ -202,6 +208,23 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
         title: "Игра окончена!",
         description: `Заработано косточек: ${bonesEarned}`,
       });
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent, block: Block) => {
+    setDraggedBlock(block);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, row: number, col: number) => {
+    e.preventDefault();
+    if (draggedBlock) {
+      placeBlock(row, col, draggedBlock);
     }
   };
 
@@ -300,16 +323,17 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
         </div>
 
         {/* Game Grid */}
-        <Card className="card-glow p-4 mb-4">
+        <Card className="card-glow p-3 mb-4">
           <div className="grid grid-cols-7 gap-1 mb-4">
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => (
                 <div
                   key={`${rowIndex}-${colIndex}`}
-                  className={`aspect-square border border-muted-foreground/20 ${
-                    cell ? 'bg-gold/30' : 'bg-muted/20'
-                  } ${selectedBlock ? 'cursor-pointer hover:bg-gold/10' : ''}`}
-                  onClick={() => selectedBlock && placeBlock(rowIndex, colIndex)}
+                  className={`aspect-square border border-muted-foreground/20 rounded-sm ${
+                    cell.filled ? cell.color : 'bg-muted/20'
+                  } ${draggedBlock ? 'hover:bg-gold/10' : ''}`}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
                 />
               ))
             )}
@@ -317,26 +341,26 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
         </Card>
 
         {/* Available Blocks */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {currentBlocks.map((block) => (
             <Card
               key={block.id}
-              className={`card-glow p-2 cursor-pointer transition-all ${
-                selectedBlock?.id === block.id ? 'ring-2 ring-gold' : ''
-              }`}
-              onClick={() => setSelectedBlock(block)}
+              className="card-glow p-2 cursor-move transition-all hover:scale-105"
+              draggable
+              onDragStart={(e) => handleDragStart(e, block)}
             >
-              <div className="grid gap-1" style={{
-                gridTemplateColumns: `repeat(${block.shape[0].length}, 1fr)`,
-                gridTemplateRows: `repeat(${block.shape.length}, 1fr)`
+              <div className="grid gap-0.5 max-w-[80px] mx-auto" style={{
+                gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
+                gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`
               }}>
                 {block.shape.map((row, rowIndex) =>
                   row.map((cell, colIndex) => (
                     <div
                       key={`${rowIndex}-${colIndex}`}
-                      className={`aspect-square ${
+                      className={`aspect-square rounded-sm ${
                         cell ? block.color : 'bg-transparent'
                       }`}
+                      style={{ minWidth: '8px', minHeight: '8px' }}
                     />
                   ))
                 )}

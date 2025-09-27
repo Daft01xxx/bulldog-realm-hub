@@ -165,6 +165,64 @@ export const useBdogTonWallet = () => {
     }
   };
 
+  const sendTransaction = async (to: string, amount: string, comment?: string) => {
+    if (!wallet?.account) {
+      toast({
+        title: "Ошибка",
+        description: "Кошелек не подключен",
+        variant: "destructive",
+      });
+      return null;
+    }
+
+    try {
+      const transaction = {
+        validUntil: Math.floor(Date.now() / 1000) + 600, // Valid for 10 minutes
+        messages: [
+          {
+            address: to,
+            amount: (parseFloat(amount) * 1000000000).toString(), // Convert TON to nanotons
+            payload: comment ? Buffer.from(comment, 'utf8').toString('base64') : undefined
+          }
+        ]
+      };
+
+      const result = await tonConnectUI.sendTransaction(transaction);
+      
+      toast({
+        title: "Транзакция отправлена",
+        description: `Транзакция на ${amount} TON отправлена`,
+      });
+
+      // Refresh wallet data after transaction
+      setTimeout(() => {
+        if (wallet?.account?.address) {
+          fetchWalletData(wallet.account.address);
+        }
+      }, 3000);
+
+      return result;
+    } catch (error: any) {
+      console.error('Transaction failed:', error);
+      
+      let errorMessage = "Не удалось отправить транзакцию";
+      
+      if (error.message?.includes('user rejected')) {
+        errorMessage = "Транзакция отклонена пользователем";
+      } else if (error.message?.includes('insufficient balance')) {
+        errorMessage = "Недостаточно средств на балансе";
+      }
+      
+      toast({
+        title: "Ошибка транзакции",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      
+      return null;
+    }
+  };
+
   // Always return the same object structure
   return {
     // Connection state
@@ -185,5 +243,6 @@ export const useBdogTonWallet = () => {
     disconnectWallet,
     refreshWalletData,
     setAutoRefresh,
+    sendTransaction,
   };
 };

@@ -286,7 +286,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     console.log('Touch start:', block, 'Position:', touch.clientX, touch.clientY);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent | TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -297,10 +297,11 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     
     // Calculate ghost position on grid
     const gridPos = calculateGridPosition(touch.clientX, touch.clientY);
+    console.log('Touch move - grid position:', gridPos, 'Touch coords:', touch.clientX, touch.clientY);
     setGhostGridPosition(gridPos);
-  };
+  }, [isDragging, draggedBlock, calculateGridPosition]);
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
+  const handleTouchEnd = useCallback((e: React.TouchEvent | TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -328,7 +329,28 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     setDragPosition(null);
     setGhostGridPosition(null);
     setTouchStartPos(null);
-  };
+  }, [isDragging, draggedBlock, ghostGridPosition, grid, canPlaceBlock, placeBlock]);
+
+  // Add global touch event listeners for drag operations
+  React.useEffect(() => {
+    if (isDragging) {
+      const handleGlobalTouchMove = (e: TouchEvent) => {
+        handleTouchMove(e);
+      };
+      
+      const handleGlobalTouchEnd = (e: TouchEvent) => {
+        handleTouchEnd(e);
+      };
+      
+      document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
+      document.addEventListener('touchend', handleGlobalTouchEnd, { passive: false });
+      
+      return () => {
+        document.removeEventListener('touchmove', handleGlobalTouchMove);
+        document.removeEventListener('touchend', handleGlobalTouchEnd);
+      };
+    }
+  }, [isDragging, handleTouchMove, handleTouchEnd]);
 
   const endGame = () => {
     setGameActive(false);
@@ -452,8 +474,6 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                 isDragging && draggedBlock?.id === block.id ? 'opacity-50' : ''
               }`}
               onTouchStart={(e) => handleTouchStart(e, block)}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
             >
               <div className="grid gap-0.5 max-w-[80px] mx-auto" style={{
                 gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,

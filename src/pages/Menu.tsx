@@ -129,7 +129,7 @@ const Menu = () => {
     } else if (random <= 65) {
       // 50% chance for 100 bones
       reward = "100 косточек";
-      updateData.bone = (profile?.bone || 1000) + 100;
+      updateData.bone = (profile?.bone || 0) + 100;
     } else {
       // 35% chance for growth +100
       reward = "Рост +100";

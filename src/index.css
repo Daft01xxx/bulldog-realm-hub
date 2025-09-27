@@ -25,7 +25,7 @@ All colors MUST be HSL.
     --secondary-foreground: 210 20% 98%;
 
     --muted: 220 30% 20%;
-    --muted-foreground: 215 20% 70%;
+    --muted-foreground: 215 25% 80%;
 
     --accent: 220 30% 20%;
     --accent-foreground: 210 20% 98%;
@@ -52,10 +52,13 @@ All colors MUST be HSL.
     --cosmic-purple: 270 100% 70%;
     --cosmic-cyan: 180 100% 60%;
     
-    /* Surface Colors */
+    /* Surface Colors with better contrast */
     --surface: 235 30% 12%;
     --surface-elevated: 240 25% 15%;
     --surface-muted: 230 35% 10%;
+    
+    /* Better muted text for readability */
+    --muted-foreground: 215 25% 80%;
     
     /* Cosmic Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(240 100% 70%), hsl(270 100% 70%));
@@ -265,19 +268,19 @@ All colors MUST be HSL.
   }
 
   .animate-fade-in-up {
-    animation: fade-in-up 0.8s ease-out forwards;
+    animation: fade-in-up 0.4s ease-out forwards;
   }
 
   .animate-slide-in-right {
-    animation: slide-in-right 0.6s ease-out forwards;
+    animation: slide-in-right 0.3s ease-out forwards;
   }
 
   .animate-glow-text {
-    animation: glow-text 2s ease-in-out infinite;
+    animation: glow-text 3s ease-in-out infinite;
   }
 
   .animate-bounce-in {
-    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+    animation: bounce-in 0.3s ease-out forwards;
   }
 
   .animate-fall-coin {
@@ -317,7 +320,6 @@ All colors MUST be HSL.
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200% 200%;
-    animation: glow-text 3s ease-in-out infinite;
   }
 
   .gray-subtle {

@@ -18,7 +18,7 @@ const Game = () => {
   const { profile, updateProfile, loading } = useProfile();
   const [grow, setGrow] = useState(0);
   const [grow1, setGrow1] = useState(1);
-  const [bone, setBone] = useState(1000);
+  const [bone, setBone] = useState(0);
   const [timeLeft, setTimeLeft] = useState("");
   const [weeklyTimeLeft, setWeeklyTimeLeft] = useState("");
   const [clickEffect, setClickEffect] = useState<{id: number, x: number, y: number}[]>([]);
@@ -91,7 +91,7 @@ const Game = () => {
       const savedGrow = Number(localStorage.getItem("bdog-grow")) || 0;
       const savedGrow1 = Number(localStorage.getItem("bdog-grow1")) || 1;
       const savedBoneStr = localStorage.getItem("bdog-bone");
-      const savedBone = savedBoneStr !== null ? Number(savedBoneStr) : 1000; // Preserve 0 bones
+      const savedBone = savedBoneStr !== null ? Number(savedBoneStr) : 0; // Start with 0 bones
       const savedBoosterEndTime = localStorage.getItem("bdog-booster-end");
       
       console.log('Loading from localStorage:', { savedGrow, savedGrow1, savedBone });
@@ -466,9 +466,9 @@ const Game = () => {
               <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
             </Card>
             
-            <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+            <Card className="card-glow p-2 text-center animate-fade-in-up">
               <p className="text-xs text-muted-foreground">Косточки</p>
-              <p className="text-sm font-bold text-foreground">{bone}</p>
+              <p className="text-sm font-bold text-gold">{bone}</p>
             </Card>
             
             <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
@@ -489,13 +489,13 @@ const Game = () => {
                 <img 
                   src={bulldogLogoTransparent}
                   alt="BDOG"
-                  className={`w-40 h-40 mx-auto rounded-full object-contain transition-all duration-150 ease-out ${
-                    isClicked 
-                      ? 'scale-110 brightness-110' 
-                      : 'scale-100 hover:scale-105'
-                  }`}
+              className={`w-40 h-40 mx-auto rounded-full object-contain transition-all duration-150 ease-out ${
+                isClicked 
+                  ? 'scale-105 brightness-105' 
+                  : 'scale-100 hover:scale-102'
+              }`}
                   style={{
-                    filter: 'brightness(1.2) contrast(1.1) saturate(1.2) drop-shadow(0 0 20px hsl(var(--gold) / 0.6))'
+                filter: 'brightness(1.1) contrast(1.05) saturate(1.1) drop-shadow(0 0 10px hsl(var(--gold) / 0.3))'
                   }}
                 />
                 
@@ -550,7 +550,7 @@ const Game = () => {
 
           {/* Ad space */}
           <Card className="card-glow p-3 text-center mb-6 max-w-xs mx-auto animate-fade-in-up">
-            <p className="text-gray-subtle text-xs mb-1">Твоя реклама тут,</p>
+            <p className="text-muted-foreground text-xs mb-1">Твоя реклама тут,</p>
             <a 
               href="https://t.me/Deff0xq" 
               target="_blank" 
@@ -563,10 +563,10 @@ const Game = () => {
 
           {/* Top players */}
           {topPlayers.length > 0 && (
-            <div className="max-w-xs mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
-              <h3 className="text-lg font-bold text-foreground mb-3 text-center">
-                🏆 Топ роста
-              </h3>
+          <div className="max-w-xs mx-auto animate-slide-in-right">
+            <h3 className="text-lg font-bold text-foreground mb-3 text-center">
+              🏆 Топ роста
+            </h3>
               
               <Card className="card-glow p-3">
                 <div className="text-center mb-3 border-b border-border pb-3">

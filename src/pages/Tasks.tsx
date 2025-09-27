@@ -113,7 +113,7 @@ export default function Tasks() {
     if (task.reward.type === 'v_bdog') {
       updates.v_bdog_earned = (profile.v_bdog_earned || 0) + task.reward.amount;
     } else if (task.reward.type === 'bone') {
-      updates.bone = (profile.bone || 1000) + task.reward.amount;
+      updates.bone = (profile.bone || 0) + task.reward.amount;
     }
 
     // Save completed task to profile to persist across sessions

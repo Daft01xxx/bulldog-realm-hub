@@ -10,7 +10,7 @@ interface Particle {
   direction: 'up' | 'down' | 'left' | 'right';
 }
 
-export default function FloatingParticles({ count = 20 }: { count?: number }) {
+export default function FloatingParticles({ count = 8 }: { count?: number }) {
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
@@ -19,8 +19,8 @@ export default function FloatingParticles({ count = 20 }: { count?: number }) {
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: 1 + Math.random() * 3, // 1-4px size
-        duration: 15 + Math.random() * 25, // 15-40 seconds
+        size: 1 + Math.random() * 2, // 1-3px size
+        duration: 20 + Math.random() * 20, // 20-40 seconds
         delay: Math.random() * 10, // 0-10 seconds delay
         direction: ['up', 'down', 'left', 'right'][Math.floor(Math.random() * 4)] as Particle['direction'],
       }));

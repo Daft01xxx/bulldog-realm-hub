@@ -5,6 +5,7 @@ import { ShoppingCart, Coins, Wallet, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useBdogTonWallet } from '@/hooks/useTonWallet';
 import { useProfile } from '@/hooks/useProfile';
+import vBdogLogo from '@/assets/v-bdog-new-logo.jpeg';
 
 interface ShopItem {
   id: string;
@@ -44,31 +45,11 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
     {
       id: 'bones_1000',
       name: '1,000 Косточек',
-      price: '0.1',
+      price: '1.0',
       currency: 'TON' as const,
       bones: 1000,
       icon: <Coins className="w-6 h-6 text-gold" />,
       description: 'Пачка косточек для кормления',
-      type: 'bones' as const
-    },
-    {
-      id: 'bones_5000',
-      name: '5,000 Косточек',
-      price: '0.5',
-      currency: 'TON' as const,
-      bones: 5000,
-      icon: <Coins className="w-6 h-6 text-gold" />,
-      description: 'Большая упаковка косточек',
-      type: 'bones' as const
-    },
-    {
-      id: 'bones_10000',
-      name: '10,000 Косточек',
-      price: '1.0',
-      currency: 'TON' as const,
-      bones: 10000,
-      icon: <Coins className="w-6 h-6 text-gold" />,
-      description: 'Мега упаковка косточек',
       type: 'bones' as const
     },
     {
@@ -82,22 +63,12 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       type: 'booster' as const
     },
     {
-      id: 'booster_2h',
-      name: 'Ускоритель на 2 часа',
-      price: '1.5',
-      currency: 'TON' as const,
-      boosterHours: 2,
-      icon: <Zap className="w-6 h-6 text-primary" />,
-      description: 'Увеличивает grow1 в 5 раз на 2 часа',
-      type: 'booster' as const
-    },
-    {
       id: 'vbdog_500k',
       name: '500,000 V-BDOG',
       price: '3.0',
       currency: 'TON' as const,
       vBdog: 500000,
-      icon: <Coins className="w-6 h-6 text-primary" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: 'Пачка V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -107,7 +78,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '5.0',
       currency: 'TON' as const,
       vBdog: 1000000,
-      icon: <Coins className="w-6 h-6 text-primary" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: 'Миллион V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -117,7 +88,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '9.0',
       currency: 'TON' as const,
       vBdog: 2000000,
-      icon: <Coins className="w-6 h-6 text-primary" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: '2 миллиона V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -127,7 +98,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '16.0',
       currency: 'TON' as const,
       vBdog: 4000000,
-      icon: <Coins className="w-6 h-6 text-primary" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: '4 миллиона V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -137,7 +108,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '30.0',
       currency: 'TON' as const,
       vBdog: 8000000,
-      icon: <Coins className="w-6 h-6 text-primary" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: '8 миллионов V-BDOG токенов',
       type: 'vbdog' as const
     }
@@ -290,40 +261,121 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
         </div>
       </Card>
 
-      {/* Shop Items */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-bold text-foreground text-center mb-4 flex items-center justify-center gap-2">
-          <ShoppingCart className="w-5 h-5 text-gold" />
-          Магазин
-        </h3>
-        
-        {shopItems.map((item) => (
-          <Card key={item.id} className="card-glow p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {item.icon}
-                <div>
-                  <h4 className="font-semibold text-foreground">{item.name}</h4>
-                  <p className="text-sm text-muted-foreground">{item.description}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-sm font-medium text-gold">
-                      {item.price} TON
-                    </span>
+      {/* Shop Items - grouped by type */}
+      <div className="space-y-6">
+        {/* Bones Section */}
+        <div className="space-y-3">
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Coins className="w-8 h-8 text-gold" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">Купить косточки</h3>
+          </div>
+          
+          {shopItems.filter(item => item.type === 'bones').map((item) => (
+            <Card key={item.id} className="card-glow p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <div>
+                    <h4 className="font-semibold text-foreground">{item.name}</h4>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm font-medium text-gold">
+                        {item.price} TON
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <div>
+                  <Button
+                    onClick={() => handlePurchase(item)}
+                    className="button-gold text-xs px-4 py-2"
+                    disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < (parseFloat(item.price) + 0.1)}
+                  >
+                    {isProcessing ? "Покупка..." : "Купить"}
+                  </Button>
+                </div>
               </div>
-              <div>
-                <Button
-                  onClick={() => handlePurchase(item)}
-                  className="button-gold text-xs px-4 py-2"
-                  disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < (parseFloat(item.price) + 0.1)}
-                >
-                  {isProcessing ? "Покупка..." : "Купить"}
-                </Button>
-              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Boosters Section */}
+        <div className="space-y-3">
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Zap className="w-8 h-8 text-primary" />
             </div>
-          </Card>
-        ))}
+            <h3 className="text-lg font-bold text-foreground">Купить ускоритель</h3>
+          </div>
+          
+          {shopItems.filter(item => item.type === 'booster').map((item) => (
+            <Card key={item.id} className="card-glow p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <div>
+                    <h4 className="font-semibold text-foreground">{item.name}</h4>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm font-medium text-gold">
+                        {item.price} TON
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handlePurchase(item)}
+                    className="button-gold text-xs px-4 py-2"
+                    disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < (parseFloat(item.price) + 0.1)}
+                  >
+                    {isProcessing ? "Покупка..." : "Купить"}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* V-BDOG Section */}
+        <div className="space-y-3">
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <img src={vBdogLogo} alt="V-BDOG" className="w-10 h-10 rounded-full" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground">Купить V-BDOG</h3>
+          </div>
+          
+          {shopItems.filter(item => item.type === 'vbdog').map((item) => (
+            <Card key={item.id} className="card-glow p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {item.icon}
+                  <div>
+                    <h4 className="font-semibold text-foreground">{item.name}</h4>
+                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-sm font-medium text-gold">
+                        {item.price} TON
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handlePurchase(item)}
+                    className="button-gold text-xs px-4 py-2"
+                    disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < (parseFloat(item.price) + 0.1)}
+                  >
+                    {isProcessing ? "Покупка..." : "Купить"}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </div>
 
       <Card className="card-glow p-4 bg-gold/10 border-gold/20">

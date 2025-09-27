@@ -14,7 +14,7 @@ export default function TransactionTracker({ onTransactionFound }: TransactionTr
   const [loading, setLoading] = useState(false);
 
   const checkTonScan = (addressToCheck: string) => {
-    const cleanAddress = addressToCheck.replace(/[^A-Za-z0-9_]/g, '');
+    const cleanAddress = addressToCheck.replace(/[^A-Za-z0-9_-]/g, '');
     const tonScanUrl = `https://tonscan.org/address/${cleanAddress}`;
     window.open(tonScanUrl, '_blank');
   };
@@ -53,14 +53,14 @@ export default function TransactionTracker({ onTransactionFound }: TransactionTr
             id="address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            placeholder="EQBNLD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"
+            placeholder="EQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"
             className="mt-1"
           />
         </div>
 
         <div className="flex gap-2">
           <Button
-            onClick={() => checkTonScan(address || "EQBNLD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7")}
+            onClick={() => checkTonScan(address || "EQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7")}
             className="button-gold flex-1"
             disabled={loading}
           >

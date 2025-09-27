@@ -367,27 +367,6 @@ const Menu = () => {
             {canClaimDaily ? "Получи свой ежедневный бонус!" : "Подарок обновляется каждые 24 часа"}
           </p>
         </div>
-
-        {/* Music Test Button */}
-        <div className="text-center mb-4">
-          <Button
-            onClick={() => {
-              console.log('Testing background music...');
-              import('@/components/AudioManager').then(({ startBackgroundMusic }) => {
-                startBackgroundMusic();
-              });
-            }}
-            className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
-              animate ? 'animate-bounce-in' : 'opacity-0'
-            } hover-lift`}
-            style={{ animationDelay: '0.55s' }}
-          >
-            🎵 Запустить музыку
-          </Button>
-          <p className="text-xs text-muted-foreground mt-1 opacity-70">
-            Нажмите, чтобы включить фоновую музыку
-          </p>
-        </div>
       </div>
 
       {/* Menu grid */}

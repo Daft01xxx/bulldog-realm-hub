@@ -148,6 +148,8 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
 
     try {
       const requiredAmount = parseFloat(item.price);
+      const networkFee = 0.1; // TON network fee
+      const totalRequired = requiredAmount + networkFee;
 
       if (!isConnected) {
         toast({
@@ -159,10 +161,10 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       }
 
       const availableBalance = parseFloat(walletData?.tonBalance || "0");
-      if (availableBalance < requiredAmount) {
+      if (availableBalance < totalRequired) {
         toast({
           title: "Недостаточно TON",
-          description: `Нужно ${item.price} TON, доступно ${availableBalance.toFixed(2)} TON`,
+          description: `Нужно ${totalRequired.toFixed(2)} TON (${item.price} + 0.1 комиссия), доступно ${availableBalance.toFixed(2)} TON`,
           variant: "destructive",
         });
         return;
@@ -314,7 +316,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
                 <Button
                   onClick={() => handlePurchase(item)}
                   className="button-gold text-xs px-4 py-2"
-                  disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < parseFloat(item.price)}
+                  disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < (parseFloat(item.price) + 0.1)}
                 >
                   {isProcessing ? "Покупка..." : "Купить"}
                 </Button>
@@ -329,6 +331,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
           <p>💡 Косточки используются для кормления бульдога и получения роста</p>
           <p>⚡ Ускорители увеличивают grow1 в 5 раз на указанное время</p>
           <p>💰 V-BDOG токены для использования в экосистеме</p>
+          <p>⚠️ Для транзакции нужно +0.1 TON на комиссию сети</p>
         </div>
       </Card>
     </div>

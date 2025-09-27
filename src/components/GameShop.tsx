@@ -10,13 +10,13 @@ interface ShopItem {
   id: string;
   name: string;
   price: string;
-  priceBdog: number;
-  currency: 'TON' | 'BOTH';
+  currency: 'TON';
   bones?: number;
   boosterHours?: number;
+  vBdog?: number;
   icon: JSX.Element;
   description: string;
-  type: 'bones' | 'booster';
+  type: 'bones' | 'booster' | 'vbdog';
 }
 
 interface GameShopProps {
@@ -45,8 +45,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       id: 'bones_1000',
       name: '1,000 Косточек',
       price: '0.1',
-      priceBdog: 0.1 * BDOG_TO_TON_RATE,
-      currency: 'BOTH' as const,
+      currency: 'TON' as const,
       bones: 1000,
       icon: <Coins className="w-6 h-6 text-gold" />,
       description: 'Пачка косточек для кормления',
@@ -56,8 +55,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       id: 'bones_5000',
       name: '5,000 Косточек',
       price: '0.5',
-      priceBdog: 0.5 * BDOG_TO_TON_RATE,
-      currency: 'BOTH' as const,
+      currency: 'TON' as const,
       bones: 5000,
       icon: <Coins className="w-6 h-6 text-gold" />,
       description: 'Большая упаковка косточек',
@@ -67,8 +65,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       id: 'bones_10000',
       name: '10,000 Косточек',
       price: '1.0',
-      priceBdog: 1.0 * BDOG_TO_TON_RATE,
-      currency: 'BOTH' as const,
+      currency: 'TON' as const,
       bones: 10000,
       icon: <Coins className="w-6 h-6 text-gold" />,
       description: 'Мега упаковка косточек',
@@ -78,8 +75,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       id: 'booster_1h',
       name: 'Ускоритель на 1 час',
       price: '1.0',
-      priceBdog: 1.0 * BDOG_TO_TON_RATE,
-      currency: 'BOTH' as const,
+      currency: 'TON' as const,
       boosterHours: 1,
       icon: <Zap className="w-6 h-6 text-primary" />,
       description: 'Увеличивает grow1 в 5 раз на 1 час',
@@ -89,66 +85,103 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       id: 'booster_2h',
       name: 'Ускоритель на 2 часа',
       price: '1.5',
-      priceBdog: 1.5 * BDOG_TO_TON_RATE,
-      currency: 'BOTH' as const,
+      currency: 'TON' as const,
       boosterHours: 2,
       icon: <Zap className="w-6 h-6 text-primary" />,
       description: 'Увеличивает grow1 в 5 раз на 2 часа',
       type: 'booster' as const
+    },
+    {
+      id: 'vbdog_500k',
+      name: '500,000 V-BDOG',
+      price: '3.0',
+      currency: 'TON' as const,
+      vBdog: 500000,
+      icon: <Coins className="w-6 h-6 text-primary" />,
+      description: 'Пачка V-BDOG токенов',
+      type: 'vbdog' as const
+    },
+    {
+      id: 'vbdog_1m',
+      name: '1,000,000 V-BDOG',
+      price: '5.0',
+      currency: 'TON' as const,
+      vBdog: 1000000,
+      icon: <Coins className="w-6 h-6 text-primary" />,
+      description: 'Миллион V-BDOG токенов',
+      type: 'vbdog' as const
+    },
+    {
+      id: 'vbdog_2m',
+      name: '2,000,000 V-BDOG',
+      price: '9.0',
+      currency: 'TON' as const,
+      vBdog: 2000000,
+      icon: <Coins className="w-6 h-6 text-primary" />,
+      description: '2 миллиона V-BDOG токенов',
+      type: 'vbdog' as const
+    },
+    {
+      id: 'vbdog_4m',
+      name: '4,000,000 V-BDOG',
+      price: '16.0',
+      currency: 'TON' as const,
+      vBdog: 4000000,
+      icon: <Coins className="w-6 h-6 text-primary" />,
+      description: '4 миллиона V-BDOG токенов',
+      type: 'vbdog' as const
+    },
+    {
+      id: 'vbdog_8m',
+      name: '8,000,000 V-BDOG',
+      price: '30.0',
+      currency: 'TON' as const,
+      vBdog: 8000000,
+      icon: <Coins className="w-6 h-6 text-primary" />,
+      description: '8 миллионов V-BDOG токенов',
+      type: 'vbdog' as const
     }
   ];
 
-  const handlePurchase = async (item: ShopItem, paymentMethod: 'TON' | 'BDOG') => {
+  const handlePurchase = async (item: ShopItem) => {
     setIsProcessing(true);
 
     try {
       const requiredAmount = parseFloat(item.price);
-      const requiredBdog = item.priceBdog;
 
-      if (paymentMethod === 'TON') {
-        if (!isConnected) {
-          toast({
-            title: "Кошелек не подключен",
-            description: "Подключите кошелек для покупки",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        const availableBalance = parseFloat(walletData?.tonBalance || "0");
-        if (availableBalance < requiredAmount) {
-          toast({
-            title: "Недостаточно TON",
-            description: `Нужно ${item.price} TON, доступно ${availableBalance.toFixed(2)} TON`,
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // Send TON transaction
-        const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
-        const comment = item.type === 'bones' ? `BDOG: ${item.bones} косточек` : `BDOG: ${item.name}`;
-        const result = await sendTransaction(merchantWallet, item.price, comment);
-        
-        if (!result) return;
-      } else {
-        // BDOG payment
-        const availableBdog = parseFloat(walletData?.bdogBalance || "0");
-        if (availableBdog < requiredBdog) {
-          toast({
-            title: "Недостаточно BDOG",
-            description: `Нужно ${requiredBdog.toLocaleString()} BDOG, доступно ${availableBdog.toLocaleString()} BDOG`,
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // Deduct BDOG from balance
-        const newBdogBalance = availableBdog - requiredBdog;
-        await updateProfile({
-          bdog_balance: newBdogBalance
+      if (!isConnected) {
+        toast({
+          title: "Кошелек не подключен",
+          description: "Подключите кошелек для покупки",
+          variant: "destructive",
         });
+        return;
       }
+
+      const availableBalance = parseFloat(walletData?.tonBalance || "0");
+      if (availableBalance < requiredAmount) {
+        toast({
+          title: "Недостаточно TON",
+          description: `Нужно ${item.price} TON, доступно ${availableBalance.toFixed(2)} TON`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Send TON transaction
+      const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
+      let comment = "";
+      if (item.type === 'bones') {
+        comment = `BDOG: ${item.bones} косточек`;
+      } else if (item.type === 'booster') {
+        comment = `BDOG: ${item.name}`;
+      } else if (item.type === 'vbdog') {
+        comment = `BDOG: ${item.vBdog} V-BDOG`;
+      }
+      
+      const result = await sendTransaction(merchantWallet, item.price, comment);
+      
+      if (!result) return;
 
       // Apply purchase effects
       if (item.type === 'bones') {
@@ -177,6 +210,18 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
         toast({
           title: "Ускоритель активирован!",
           description: `Grow1 увеличен в 5 раз на ${item.boosterHours} час(ов)`,
+        });
+      } else if (item.type === 'vbdog') {
+        const currentVBdog = profile?.v_bdog_earned || 0;
+        const newVBdog = currentVBdog + (item.vBdog || 0);
+
+        await updateProfile({
+          v_bdog_earned: newVBdog
+        });
+
+        toast({
+          title: "Покупка успешна!",
+          description: `Получено ${item.vBdog?.toLocaleString()} V-BDOG`,
         });
       }
 
@@ -218,31 +263,17 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
   return (
     <div className="space-y-4">
       {/* Wallet Info */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card className="card-glow p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-gold">TON</h3>
-              <p className="text-xl font-bold text-gradient">
-                {walletData?.tonBalance || "0"}
-              </p>
-            </div>
-            <Wallet className="w-6 h-6 text-gold" />
+      <Card className="card-glow p-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-semibold text-gold">TON Баланс</h3>
+            <p className="text-xl font-bold text-gradient">
+              {walletData?.tonBalance || "0"} TON
+            </p>
           </div>
-        </Card>
-        
-        <Card className="card-glow p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-primary">BDOG</h3>
-              <p className="text-xl font-bold text-primary">
-                {parseFloat(walletData?.bdogBalance || "0").toLocaleString()}
-              </p>
-            </div>
-            <Coins className="w-6 h-6 text-primary" />
-          </div>
-        </Card>
-      </div>
+          <Wallet className="w-6 h-6 text-gold" />
+        </div>
+      </Card>
 
       {/* Current Bones */}
       <Card className="card-glow p-4">
@@ -272,32 +303,20 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
                 <div>
                   <h4 className="font-semibold text-foreground">{item.name}</h4>
                   <p className="text-sm text-muted-foreground">{item.description}</p>
-                  <div className="flex items-center gap-4 mt-1">
+                  <div className="flex items-center gap-2 mt-1">
                     <span className="text-sm font-medium text-gold">
                       {item.price} TON
-                    </span>
-                    <span className="text-xs text-muted-foreground">или</span>
-                    <span className="text-sm font-medium text-primary">
-                      {item.priceBdog.toLocaleString()} BDOG
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-2">
+              <div>
                 <Button
-                  onClick={() => handlePurchase(item, 'TON')}
-                  className="button-gold text-xs px-3 py-1"
+                  onClick={() => handlePurchase(item)}
+                  className="button-gold text-xs px-4 py-2"
                   disabled={isProcessing || !isConnected || parseFloat(walletData?.tonBalance || "0") < parseFloat(item.price)}
                 >
-                  {isProcessing ? "..." : "TON"}
-                </Button>
-                <Button
-                  onClick={() => handlePurchase(item, 'BDOG')}
-                  variant="outline"
-                  className="text-xs px-3 py-1 border-primary text-primary hover:bg-primary/10"
-                  disabled={isProcessing || parseFloat(walletData?.bdogBalance || "0") < item.priceBdog}
-                >
-                  {isProcessing ? "..." : "BDOG"}
+                  {isProcessing ? "Покупка..." : "Купить"}
                 </Button>
               </div>
             </div>
@@ -309,7 +328,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
         <div className="text-sm text-muted-foreground text-center space-y-1">
           <p>💡 Косточки используются для кормления бульдога и получения роста</p>
           <p>⚡ Ускорители увеличивают grow1 в 5 раз на указанное время</p>
-          <p>💰 Курс: 1 TON = 200,000 BDOG</p>
+          <p>💰 V-BDOG токены для использования в экосистеме</p>
         </div>
       </Card>
     </div>

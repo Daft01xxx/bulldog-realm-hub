@@ -213,6 +213,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   };
 
   const handleDragStart = (e: React.DragEvent, block: Block) => {
+    console.log('Drag start:', block);
     setDraggedBlock(block);
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -224,13 +225,16 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
   const handleDrop = (e: React.DragEvent, row: number, col: number) => {
     e.preventDefault();
+    console.log('Drop at:', row, col, 'Block:', draggedBlock);
     if (draggedBlock) {
       placeBlock(row, col, draggedBlock);
     }
   };
 
   const handleTouchStart = (e: React.TouchEvent, block: Block) => {
+    console.log('Touch start:', block);
     e.preventDefault();
+    e.stopPropagation();
     const touch = e.touches[0];
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDraggedBlock(block);
@@ -238,19 +242,30 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     e.preventDefault();
+    e.stopPropagation();
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    console.log('Touch end, draggedBlock:', draggedBlock);
     e.preventDefault();
-    if (!draggedBlock || !touchStartPos) return;
+    e.stopPropagation();
+    
+    if (!draggedBlock || !touchStartPos) {
+      console.log('No dragged block or touch start pos');
+      return;
+    }
 
     const touch = e.changedTouches[0];
     const element = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
+    console.log('Element at touch point:', element, element?.dataset);
     
     if (element && element.dataset.row !== undefined && element.dataset.col !== undefined) {
       const row = parseInt(element.dataset.row);
       const col = parseInt(element.dataset.col);
+      console.log('Placing block at:', row, col);
       placeBlock(row, col, draggedBlock);
+    } else {
+      console.log('No valid drop target found');
     }
     
     setTouchStartPos(null);

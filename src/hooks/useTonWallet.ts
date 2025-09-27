@@ -186,7 +186,11 @@ export const useBdogTonWallet = () => {
         const commentBuffer = new Uint8Array(4 + commentBytes.length);
         commentBuffer.set([0, 0, 0, 0], 0); // Text comment prefix
         commentBuffer.set(commentBytes, 4);
-        payload = Buffer.from(commentBuffer).toString('base64');
+        // Convert to base64 using browser-compatible method
+        const binaryString = Array.from(commentBuffer)
+          .map(byte => String.fromCharCode(byte))
+          .join('');
+        payload = btoa(binaryString);
       }
 
       const transaction = {

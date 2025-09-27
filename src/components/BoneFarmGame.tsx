@@ -239,13 +239,20 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
       });
     }
 
-    // Generate new blocks if all are placed
-    if (currentBlocks.length === 0) {
-      generateRandomBlocks();
-    }
+    // Generate new blocks if all are placed (check after state update)
+    setTimeout(() => {
+      setCurrentBlocks(prev => {
+        console.log('Current blocks after placement:', prev);
+        if (prev.length === 0) {
+          console.log('Generating new blocks...');
+          generateRandomBlocks();
+        }
+        return prev;
+      });
+    }, 100);
 
     // Check game over
-    setTimeout(() => checkGameOver(newGrid), 100);
+    setTimeout(() => checkGameOver(newGrid), 200);
   };
 
   const checkGameOver = (currentGrid: GridCell[][]) => {
@@ -482,29 +489,40 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
         <Card className="card-glow p-3 mb-4">
           <div ref={gameGridRef} className="grid grid-cols-7 gap-1 mb-4">
             {grid.map((row, rowIndex) =>
-              row.map((cell, colIndex) => (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  data-row={rowIndex}
-                  data-col={colIndex}
-                  className={`aspect-square border border-muted-foreground/20 rounded-sm ${
-                    cell.filled ? cell.color : 'bg-muted/20'
-                  } ${
-                    ghostGridPosition && 
-                    draggedBlock && 
-                    canPlaceBlock(grid, draggedBlock, ghostGridPosition.row, ghostGridPosition.col) &&
-                    rowIndex >= ghostGridPosition.row && 
-                    rowIndex < ghostGridPosition.row + draggedBlock.shape.length &&
-                    colIndex >= ghostGridPosition.col && 
-                    colIndex < ghostGridPosition.col + draggedBlock.shape[0].length &&
-                    draggedBlock.shape[rowIndex - ghostGridPosition.row][colIndex - ghostGridPosition.col]
-                      ? 'bg-gold/30 border-gold' 
-                      : ''
-                  }`}
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
-                />
-              ))
+              row.map((cell, colIndex) => {
+                // Проверяем, должна ли эта клетка быть частью призрака
+                let isGhostCell = false;
+                if (ghostGridPosition && draggedBlock && isDragging) {
+                  const validPlacement = canPlaceBlock(grid, draggedBlock, ghostGridPosition.row, ghostGridPosition.col);
+                  const inGhostRange = rowIndex >= ghostGridPosition.row && 
+                                     rowIndex < ghostGridPosition.row + draggedBlock.shape.length &&
+                                     colIndex >= ghostGridPosition.col && 
+                                     colIndex < ghostGridPosition.col + draggedBlock.shape[0].length;
+                  
+                  if (validPlacement && inGhostRange) {
+                    const shapeRow = rowIndex - ghostGridPosition.row;
+                    const shapeCol = colIndex - ghostGridPosition.col;
+                    isGhostCell = draggedBlock.shape[shapeRow]?.[shapeCol] === true;
+                  }
+                }
+                
+                return (
+                  <div
+                    key={`${rowIndex}-${colIndex}`}
+                    data-row={rowIndex}
+                    data-col={colIndex}
+                    className={`aspect-square border border-muted-foreground/20 rounded-sm ${
+                      cell.filled 
+                        ? cell.color 
+                        : isGhostCell 
+                          ? 'bg-gold/30 border-gold border-2' 
+                          : 'bg-muted/20'
+                    }`}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
+                  />
+                );
+              })
             )}
           </div>
         </Card>

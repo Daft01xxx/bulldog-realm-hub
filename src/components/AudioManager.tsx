@@ -7,17 +7,36 @@ interface AudioManagerProps {
 
 let globalAudioInstance: HTMLAudioElement | null = null;
 
-export const AudioManager = ({ backgroundMusic = true, volume = 0.1 }: AudioManagerProps) => {
+export const AudioManager = ({ backgroundMusic = true, volume = 0.2 }: AudioManagerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (backgroundMusic) {
       // Create or use existing global audio instance
       if (!globalAudioInstance) {
+        console.log('Creating new audio instance with cosmic-ambient.mp3');
         globalAudioInstance = new Audio('/cosmic-ambient.mp3');
         globalAudioInstance.loop = true;
         globalAudioInstance.volume = volume;
         globalAudioInstance.preload = 'auto';
+        
+        // Add error handling
+        globalAudioInstance.addEventListener('error', (e) => {
+          console.error('Audio error:', e);
+          console.log('Trying fallback music...');
+          globalAudioInstance = new Audio('/cosmic-music.ogg');
+          globalAudioInstance.loop = true;
+          globalAudioInstance.volume = volume;
+          globalAudioInstance.preload = 'auto';
+        });
+        
+        globalAudioInstance.addEventListener('canplaythrough', () => {
+          console.log('Audio can play through');
+        });
+        
+        globalAudioInstance.addEventListener('loadstart', () => {
+          console.log('Audio started loading');
+        });
       } else {
         globalAudioInstance.volume = volume;
       }
@@ -25,7 +44,20 @@ export const AudioManager = ({ backgroundMusic = true, volume = 0.1 }: AudioMana
       // Start playing on user interaction
       const startAudio = () => {
         if (globalAudioInstance && globalAudioInstance.paused) {
-          globalAudioInstance.play().catch(e => console.log('Audio play failed:', e));
+          console.log('Starting background music...');
+          globalAudioInstance.play()
+            .then(() => {
+              console.log('Background music started successfully');
+            })
+            .catch(e => {
+              console.error('Audio play failed:', e);
+              // Try fallback
+              if (globalAudioInstance.src.includes('cosmic-ambient.mp3')) {
+                console.log('Trying fallback music file...');
+                globalAudioInstance.src = '/cosmic-music.ogg';
+                globalAudioInstance.play().catch(err => console.error('Fallback also failed:', err));
+              }
+            });
         }
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);

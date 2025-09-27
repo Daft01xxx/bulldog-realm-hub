@@ -75,7 +75,7 @@ function AppContent() {
   return (
     <>
       <FloatingCosmicCoins />
-      <AudioManager backgroundMusic={true} volume={0.08} />
+      <AudioManager backgroundMusic={true} volume={0.15} />
       <FloatingParticles />
       <Toaster />
       <Sonner />

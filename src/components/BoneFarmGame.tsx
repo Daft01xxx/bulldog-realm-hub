@@ -113,23 +113,41 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
   const canPlaceBlock = (grid: GridCell[][], block: Block, row: number, col: number): boolean => {
     const { shape } = block;
+    console.log('Checking if can place block at:', row, col, 'Shape:', shape);
+    
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (shape[r][c]) {
           const newRow = row + r;
           const newCol = col + c;
-          if (newRow >= GRID_SIZE || newCol >= GRID_SIZE || grid[newRow][newCol].filled) {
+          console.log('Checking cell:', newRow, newCol);
+          
+          if (newRow >= GRID_SIZE || newCol >= GRID_SIZE) {
+            console.log('Out of bounds:', newRow, newCol);
+            return false;
+          }
+          
+          if (grid[newRow][newCol].filled) {
+            console.log('Cell already filled:', newRow, newCol);
             return false;
           }
         }
       }
     }
+    console.log('Block can be placed');
     return true;
   };
 
   const placeBlock = (row: number, col: number, block: Block) => {
-    if (!canPlaceBlock(grid, block, row, col)) return;
+    console.log('Attempting to place block at:', row, col, 'Block shape:', block.shape);
+    console.log('Can place block:', canPlaceBlock(grid, block, row, col));
+    
+    if (!canPlaceBlock(grid, block, row, col)) {
+      console.log('Cannot place block - invalid position');
+      return;
+    }
 
+    console.log('Placing block successfully');
     const newGrid = grid.map(row => row.map(cell => ({ ...cell })));
     const { shape, color } = block;
     
@@ -451,9 +469,10 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                   row.map((cell, colIndex) => (
                     <div
                       key={`ghost-${rowIndex}-${colIndex}`}
-                      className={`w-3 h-3 rounded-sm ${
+                      className={`aspect-square rounded-sm ${
                         cell ? draggedBlock.color : 'bg-transparent'
                       }`}
+                      style={{ width: '12px', height: '12px' }}
                     />
                   ))
                 )}

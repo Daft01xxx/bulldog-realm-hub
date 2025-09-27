@@ -109,19 +109,19 @@ export const useProfile = () => {
       let userProfile = existingProfiles?.[0];
       console.log('Existing profile found:', userProfile);
 
-      // Check if user is banned - redirect to ban page FIRST
-      if (userProfile && userProfile.ban === 1) {
-        console.log('User is banned, clearing data and redirecting to ban page');
-        
-        // Clear all user data
-        localStorage.clear();
-        
-        // Force redirect to ban page
-        setTimeout(() => {
-          window.location.href = '/ban';
-        }, 100);
-        return;
-      }
+      // Ban check disabled - users can always enter
+      // if (userProfile && userProfile.ban === 1) {
+      //   console.log('User is banned, clearing data and redirecting to ban page');
+      //   
+      //   // Clear all user data
+      //   localStorage.clear();
+      //   
+      //   // Force redirect to ban page
+      //   setTimeout(() => {
+      //     window.location.href = '/ban';
+      //   }, 100);
+      //   return;
+      // }
 
       // VPN banning disabled - users will not be banned for VPN
       // Ban VPN users only if they are not explicitly unbanned by admin

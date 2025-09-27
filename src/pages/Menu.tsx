@@ -306,9 +306,11 @@ const Menu = () => {
               )}
             </div>
             <div className="space-y-3">
-              <p className="text-base text-foreground text-center">
-                BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
-              </p>
+              {parseFloat(bdogBalance) > 0 && (
+                <p className="text-base text-foreground text-center">
+                  BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
+                </p>
+              )}
               {parseFloat(vBdogBalance) > 0 && (
                 <p className="text-base text-foreground text-center">
                   V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>

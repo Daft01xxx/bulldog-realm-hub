@@ -11,6 +11,7 @@ import PageTransition from "./components/PageTransition";
 import { AudioManager } from "./components/AudioManager";
 import FloatingCosmicCoins from "./components/FloatingCosmicCoins";
 import { AuthProvider } from "./hooks/useAuth";
+import { ThemeProvider } from "./components/ThemeProvider";
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -110,11 +111,13 @@ const App = () => (
       manifestUrl={`${window.location.origin}/tonconnect-manifest.json`}
     >
       <TooltipProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </AuthProvider>
+        </ThemeProvider>
       </TooltipProvider>
     </TonConnectUIProvider>
   </QueryClientProvider>

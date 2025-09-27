@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy, Moon, Sun } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/useTheme";
 import { AudioManager, playLogoClickSound } from '@/components/AudioManager';
 import FallingCoins2D from '@/components/FallingCoins2D';
 import FloatingCosmicCoins from '@/components/FloatingCosmicCoins';
@@ -19,6 +20,7 @@ const Menu = () => {
   const navigate = useNavigate();
   const { profile, updateProfile } = useProfile();
   const { isConnected, walletData } = useBdogTonWallet();
+  const { theme, toggleTheme } = useTheme();
   const [reg, setReg] = useState("");
   const [bdogBalance, setBdogBalance] = useState("0");
   const [vBdogBalance, setVBdogBalance] = useState("0");
@@ -318,6 +320,31 @@ const Menu = () => {
             </div>
           </div>
         </Card>
+
+        {/* Theme Toggle Button */}
+        <div className="text-center mb-4">
+          <Button
+            onClick={toggleTheme}
+            variant="outline"
+            size="sm"
+            className={`button-glow px-3 py-2 text-sm font-semibold ${
+              animate ? 'animate-bounce-in' : 'opacity-0'
+            } hover-lift border-gold/30 bg-surface/50 hover:bg-gold/20`}
+            style={{ animationDelay: '0.45s' }}
+          >
+            {theme === 'dark' ? (
+              <>
+                <Moon className="w-4 h-4 mr-2 text-gold" />
+                Ночной режим
+              </>
+            ) : (
+              <>
+                <Sun className="w-4 h-4 mr-2 text-gold" />
+                Дневной режим
+              </>
+            )}
+          </Button>
+        </div>
 
         {/* Daily Gift Button */}
         <div className="text-center mb-4">

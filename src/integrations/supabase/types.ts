@@ -36,6 +36,7 @@ export type Database = {
           last_key_reset: string | null
           last_miner_reward_at: string | null
           last_referral_code: string | null
+          miner_active: boolean | null
           miner_level: number | null
           referral_code_used: boolean | null
           referral_notifications: Json | null
@@ -68,6 +69,7 @@ export type Database = {
           last_key_reset?: string | null
           last_miner_reward_at?: string | null
           last_referral_code?: string | null
+          miner_active?: boolean | null
           miner_level?: number | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
@@ -100,6 +102,7 @@ export type Database = {
           last_key_reset?: string | null
           last_miner_reward_at?: string | null
           last_referral_code?: string | null
+          miner_active?: boolean | null
           miner_level?: number | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null

@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
+import StartMinerButton from '@/components/StartMinerButton';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
@@ -108,7 +109,8 @@ const Miner = () => {
       if (result) {
         const updateData = {
           current_miner: miner.id,
-          miner_level: 1
+          miner_level: 1,
+          miner_active: false // Miner purchased but not started yet
         };
 
         if (profile) {
@@ -123,7 +125,7 @@ const Miner = () => {
 
         toast({
           title: "Майнер успешно куплен!",
-          description: `Майнер ${miner.name} активирован. Доход: ${miner.income} V-BDOG/час`,
+          description: `Майнер ${miner.name} активирован. Теперь запустите его для получения дохода.`,
         });
       }
     } catch (error) {
@@ -235,14 +237,24 @@ const Miner = () => {
               {getCurrentMinerData().description}
             </p>
             
-            {/* Miner Timer */}
-            <div className="mb-4">
-              <MinerTimer />
-            </div>
+            {/* Miner Timer - только если майнер активен */}
+            {(profile as any)?.miner_active && (
+              <div className="mb-4">
+                <MinerTimer />
+              </div>
+            )}
+            
+            {/* Start Miner Button - только если майнер куплен но не активен */}
+            {!(profile as any)?.miner_active && currentMiner !== 'default' && (
+              <div className="mb-4">
+                <StartMinerButton />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 mt-6 justify-center">
-            <ClaimMinerRewards />
+            {/* Claim rewards only if miner is active */}
+            {(profile as any)?.miner_active && <ClaimMinerRewards />}
             
             <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
               <DialogTrigger asChild>

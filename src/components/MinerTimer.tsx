@@ -7,6 +7,11 @@ const MinerTimer: React.FC = () => {
 
   // Simplified logic - show timer immediately with fallback data if needed
   const getTimerData = () => {
+    // Only show timer if miner is active
+    if (!profile?.miner_active) {
+      return null;
+    }
+    
     if (profile?.last_miner_reward_at) {
       return {
         lastRewardTime: new Date(profile.last_miner_reward_at),
@@ -25,7 +30,7 @@ const MinerTimer: React.FC = () => {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      console.log('Timer update - loading:', loading, 'profile:', !!profile);
+      console.log('Timer update - loading:', loading, 'profile:', !!profile, 'miner_active:', profile?.miner_active);
       
       // Show loading only for first 3 seconds
       if (loading && !profile) {
@@ -40,6 +45,13 @@ const MinerTimer: React.FC = () => {
       }
 
       const timerData = getTimerData();
+      
+      // If no timer data (miner not active), don't show anything
+      if (!timerData) {
+        setTimeLeft('Майнер не активен');
+        return;
+      }
+      
       const nextRewardTime = new Date(timerData.lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
       const currentTime = new Date();
       const timeDiff = nextRewardTime.getTime() - currentTime.getTime();
@@ -65,31 +77,7 @@ const MinerTimer: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [profile?.last_miner_reward_at, loading]);
-
-  // Force update after 5 seconds if still loading
-  useEffect(() => {
-    const forceTimer = setTimeout(() => {
-      if (loading || !profile) {
-        console.log('Forcing timer display after 5 seconds');
-        const timerData = getTimerData();
-        const nextRewardTime = new Date(timerData.lastRewardTime.getTime() + 60 * 60 * 1000);
-        const currentTime = new Date();
-        const timeDiff = nextRewardTime.getTime() - currentTime.getTime();
-
-        if (timeDiff <= 0) {
-          setTimeLeft('Награда готова!');
-        } else {
-          const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-          setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-        }
-      }
-    }, 5000);
-
-    return () => clearTimeout(forceTimer);
-  }, [loading, profile]);
+  }, [profile?.last_miner_reward_at, profile?.miner_active, loading]);
 
   const getCurrentMinerIncome = () => {
     const minerType = profile?.current_miner || 'default';

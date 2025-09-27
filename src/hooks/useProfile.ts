@@ -28,6 +28,7 @@ interface UserProfile {
   referral_notifications?: any; // JSON data from database
   current_miner?: string;
   miner_level?: number;
+  miner_active?: boolean;
   last_miner_reward_at?: string;
   completed_tasks?: string;
   keys?: number;
@@ -158,6 +159,7 @@ export const useProfile = () => {
           referral_notifications: [],
           current_miner: 'default',
           miner_level: 1,
+          miner_active: false,
           last_miner_reward_at: new Date().toISOString(),
           v_bdog_earned: 0,
           bdog_balance: 0,

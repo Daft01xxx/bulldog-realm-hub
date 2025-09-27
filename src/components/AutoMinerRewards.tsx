@@ -7,7 +7,7 @@ const AutoMinerRewards: React.FC = () => {
   const { profile, updateProfile } = useProfileContext();
 
   useEffect(() => {
-    if (!profile) return;
+    if (!profile || !profile.miner_active) return; // Only work for active miners
 
     const checkAndClaimReward = async () => {
       if (!profile.last_miner_reward_at) return;
@@ -73,7 +73,7 @@ const AutoMinerRewards: React.FC = () => {
     checkAndClaimReward();
 
     return () => clearInterval(interval);
-  }, [profile, updateProfile]);
+  }, [profile?.miner_active, profile, updateProfile]);
 
   return null; // This component doesn't render anything
 };

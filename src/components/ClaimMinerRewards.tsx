@@ -10,7 +10,7 @@ const ClaimMinerRewards: React.FC = () => {
   const [claiming, setClaiming] = useState(false);
 
   const canClaimReward = () => {
-    if (!profile?.last_miner_reward_at) return true; // New users can claim immediately
+    if (!profile?.last_miner_reward_at || !profile?.miner_active) return false; // Only active miners can claim
     
     const lastRewardTime = new Date(profile.last_miner_reward_at);
     const nextRewardTime = new Date(lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
@@ -41,6 +41,11 @@ const ClaimMinerRewards: React.FC = () => {
   const handleClaimReward = async () => {
     if (!profile) {
       toast.error('Профиль еще загружается, попробуйте снова');
+      return;
+    }
+    
+    if (!profile.miner_active) {
+      toast.error('Сначала запустите майнер');
       return;
     }
     

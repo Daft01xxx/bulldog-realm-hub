@@ -26,6 +26,9 @@ interface UserProfile {
   referral_code_used?: boolean;
   last_referral_code?: string;
   referral_notifications?: any; // JSON data from database
+  current_miner?: string;
+  miner_level?: number;
+  last_miner_reward_at?: string;
 }
 
 interface DeviceInfo {

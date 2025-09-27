@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pickaxe, TrendingUp, Gamepad2, Play } from "lucide-react";
-import { useProfile } from "@/hooks/useProfile";
-import { toast } from "@/hooks/use-toast";
+import { useProfile } from '@/hooks/useProfile';
+import MinerTimer from '@/components/MinerTimer';
 
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import { AudioManager } from '@/components/AudioManager';
@@ -119,6 +119,11 @@ const Index = () => {
             </div>
           </div>
         </Card>
+
+        {/* Miner Timer */}
+        <div className="mb-8">
+          <MinerTimer />
+        </div>
 
         {/* Game Launch Section */}
         <div className="text-center mb-8">

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -274,9 +274,35 @@ const Menu = () => {
           style={{ animationDelay: '0.3s' }}
         >
           <div className="space-y-4">
-            <p className="text-base text-muted-foreground text-center">
-              <span className="text-gold font-semibold text-lg">{reg}</span>
-            </p>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-gold font-semibold text-lg">
+                {reg && reg.length > 8 ? `${reg.slice(0, 4)}...${reg.slice(-4)}` : reg}
+              </span>
+              {reg && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(reg);
+                      toast({
+                        title: "Скопировано!",
+                        description: "ID пользователя скопирован в буфер обмена",
+                      });
+                    } catch {
+                      toast({
+                        title: "Ошибка",
+                        description: "Не удалось скопировать ID",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  className="h-6 w-6 p-0 hover:bg-gold/10"
+                >
+                  <Copy className="w-3 h-3 text-gold" />
+                </Button>
+              )}
+            </div>
             <div className="space-y-3">
               <p className="text-base text-foreground text-center">
                 BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>

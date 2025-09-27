@@ -45,7 +45,18 @@ const Referral = () => {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(referralLink);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(referralLink);
+      } else {
+        // Fallback for older browsers or non-secure contexts
+        const textArea = document.createElement('textarea');
+        textArea.value = referralLink;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
       toast({
         title: "Скопировано!",
         description: "Реферальная ссылка скопирована в буфер обмена",

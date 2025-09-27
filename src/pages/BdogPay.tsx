@@ -66,15 +66,7 @@ export default function BdogPay() {
     if (currency === 'ton') {
       result = await sendTransaction(recipientAddress, amount, comment || undefined, 'ton');
     } else {
-      // For BDOG tokens, we'll use a placeholder function for now
-      // This would need to be implemented based on the specific BDOG token contract
-      toast({
-        title: "В разработке",
-        description: "Отправка BDOG токенов будет доступна скоро",
-        variant: "destructive",
-      });
-      setIsProcessing(false);
-      return;
+      result = await sendTransaction(recipientAddress, amount, comment || undefined, 'bdog');
     }
     
     if (result) {

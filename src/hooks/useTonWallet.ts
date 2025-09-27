@@ -166,7 +166,10 @@ export const useBdogTonWallet = () => {
   };
 
   const sendTransaction = async (to: string, amount: string, comment?: string) => {
+    console.log('[TON Wallet] Starting transaction:', { to, amount, comment });
+    
     if (!wallet?.account) {
+      console.log('[TON Wallet] No wallet account available');
       toast({
         title: "Ошибка",
         description: "Кошелек не подключен",
@@ -175,42 +178,72 @@ export const useBdogTonWallet = () => {
       return null;
     }
 
+    console.log('[TON Wallet] Wallet account:', wallet.account.address);
+
     try {
+      // Convert amount to nanotons (1 TON = 1,000,000,000 nanotons)
+      const nanoAmount = (parseFloat(amount) * 1000000000).toString();
+      console.log('[TON Wallet] Converting amount:', { original: amount, nano: nanoAmount });
+
+      // Basic transaction without payload for now (comment support can be added later)
       const transaction = {
-        validUntil: Math.floor(Date.now() / 1000) + 600, // Valid for 10 minutes
+        validUntil: Math.floor(Date.now() / 1000) + 360, // Valid for 6 minutes
         messages: [
           {
             address: to,
-            amount: (parseFloat(amount) * 1000000000).toString(), // Convert TON to nanotons
-            payload: comment ? Buffer.from(comment, 'utf8').toString('base64') : undefined
+            amount: nanoAmount
+            // Removed payload for now to simplify debugging
           }
         ]
       };
 
+      console.log('[TON Wallet] Prepared transaction:', transaction);
+
       const result = await tonConnectUI.sendTransaction(transaction);
+      console.log('[TON Wallet] TonConnect result:', result);
       
       toast({
         title: "Транзакция отправлена",
-        description: `Транзакция на ${amount} TON отправлена`,
+        description: `Транзакция на ${amount} TON отправлена${comment ? ` с комментарием: ${comment}` : ''}`,
       });
 
       // Refresh wallet data after transaction
       setTimeout(() => {
+        console.log('[TON Wallet] Refreshing wallet data after transaction');
         if (wallet?.account?.address) {
           fetchWalletData(wallet.account.address);
         }
-      }, 3000);
+      }, 5000); // Increased timeout
 
       return result;
     } catch (error: any) {
-      console.error('Transaction failed:', error);
+      console.error('[TON Wallet] Transaction failed with error:', {
+        error,
+        errorMessage: error.message,
+        errorCode: error.code,
+        errorName: error.name,
+        errorType: typeof error,
+        fullError: JSON.stringify(error, null, 2)
+      });
       
       let errorMessage = "Не удалось отправить транзакцию";
       
-      if (error.message?.includes('user rejected')) {
+      // More comprehensive error handling
+      if (error.message?.toLowerCase().includes('user rejected') || 
+          error.message?.toLowerCase().includes('user declined') ||
+          error.message?.toLowerCase().includes('cancelled')) {
         errorMessage = "Транзакция отклонена пользователем";
-      } else if (error.message?.includes('insufficient balance')) {
+      } else if (error.message?.toLowerCase().includes('insufficient') || 
+                 error.message?.toLowerCase().includes('not enough') ||
+                 error.message?.toLowerCase().includes('balance')) {
         errorMessage = "Недостаточно средств на балансе";
+      } else if (error.message?.toLowerCase().includes('invalid address')) {
+        errorMessage = "Неверный адрес получателя";
+      } else if (error.message?.toLowerCase().includes('network') || 
+                 error.message?.toLowerCase().includes('connection')) {
+        errorMessage = "Проблемы с сетевым подключением";
+      } else if (error.message) {
+        errorMessage = `Ошибка: ${error.message}`;
       }
       
       toast({

@@ -7,6 +7,9 @@ const MinerTimer: React.FC = () => {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
+      console.log('MinerTimer: profile data:', profile);
+      console.log('MinerTimer: last_miner_reward_at:', profile?.last_miner_reward_at);
+      
       if (!profile?.last_miner_reward_at) {
         setTimeLeft('00:00:00');
         return;

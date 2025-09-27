@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pickaxe, TrendingUp, Gamepad2, Play } from "lucide-react";
+import { Pickaxe, TrendingUp, Gamepad2, Play, RefreshCw } from "lucide-react";
 import { useProfile } from '@/hooks/useProfile';
 import MinerTimer from '@/components/MinerTimer';
 
@@ -22,7 +22,7 @@ const minerTypes = [
 
 const Index = () => {
   const navigate = useNavigate();
-  const { profile } = useProfile();
+  const { profile, reloadProfile } = useProfile();
   const [currentMiner, setCurrentMiner] = useState('default');
   const [minerLevel, setMinerLevel] = useState(1);
   const [vBdogEarned, setVBdogEarned] = useState(0);
@@ -123,6 +123,19 @@ const Index = () => {
         {/* Miner Timer */}
         <div className="mb-8">
           <MinerTimer />
+        </div>
+
+        {/* Debug: Reload Profile Button */}
+        <div className="text-center mb-4">
+          <Button
+            onClick={() => reloadProfile()}
+            size="sm"
+            variant="outline"
+            className="text-xs"
+          >
+            <RefreshCw className="w-4 h-4 mr-1" />
+            Обновить профиль
+          </Button>
         </div>
 
         {/* Game Launch Section */}

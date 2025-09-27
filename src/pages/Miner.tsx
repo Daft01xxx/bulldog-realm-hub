@@ -12,12 +12,12 @@ import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
 // Import miner images
-import solarCollectorImage from '@/assets/solar-collector-miner.png';
-import quantumHarvesterImage from '@/assets/quantum-harvester-miner.png';
-import stellarMinerImage from '@/assets/stellar-miner.png';
-import boneExtractorImage from '@/assets/bone-extractor-miner.png';
-import voidDrillerImage from '@/assets/void-driller-miner.png';
-import galacticHarvesterImage from '@/assets/galactic-harvester-miner.png';
+import defaultMinerImage from '@/assets/default-miner.png';
+import plusMinerImage from '@/assets/plus-miner.png';
+import silverMinerImage from '@/assets/silver-miner.png';
+import goldMinerImage from '@/assets/gold-miner.png';
+import diamondMinerImage from '@/assets/diamond-miner.png';
+import premiumMinerImage from '@/assets/premium-miner.png';
 
 interface MinerType {
   id: string;
@@ -29,12 +29,12 @@ interface MinerType {
 }
 
 const minerTypes: MinerType[] = [
-  { id: 'default', name: 'DEFOLT', price: '0', income: 100, description: 'Бесплатный майнер для всех', image: bdogLogoTransparent },
-  { id: 'plus', name: 'PLUS', price: '1', income: 500, description: 'Улучшенная производительность', image: solarCollectorImage },
-  { id: 'silver', name: 'SILVER', price: '3', income: 1400, description: 'Серебряный уровень майнинга', image: quantumHarvesterImage },
-  { id: 'gold', name: 'GOLD', price: '6', income: 2500, description: 'Золотой стандарт майнинга', image: stellarMinerImage },
-  { id: 'diamond', name: 'DIAMOND', price: '15', income: 6000, description: 'Алмазная мощность', image: boneExtractorImage },
-  { id: 'premium', name: 'PREMIUM', price: '35', income: 10000, description: 'Максимальная производительность', image: galacticHarvesterImage }
+  { id: 'default', name: 'DEFOLT', price: '0', income: 100, description: 'Бесплатный майнер для всех', image: defaultMinerImage },
+  { id: 'plus', name: 'PLUS', price: '1', income: 500, description: 'Улучшенная производительность', image: plusMinerImage },
+  { id: 'silver', name: 'SILVER', price: '3', income: 1400, description: 'Серебряный уровень майнинга', image: silverMinerImage },
+  { id: 'gold', name: 'GOLD', price: '6', income: 2500, description: 'Золотой стандарт майнинга', image: goldMinerImage },
+  { id: 'diamond', name: 'DIAMOND', price: '15', income: 6000, description: 'Алмазная мощность', image: diamondMinerImage },
+  { id: 'premium', name: 'PREMIUM', price: '35', income: 10000, description: 'Максимальная производительность', image: premiumMinerImage }
 ];
 
 const Miner = () => {

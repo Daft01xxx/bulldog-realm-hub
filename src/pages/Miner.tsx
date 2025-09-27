@@ -7,7 +7,7 @@ import { ArrowLeft, Pickaxe, Star, TrendingUp } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
-import TopNavigation from "@/components/TopNavigation";
+
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
@@ -184,7 +184,6 @@ const Miner = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <FloatingCosmicCoins />
-      <TopNavigation />
       
       <div className="container mx-auto px-4 py-6 relative z-10">
         {/* Header */}

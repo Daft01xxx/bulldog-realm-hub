@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Home, ExternalLink } from "lucide-react";
-import TopNavigation from "@/components/TopNavigation";
+
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { AudioManager } from '@/components/AudioManager';
 import TonLogoNoBackground from "@/components/TonLogoNoBackground";
@@ -51,7 +51,6 @@ const Wallet = () => {
   return (
     <div className="min-h-screen bg-background px-1 py-2">
       <AudioManager backgroundMusic={true} volume={0.05} />
-      <TopNavigation />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-3 pt-2">
         <Button

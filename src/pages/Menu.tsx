@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -194,6 +194,13 @@ const Menu = () => {
       delay: "0.2s"
     },
     {
+      title: "Майнер",
+      icon: "miner",
+      path: "/miner",
+      description: "Пассивный доход V-BDOG",
+      delay: "0.25s"
+    },
+    {
       title: "Информация о BDOG",
       icon: Info,
       path: "/info",
@@ -331,6 +338,8 @@ const Menu = () => {
                       <img src={bdogLogo} alt="BDOG" className="w-6 h-6 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : item.icon === "support" ? (
                       <HeadphonesIcon className="w-6 h-6 icon-gold" />
+                    ) : item.icon === "miner" ? (
+                      <Pickaxe className="w-6 h-6 icon-gold" />
                     ) : (
                       <IconComponent className="w-6 h-6 icon-gold" />
                     )}

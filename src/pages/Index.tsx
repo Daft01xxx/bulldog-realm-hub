@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Pickaxe, TrendingUp, Gamepad2, Play } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { toast } from "@/hooks/use-toast";
-import TopNavigation from "@/components/TopNavigation";
+
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import { AudioManager } from '@/components/AudioManager';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
@@ -55,7 +55,6 @@ const Index = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       <FloatingCosmicCoins />
       <AudioManager backgroundMusic={true} volume={0.3} />
-      <TopNavigation />
       
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}

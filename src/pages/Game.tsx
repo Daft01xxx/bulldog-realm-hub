@@ -9,7 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
-import TopNavigation from '@/components/TopNavigation';
+
 import GameShop from '@/components/GameShop';
 import { BoneFarmGame } from '@/components/BoneFarmGame';
 
@@ -502,7 +502,6 @@ const Game = () => {
   return (
     <div className="min-h-screen bg-background px-2 py-4">
       <AudioManager backgroundMusic={true} volume={0.1} />
-      <TopNavigation />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-4 pt-4">
         <Button

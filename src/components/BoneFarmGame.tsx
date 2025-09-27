@@ -88,27 +88,33 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     }
     
     const gridRect = gameGridRef.current.getBoundingClientRect();
+    console.log('Grid rect:', gridRect);
+    
+    // Убеждаемся что элемент видим и имеет правильные размеры
+    if (gridRect.width === 0 || gridRect.height === 0) {
+      console.log('Grid has zero dimensions');
+      return null;
+    }
+    
     const cellSize = gridRect.width / GRID_SIZE;
     
     const relativeX = clientX - gridRect.left;
     const relativeY = clientY - gridRect.top;
     
+    console.log('Touch calculation:', {
+      clientX, clientY,
+      gridLeft: gridRect.left, gridTop: gridRect.top,
+      relativeX, relativeY,
+      cellSize
+    });
+    
     const col = Math.floor(relativeX / cellSize);
     const row = Math.floor(relativeY / cellSize);
     
-    console.log('calculateGridPosition:', {
-      clientX,
-      clientY,
-      gridRect: { left: gridRect.left, top: gridRect.top, width: gridRect.width, height: gridRect.height },
-      cellSize,
-      relativeX,
-      relativeY,
-      row,
-      col
-    });
+    console.log('Calculated position:', { row, col });
     
     if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
-      console.log('Position out of bounds:', { row, col });
+      console.log('Position out of bounds:', { row, col, GRID_SIZE });
       return null;
     }
     

@@ -2,13 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, Zap, Info, ClipboardList } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
 import TopNavigation from '@/components/TopNavigation';
+import GameShop from '@/components/GameShop';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -27,6 +29,7 @@ const Game = () => {
   const [boosterTimeLeft, setBoosterTimeLeft] = useState("");
   const [totalTaps, setTotalTaps] = useState(0);
   const [isClicked, setIsClicked] = useState(false);
+  const [activeTab, setActiveTab] = useState("game");
 
   const [isUpdatingFromClick, setIsUpdatingFromClick] = useState(false);
 
@@ -436,154 +439,186 @@ const Game = () => {
         </Button>
       </div>
 
-      {/* Game stats */}
-      <div className="grid grid-cols-3 gap-2 mb-4 max-w-sm mx-auto">
-        <Card className="card-glow p-2 text-center animate-fade-in-up">
-          <p className="text-xs text-muted-foreground">Рост</p>
-          <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
-        </Card>
-        
-        <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-          <p className="text-xs text-muted-foreground">Косточки</p>
-          <p className="text-sm font-bold text-foreground">{bone}</p>
-        </Card>
-        
-        <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-          <p className="text-xs text-muted-foreground">Сброс через</p>
-          <p className="text-xs font-bold text-gold">{timeLeft}</p>
-        </Card>
-      </div>
-
-      {/* Game area */}
-      <div className="text-center mb-4">
-        <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
-          <div 
-            className="relative cursor-pointer group"
-            onClick={(e) => {
-              handleClick(e);
-            }}
+      {/* Main Content */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger 
+            value="game" 
+            className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
           >
-            <img 
-              src={bulldogLogoTransparent}
-              alt="BDOG"
-              className={`w-40 h-40 mx-auto rounded-full object-contain transition-all duration-150 ease-out ${
-                isClicked 
-                  ? 'scale-110 brightness-110' 
-                  : 'scale-100 hover:scale-105'
-              }`}
-              style={{
-                filter: 'brightness(1.2) contrast(1.1) saturate(1.2) drop-shadow(0 0 20px hsl(var(--gold) / 0.6))'
-              }}
-            />
+            <Gamepad2 className="w-4 h-4" />
+            Игра
+          </TabsTrigger>
+          <TabsTrigger 
+            value="shop" 
+            className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Магазин
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="game" className="space-y-4">
+          {/* Game stats */}
+          <div className="grid grid-cols-3 gap-2 mb-4 max-w-sm mx-auto">
+            <Card className="card-glow p-2 text-center animate-fade-in-up">
+              <p className="text-xs text-muted-foreground">Рост</p>
+              <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
+            </Card>
             
-            {/* Click effects */}
-            {clickEffect.map((effect) => (
-              <div
-                key={effect.id}
-                className="absolute pointer-events-none text-gold font-bold text-lg animate-bounce-in"
-                style={{
-                  left: effect.x,
-                  top: effect.y,
-                  animation: 'bounce-in 0.5s ease-out forwards',
+            <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+              <p className="text-xs text-muted-foreground">Косточки</p>
+              <p className="text-sm font-bold text-foreground">{bone}</p>
+            </Card>
+            
+            <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+              <p className="text-xs text-muted-foreground">Сброс через</p>
+              <p className="text-xs font-bold text-gold">{timeLeft}</p>
+            </Card>
+          </div>
+
+          {/* Game area */}
+          <div className="text-center mb-4">
+            <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
+              <div 
+                className="relative cursor-pointer group"
+                onClick={(e) => {
+                  handleClick(e);
                 }}
               >
-                {bone > 0 ? `+${grow1}` : "Закончились косточки"}
-              </div>
-            ))}
-          </div>
-          
-          <p className="text-sm font-semibold text-foreground mt-2">
-            Нажми на бульдога!
-          </p>
-        </Card>
-      </div>
-
-      {/* Action buttons */}
-      <div className="flex justify-center gap-2 mb-6">
-        {boosterEndTime && boosterTimeLeft ? (
-          <div className="bg-primary/20 border border-primary/30 rounded-md px-2 py-1 flex items-center gap-1">
-            <Zap className="w-3 h-3 text-gold animate-pulse" />
-            <span className="text-primary font-semibold text-xs">{boosterTimeLeft}</span>
-          </div>
-        ) : (
-          <Button
-            onClick={() => setShowBooster(true)}
-            className="button-gold group text-xs px-3 py-2"
-          >
-            <Zap className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
-            Ускорить
-          </Button>
-        )}
-        
-        <Button
-          onClick={() => setShowRules(true)}
-          variant="outline"
-          className="button-outline-gold group text-xs px-3 py-2"
-        >
-          <Info className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
-          Правила
-        </Button>
-      </div>
-
-      {/* Ad space */}
-      <Card className="card-glow p-3 text-center mb-6 max-w-xs mx-auto animate-fade-in-up">
-        <p className="text-gray-subtle text-xs mb-1">Твоя реклама тут,</p>
-        <a 
-          href="https://t.me/Deff0xq" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-gold hover:text-gold-light transition-colors underline text-xs font-semibold"
-        >
-          пиши нам
-        </a>
-      </Card>
-
-      {/* Top players */}
-      {topPlayers.length > 0 && (
-        <div className="max-w-xs mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
-          <h3 className="text-lg font-bold text-foreground mb-3 text-center">
-            🏆 Топ роста
-          </h3>
-          
-          <Card className="card-glow p-3">
-            <div className="text-center mb-3 border-b border-border pb-3">
-              <div className="text-xs text-muted-foreground mb-1">
-                Еженедельный сброс через:
-              </div>
-              <div className="text-sm font-bold text-gold">
-                {weeklyTimeLeft}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                Топ-5 получат по 5,000,000 V-BDOG!<br/>
-                <span className="text-xs">Воскресенье 20:00 (МСК)</span>
-              </div>
-            </div>
-            <div className="space-y-1">
-              {topPlayers.map((player, index) => (
-                <div 
-                  key={player.name + index} 
-                  className={`flex justify-between items-center p-2 rounded text-xs ${
-                    index === 0 ? 'bg-gold/20 border border-gold/30' : 
-                    index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
-                    index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
-                    'bg-muted/50'
+                <img 
+                  src={bulldogLogoTransparent}
+                  alt="BDOG"
+                  className={`w-40 h-40 mx-auto rounded-full object-contain transition-all duration-150 ease-out ${
+                    isClicked 
+                      ? 'scale-110 brightness-110' 
+                      : 'scale-100 hover:scale-105'
                   }`}
-                >
-                  <span className="flex items-center">
-                    <span className="font-bold mr-1 text-xs">
-                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
-                    </span>
-                    <span className="text-foreground">{player.name}</span>
-                  </span>
-                  <span className="text-gold font-semibold">
-                    {player.grow.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
+                  style={{
+                    filter: 'brightness(1.2) contrast(1.1) saturate(1.2) drop-shadow(0 0 20px hsl(var(--gold) / 0.6))'
+                  }}
+                />
+                
+                {/* Click effects */}
+                {clickEffect.map((effect) => (
+                  <div
+                    key={effect.id}
+                    className="absolute pointer-events-none text-gold font-bold text-lg animate-bounce-in"
+                    style={{
+                      left: effect.x,
+                      top: effect.y,
+                      animation: 'bounce-in 0.5s ease-out forwards',
+                    }}
+                  >
+                    {bone > 0 ? `+${grow1}` : "Закончились косточки"}
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-sm font-semibold text-foreground mt-2">
+                Нажми на бульдога!
+              </p>
+            </Card>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex justify-center gap-2 mb-6">
+            {boosterEndTime && boosterTimeLeft ? (
+              <div className="bg-primary/20 border border-primary/30 rounded-md px-2 py-1 flex items-center gap-1">
+                <Zap className="w-3 h-3 text-gold animate-pulse" />
+                <span className="text-primary font-semibold text-xs">{boosterTimeLeft}</span>
+              </div>
+            ) : (
+              <Button
+                onClick={() => setShowBooster(true)}
+                className="button-gold group text-xs px-3 py-2"
+              >
+                <Zap className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
+                Ускорить
+              </Button>
+            )}
+            
+            <Button
+              onClick={() => setShowRules(true)}
+              variant="outline"
+              className="button-outline-gold group text-xs px-3 py-2"
+            >
+              <Info className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
+              Правила
+            </Button>
+          </div>
+
+          {/* Ad space */}
+          <Card className="card-glow p-3 text-center mb-6 max-w-xs mx-auto animate-fade-in-up">
+            <p className="text-gray-subtle text-xs mb-1">Твоя реклама тут,</p>
+            <a 
+              href="https://t.me/Deff0xq" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gold hover:text-gold-light transition-colors underline text-xs font-semibold"
+            >
+              пиши нам
+            </a>
           </Card>
-        </div>
-      )}
+
+          {/* Top players */}
+          {topPlayers.length > 0 && (
+            <div className="max-w-xs mx-auto animate-slide-in-right" style={{animationDelay: '0.3s'}}>
+              <h3 className="text-lg font-bold text-foreground mb-3 text-center">
+                🏆 Топ роста
+              </h3>
+              
+              <Card className="card-glow p-3">
+                <div className="text-center mb-3 border-b border-border pb-3">
+                  <div className="text-xs text-muted-foreground mb-1">
+                    Еженедельный сброс через:
+                  </div>
+                  <div className="text-sm font-bold text-gold">
+                    {weeklyTimeLeft}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Топ-5 получат по 5,000,000 V-BDOG!<br/>
+                    <span className="text-xs">Воскресенье 20:00 (МСК)</span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  {topPlayers.map((player, index) => (
+                    <div 
+                      key={player.name + index} 
+                      className={`flex justify-between items-center p-2 rounded text-xs ${
+                        index === 0 ? 'bg-gold/20 border border-gold/30' : 
+                        index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
+                        index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
+                        'bg-muted/50'
+                      }`}
+                    >
+                      <span className="flex items-center">
+                        <span className="font-bold mr-1 text-xs">
+                          {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                        </span>
+                        <span className="text-foreground">{player.name}</span>
+                      </span>
+                      <span className="text-gold font-semibold">
+                        {player.grow.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="shop">
+          <div className="max-w-sm mx-auto">
+            <GameShop 
+              bone={bone}
+              setBone={setBone}
+              profile={profile}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Modals */}
       {showBooster && (

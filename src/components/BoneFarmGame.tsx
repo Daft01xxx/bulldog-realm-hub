@@ -12,7 +12,7 @@ interface BoneFarmGameProps {
   onRecordUpdate: (record: number) => void;
 }
 
-const GRID_SIZE = 10;
+const GRID_SIZE = 7;
 
 interface Block {
   id: number;
@@ -21,12 +21,38 @@ interface Block {
 }
 
 const BLOCK_SHAPES = [
+  // Маленькие блоки
   { shape: [[true]], color: 'bg-yellow-500' },
   { shape: [[true, true]], color: 'bg-blue-500' },
   { shape: [[true], [true]], color: 'bg-green-500' },
+  
+  // Средние блоки
   { shape: [[true, true, true]], color: 'bg-red-500' },
   { shape: [[true], [true], [true]], color: 'bg-purple-500' },
   { shape: [[true, true], [true, true]], color: 'bg-orange-500' },
+  
+  // Крупные блоки
+  { shape: [[true, true, true, true]], color: 'bg-pink-500' },
+  { shape: [[true], [true], [true], [true]], color: 'bg-cyan-500' },
+  { shape: [[true, true, true], [true, true, true]], color: 'bg-lime-500' },
+  { shape: [[true, true], [true, true], [true, true]], color: 'bg-indigo-500' },
+  
+  // Неправильные формы
+  { shape: [[true, true, false], [false, true, true]], color: 'bg-rose-500' },
+  { shape: [[false, true], [true, true], [true, false]], color: 'bg-amber-500' },
+  { shape: [[true, false, true], [true, true, true]], color: 'bg-emerald-500' },
+  { shape: [[true, true, true], [false, true, false]], color: 'bg-violet-500' },
+  { shape: [[true, false], [true, true], [false, true]], color: 'bg-teal-500' },
+  
+  // Большие L-формы
+  { shape: [[true, false, false], [true, false, false], [true, true, true]], color: 'bg-sky-500' },
+  { shape: [[false, false, true], [false, false, true], [true, true, true]], color: 'bg-fuchsia-500' },
+  
+  // Крестообразные
+  { shape: [[false, true, false], [true, true, true], [false, true, false]], color: 'bg-slate-500' },
+  
+  // Большие квадраты
+  { shape: [[true, true, true], [true, true, true], [true, true, true]], color: 'bg-stone-500' },
 ];
 
 export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
@@ -47,7 +73,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
   const generateRandomBlocks = useCallback(() => {
     const blocks = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       const randomShape = BLOCK_SHAPES[Math.floor(Math.random() * BLOCK_SHAPES.length)];
       blocks.push({
         id: i,
@@ -146,7 +172,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     }
 
     // Generate new blocks if all are placed
-    if (currentBlocks.length === 1) {
+    if (currentBlocks.length === 0) {
       generateRandomBlocks();
     }
 
@@ -224,7 +250,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <Card className="card-glow p-6 text-center mb-6">
             <h2 className="text-2xl font-bold mb-4 text-gold">Фарм косточек</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              Размещайте блоки на сетке 10x10. Очищайте полные линии чтобы заработать косточки!
+              Размещайте блоки на сетке 7x7. Очищайте полные линии чтобы заработать косточки!
             </p>
             <p className="text-lg mb-4">Ключи: <span className="font-bold text-gold">{keys}</span></p>
             
@@ -275,7 +301,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
         {/* Game Grid */}
         <Card className="card-glow p-4 mb-4">
-          <div className="grid grid-cols-10 gap-1 mb-4">
+          <div className="grid grid-cols-7 gap-1 mb-4">
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => (
                 <div
@@ -291,7 +317,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
         </Card>
 
         {/* Available Blocks */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {currentBlocks.map((block) => (
             <Card
               key={block.id}

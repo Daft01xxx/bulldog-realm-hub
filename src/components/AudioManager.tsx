@@ -27,12 +27,18 @@ const createBackgroundMusicManager = () => {
   let isPlaying = false;
 
   const playNextTrack = () => {
-    if (!isBackgroundMusicEnabled) return;
+    if (!isBackgroundMusicEnabled) {
+      console.log('Background music disabled, stopping playback');
+      return;
+    }
+
+    console.log('Playing next track, current index:', currentTrackIndex);
 
     // Stop current track
     if (currentAudio) {
       currentAudio.pause();
       currentAudio.currentTime = 0;
+      console.log('Stopped previous track');
     }
 
     // Get random track (avoid repeating the same track)
@@ -42,6 +48,7 @@ const createBackgroundMusicManager = () => {
     
     // Update current track index
     currentTrackIndex = ambientTracks.indexOf(selectedTrack);
+    console.log('Selected track:', selectedTrack, 'index:', currentTrackIndex);
 
     // Create new audio instance
     currentAudio = new Audio(selectedTrack);
@@ -50,20 +57,32 @@ const createBackgroundMusicManager = () => {
 
     // When track ends, play next one
     currentAudio.addEventListener('ended', () => {
+      console.log('Track ended, scheduling next track in 2 seconds');
       setTimeout(() => {
         playNextTrack();
       }, 2000); // 2 second gap between tracks
     });
 
     // Handle errors (if track doesn't exist, try next one)
-    currentAudio.addEventListener('error', () => {
-      console.log(`Failed to load track: ${selectedTrack}, trying next...`);
+    currentAudio.addEventListener('error', (e) => {
+      console.log(`Failed to load track: ${selectedTrack}`, e);
       setTimeout(() => {
         playNextTrack();
       }, 1000);
     });
 
-    currentAudio.play().catch(e => {
+    // Add load event listener
+    currentAudio.addEventListener('loadstart', () => {
+      console.log('Started loading track:', selectedTrack);
+    });
+
+    currentAudio.addEventListener('canplaythrough', () => {
+      console.log('Track can play through:', selectedTrack);
+    });
+
+    currentAudio.play().then(() => {
+      console.log('Successfully started playing:', selectedTrack);
+    }).catch(e => {
       console.log('Background music play failed:', e);
       // Try next track after a delay
       setTimeout(() => {

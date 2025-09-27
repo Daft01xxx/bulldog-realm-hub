@@ -6,6 +6,7 @@ import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import FallingCoins2D from "./components/FallingCoins2D";
+import FloatingParticles from "./components/FloatingParticles";
 import PageTransition from "./components/PageTransition";
 import { AudioManager } from "./components/AudioManager";
 import { AuthProvider } from "./hooks/useAuth";
@@ -66,6 +67,7 @@ function AppContent() {
   return (
     <>
       <AudioManager backgroundMusic={true} volume={0.15} />
+      <FloatingParticles />
       <Toaster />
       <Sonner />
       {location.pathname === '/menu' && <FallingCoins2D />}

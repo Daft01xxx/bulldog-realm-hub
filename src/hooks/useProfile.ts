@@ -68,7 +68,11 @@ export const useProfile = () => {
   }, []);
 
   const loadProfile = useCallback(async () => {
-    if (loading) return;
+    console.log('loadProfile called, current loading state:', loading);
+    if (loading) {
+      console.log('Already loading, skipping');
+      return;
+    }
     
     setLoading(true);
 
@@ -321,19 +325,19 @@ export const useProfile = () => {
     let isMounted = true;
     
     const initProfile = async () => {
-      if (isMounted && !profile) {
+      console.log('initProfile called, profile exists:', !!profile, 'loading:', loading);
+      if (isMounted && !profile && !loading) {
+        console.log('Starting profile load...');
         await loadProfile();
       }
     };
     
-    if (!profile) {
-      initProfile();
-    }
+    initProfile();
     
     return () => {
       isMounted = false;
     };
-  }, [loadProfile, profile]);
+  }, []); // Empty dependency array to run only once
 
   return {
     profile,

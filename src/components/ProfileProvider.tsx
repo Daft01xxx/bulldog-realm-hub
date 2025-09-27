@@ -17,6 +17,8 @@ interface ProfileProviderProps {
 
 export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const profileData = useProfile();
+  
+  console.log('ProfileProvider render - profile:', !!profileData.profile, 'loading:', profileData.loading);
 
   return (
     <ProfileContext.Provider value={profileData}>
@@ -27,6 +29,8 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
 
 export const useProfileContext = () => {
   const context = useContext(ProfileContext);
+  console.log('useProfileContext called - context:', !!context, 'profile:', !!context?.profile, 'loading:', context?.loading);
+  
   if (context === undefined) {
     throw new Error('useProfileContext must be used within a ProfileProvider');
   }

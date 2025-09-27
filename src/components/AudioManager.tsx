@@ -7,57 +7,89 @@ interface AudioManagerProps {
 
 let globalAudioInstance: HTMLAudioElement | null = null;
 
-export const AudioManager = ({ backgroundMusic = true, volume = 0.2 }: AudioManagerProps) => {
+// Simple classical music generator using Web Audio API
+const createClassicalMusic = () => {
+  let audioContext: AudioContext | null = null;
+  let masterGainNode: GainNode | null = null;
+  let isPlaying = false;
+
+  const playClassicalSequence = () => {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      masterGainNode = audioContext.createGain();
+      masterGainNode.connect(audioContext.destination);
+      masterGainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    }
+
+    if (isPlaying) return;
+    isPlaying = true;
+
+    // Classical chord progression (C-Am-F-G)
+    const chords = [
+      [261.63, 329.63, 392.0], // C major
+      [220.0, 261.63, 329.63], // A minor  
+      [174.61, 220.0, 261.63], // F major
+      [196.0, 246.94, 293.66]  // G major
+    ];
+
+    let chordIndex = 0;
+    const playChord = () => {
+      if (!audioContext || !masterGainNode) return;
+
+      const chord = chords[chordIndex % chords.length];
+      const chordGain = audioContext.createGain();
+      chordGain.connect(masterGainNode);
+      chordGain.gain.setValueAtTime(0, audioContext.currentTime);
+      chordGain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+      chordGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 3);
+
+      chord.forEach(frequency => {
+        const oscillator = audioContext!.createOscillator();
+        oscillator.connect(chordGain);
+        oscillator.frequency.setValueAtTime(frequency, audioContext!.currentTime);
+        oscillator.type = 'sine';
+        oscillator.start(audioContext!.currentTime);
+        oscillator.stop(audioContext!.currentTime + 3);
+      });
+
+      chordIndex++;
+      if (isPlaying) {
+        setTimeout(playChord, 3000);
+      }
+    };
+
+    playChord();
+  };
+
+  const stopClassicalMusic = () => {
+    isPlaying = false;
+    if (audioContext) {
+      audioContext.close();
+      audioContext = null;
+      masterGainNode = null;
+    }
+  };
+
+  return { playClassicalSequence, stopClassicalMusic };
+};
+
+let classicalMusicInstance: ReturnType<typeof createClassicalMusic> | null = null;
+
+export const AudioManager = ({ backgroundMusic = true, volume = 0.15 }: AudioManagerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (backgroundMusic) {
-      // Create or use existing global audio instance
-      if (!globalAudioInstance) {
-        console.log('Creating new audio instance with cosmic-ambient.mp3');
-        globalAudioInstance = new Audio('/cosmic-ambient.mp3');
-        globalAudioInstance.loop = true;
-        globalAudioInstance.volume = volume;
-        globalAudioInstance.preload = 'auto';
-        
-        // Add error handling
-        globalAudioInstance.addEventListener('error', (e) => {
-          console.error('Audio error:', e);
-          console.log('Trying fallback music...');
-          globalAudioInstance = new Audio('/cosmic-music.ogg');
-          globalAudioInstance.loop = true;
-          globalAudioInstance.volume = volume;
-          globalAudioInstance.preload = 'auto';
-        });
-        
-        globalAudioInstance.addEventListener('canplaythrough', () => {
-          console.log('Audio can play through');
-        });
-        
-        globalAudioInstance.addEventListener('loadstart', () => {
-          console.log('Audio started loading');
-        });
-      } else {
-        globalAudioInstance.volume = volume;
+      // Create classical music instance
+      if (!classicalMusicInstance) {
+        classicalMusicInstance = createClassicalMusic();
       }
 
       // Start playing on user interaction
       const startAudio = () => {
-        if (globalAudioInstance && globalAudioInstance.paused) {
-          console.log('Starting background music...');
-          globalAudioInstance.play()
-            .then(() => {
-              console.log('Background music started successfully');
-            })
-            .catch(e => {
-              console.error('Audio play failed:', e);
-              // Try fallback
-              if (globalAudioInstance.src.includes('cosmic-ambient.mp3')) {
-                console.log('Trying fallback music file...');
-                globalAudioInstance.src = '/cosmic-music.ogg';
-                globalAudioInstance.play().catch(err => console.error('Fallback also failed:', err));
-              }
-            });
+        console.log('Starting classical music...');
+        if (classicalMusicInstance) {
+          classicalMusicInstance.playClassicalSequence();
         }
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
@@ -73,6 +105,10 @@ export const AudioManager = ({ backgroundMusic = true, volume = 0.2 }: AudioMana
         document.removeEventListener('click', startAudio);
         document.removeEventListener('touchstart', startAudio);
         document.removeEventListener('keydown', startAudio);
+        if (classicalMusicInstance) {
+          classicalMusicInstance.stopClassicalMusic();
+          classicalMusicInstance = null;
+        }
       };
     }
   }, [backgroundMusic, volume]);

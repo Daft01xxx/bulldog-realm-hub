@@ -75,6 +75,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   const [bonesEarned, setBonesEarnedLocal] = useState(0);
   const [gameActive, setGameActive] = useState(false);
   const [gameOver, setGameOver] = useState(false);
+  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const dragRef = useRef<HTMLDivElement>(null);
 
   const generateRandomBlocks = useCallback(() => {
@@ -228,6 +229,34 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent, block: Block) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    setDraggedBlock(block);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    if (!draggedBlock || !touchStartPos) return;
+
+    const touch = e.changedTouches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement;
+    
+    if (element && element.dataset.row !== undefined && element.dataset.col !== undefined) {
+      const row = parseInt(element.dataset.row);
+      const col = parseInt(element.dataset.col);
+      placeBlock(row, col, draggedBlock);
+    }
+    
+    setTouchStartPos(null);
+    setDraggedBlock(null);
+  };
+
   const endGame = () => {
     setGameActive(false);
     setGameOver(false);
@@ -286,18 +315,6 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
             </Button>
           </Card>
 
-          {/* Leaderboard placeholder */}
-          <Card className="card-glow p-4">
-            <h3 className="font-semibold mb-3 text-gold">Топ 10 игроков</h3>
-            <div className="space-y-2">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex justify-between text-sm">
-                  <span>Игрок {i + 1}</span>
-                  <span className="text-gold">{Math.floor(Math.random() * 100)} косточек</span>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
       </div>
     );
@@ -329,6 +346,8 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
               row.map((cell, colIndex) => (
                 <div
                   key={`${rowIndex}-${colIndex}`}
+                  data-row={rowIndex}
+                  data-col={colIndex}
                   className={`aspect-square border border-muted-foreground/20 rounded-sm ${
                     cell.filled ? cell.color : 'bg-muted/20'
                   } ${draggedBlock ? 'hover:bg-gold/10' : ''}`}
@@ -348,6 +367,9 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
               className="card-glow p-2 cursor-move transition-all hover:scale-105"
               draggable
               onDragStart={(e) => handleDragStart(e, block)}
+              onTouchStart={(e) => handleTouchStart(e, block)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               <div className="grid gap-0.5 max-w-[80px] mx-auto" style={{
                 gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,

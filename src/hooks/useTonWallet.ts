@@ -182,24 +182,29 @@ export const useBdogTonWallet = () => {
       let payload = undefined;
       if (comment) {
         // Create text comment payload according to TON standards
+        // For text comments, we need to use "te6/3" format
         const commentBytes = new TextEncoder().encode(comment);
         const commentBuffer = new Uint8Array(4 + commentBytes.length);
-        commentBuffer.set([0, 0, 0, 0], 0); // Text comment prefix
+        commentBuffer.set([0, 0, 0, 0], 0); // Text comment prefix (32 zero bits)
         commentBuffer.set(commentBytes, 4);
-        // Convert to base64 using browser-compatible method
-        const binaryString = Array.from(commentBuffer)
-          .map(byte => String.fromCharCode(byte))
+        
+        // Convert to hex string for TON Connect
+        const hexString = Array.from(commentBuffer)
+          .map(byte => byte.toString(16).padStart(2, '0'))
           .join('');
-        payload = btoa(binaryString);
+        payload = hexString;
       }
 
+      // Prepare transaction payload - try without payload first
+      // TON Connect has specific requirements for payload format
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 600, // Valid for 10 minutes
         messages: [
           {
             address: to,
             amount: (parseFloat(amount) * 1000000000).toString(), // Convert TON to nanotons
-            payload: payload
+            // Temporarily remove payload to test basic transaction
+            // payload: payload
           }
         ]
       };

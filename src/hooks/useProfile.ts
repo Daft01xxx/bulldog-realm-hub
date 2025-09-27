@@ -69,10 +69,9 @@ export const useProfile = () => {
   }, []);
 
   const loadProfile = useCallback(async () => {
-    if (loading || hasLoadedRef.current) return;
+    if (loading) return;
     
     setLoading(true);
-    hasLoadedRef.current = true;
 
     try {
       console.log('Starting profile loading...');
@@ -280,7 +279,7 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  }, [loading, getDeviceInfo, toast]);
+  }, [getDeviceInfo, toast]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
@@ -366,9 +365,7 @@ export const useProfile = () => {
 
   // Load profile only once on mount to prevent infinite loops
   useEffect(() => {
-    if (!hasLoadedRef.current && !loading) {
-      loadProfile();
-    }
+    loadProfile();
   }, []);
 
   return {

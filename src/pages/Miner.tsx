@@ -9,6 +9,9 @@ import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
 
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
+import MinerTimer from '@/components/MinerTimer';
+import ClaimMinerRewards from '@/components/ClaimMinerRewards';
+import AutoMinerRewards from '@/components/AutoMinerRewards';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
 // Import miner images
@@ -192,6 +195,7 @@ const Miner = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <FloatingCosmicCoins />
+      <AutoMinerRewards />
       
       <div className="container mx-auto px-4 py-6 relative z-10">
         {/* Header */}
@@ -227,12 +231,18 @@ const Miner = () => {
             <p className="text-2xl font-bold text-gradient mb-2">
               {getCurrentIncome()} V-BDOG/час
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-4">
               {getCurrentMinerData().description}
             </p>
+            
+            {/* Miner Timer */}
+            <div className="mb-4">
+              <MinerTimer />
+            </div>
           </div>
 
           <div className="flex gap-3 mt-6 justify-center">
+            <ClaimMinerRewards />
             
             <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
               <DialogTrigger asChild>

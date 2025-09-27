@@ -7,6 +7,7 @@ import { useProfile } from '@/hooks/useProfile';
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import MinerDebug from '@/components/MinerDebug';
+import AutoMinerRewards from '@/components/AutoMinerRewards';
 
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import { AudioManager } from '@/components/AudioManager';
@@ -56,7 +57,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <FloatingCosmicCoins />
-      <AudioManager backgroundMusic={true} volume={0.3} />
+      <AudioManager backgroundMusic={false} volume={0.1} />
+      <AutoMinerRewards />
       
       <div className="mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
@@ -121,11 +123,6 @@ const Index = () => {
             </div>
           </div>
         </Card>
-
-        {/* Debug Component - Remove in production */}
-        <div className="mb-8">
-          <MinerDebug />
-        </div>
 
         {/* Miner Timer and Rewards */}
         <div className="grid gap-4 mb-8">

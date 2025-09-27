@@ -94,7 +94,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
 
     try {
       // User's TON wallet address for receiving payments
-      const originalAddress = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
+      const originalAddress = "UQBNLD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
       
       // Convert UQ address to EQ format for wallet transactions
       let recipientAddress = originalAddress;

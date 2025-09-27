@@ -287,27 +287,46 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   };
 
   const handleTouchStart = (e: React.TouchEvent, block: Block) => {
+    console.log('=== TOUCH START ===');
+    console.log('Event:', e);
+    console.log('Block:', block);
+    console.log('Current state - isDragging:', isDragging, 'draggedBlock:', draggedBlock);
+    
     e.preventDefault();
     e.stopPropagation();
     
     const touch = e.touches[0];
+    console.log('Touch info:', {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      touches_length: e.touches.length
+    });
+    
     const rect = e.currentTarget.getBoundingClientRect();
+    console.log('Element rect:', rect);
     
     setDraggedBlock(block);
     setIsDragging(true);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDragPosition({ x: touch.clientX, y: touch.clientY });
     
-    console.log('Touch start:', block, 'Position:', touch.clientX, touch.clientY);
+    console.log('State updated - setting draggedBlock:', block, 'isDragging: true');
   };
 
   const handleTouchMove = useCallback((e: React.TouchEvent | TouchEvent) => {
+    console.log('=== TOUCH MOVE ===');
+    console.log('isDragging:', isDragging, 'draggedBlock:', draggedBlock);
+    
     e.preventDefault();
     e.stopPropagation();
     
-    if (!isDragging || !draggedBlock) return;
+    if (!isDragging || !draggedBlock) {
+      console.log('Skipping touch move - not dragging or no block');
+      return;
+    }
     
     const touch = e.touches[0];
+    console.log('Touch move position:', touch.clientX, touch.clientY);
     setDragPosition({ x: touch.clientX, y: touch.clientY });
     
     // Calculate ghost position on grid
@@ -446,6 +465,10 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Косточки</p>
             <p className="font-bold text-gold">{bonesEarned}</p>
+            {/* Отладочная информация */}
+            <p className="text-xs text-red-500">
+              Драг: {isDragging ? 'Да' : 'Нет'} | Блок: {draggedBlock?.id || 'Нет'}
+            </p>
           </div>
         </div>
 

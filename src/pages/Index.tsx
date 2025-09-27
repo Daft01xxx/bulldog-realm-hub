@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Pickaxe, TrendingUp, Gamepad2, Play, RefreshCw } from "lucide-react";
 import { useProfile } from '@/hooks/useProfile';
 import MinerTimer from '@/components/MinerTimer';
+import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import { AudioManager } from '@/components/AudioManager';
@@ -120,9 +121,10 @@ const Index = () => {
           </div>
         </Card>
 
-        {/* Miner Timer */}
-        <div className="mb-8">
+        {/* Miner Timer and Rewards */}
+        <div className="grid gap-4 mb-8">
           <MinerTimer />
+          <ClaimMinerRewards />
         </div>
 
         {/* Debug: Reload Profile Button */}

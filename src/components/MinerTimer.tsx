@@ -45,17 +45,18 @@ const MinerTimer: React.FC = () => {
     
     const incomeRates: { [key: string]: number } = {
       'default': 100,
-      'silver': 250,
-      'gold': 500,
-      'diamond': 1000,
-      'premium': 2000,
+      'silver': 1400,
+      'gold': 2500,
+      'diamond': 6000,
+      'premium': 10000,
+      'plus': 500,
+      // Keep other miners with existing values
       'stellar': 5000,
       'quantum-harvester': 10000,
       'galactic-harvester': 25000,
       'void-driller': 50000,
       'solar-collector': 100000,
       'bone-extractor': 250000,
-      'plus': 500000,
     };
 
     return (incomeRates[minerType] || 100) * minerLevel;

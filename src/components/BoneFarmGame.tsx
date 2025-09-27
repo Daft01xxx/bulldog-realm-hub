@@ -82,7 +82,10 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   const gameGridRef = useRef<HTMLDivElement>(null);
 
   const calculateGridPosition = (clientX: number, clientY: number): { row: number; col: number } | null => {
-    if (!gameGridRef.current) return null;
+    if (!gameGridRef.current) {
+      console.log('gameGridRef.current is null');
+      return null;
+    }
     
     const gridRect = gameGridRef.current.getBoundingClientRect();
     const cellSize = gridRect.width / GRID_SIZE;
@@ -93,7 +96,19 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     const col = Math.floor(relativeX / cellSize);
     const row = Math.floor(relativeY / cellSize);
     
+    console.log('calculateGridPosition:', {
+      clientX,
+      clientY,
+      gridRect: { left: gridRect.left, top: gridRect.top, width: gridRect.width, height: gridRect.height },
+      cellSize,
+      relativeX,
+      relativeY,
+      row,
+      col
+    });
+    
     if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
+      console.log('Position out of bounds:', { row, col });
       return null;
     }
     

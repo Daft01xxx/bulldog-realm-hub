@@ -309,9 +309,11 @@ const Menu = () => {
               <p className="text-base text-foreground text-center">
                 BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
               </p>
-              <p className="text-base text-foreground text-center">
-                V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
-              </p>
+              {parseFloat(vBdogBalance) > 0 && (
+                <p className="text-base text-foreground text-center">
+                  V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
+                </p>
+              )}
               {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
                 <p className="text-sm text-gold text-center">
                   (включая {profile.v_bdog_earned.toLocaleString()} V-BDOG за рефералов)

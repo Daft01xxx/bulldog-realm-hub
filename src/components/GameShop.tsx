@@ -93,12 +93,24 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
     console.log('[GameShop] Processing transaction...');
 
     try {
-      // Send transaction to user's TON wallet
-      const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"; // User's TON wallet
-      console.log('[GameShop] Sending to wallet:', merchantWallet);
+      // Original user's TON wallet address  
+      const originalAddress = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
+      
+      // Convert UQ address to EQ format for wallet transactions
+      let recipientAddress = originalAddress;
+      if (originalAddress.startsWith('UQ')) {
+        // Convert UQ (non-bounceable) to EQ (bounceable) for wallet transactions
+        recipientAddress = 'EQ' + originalAddress.substring(2);
+        console.log('[GameShop] Converted address from UQ to EQ:', { 
+          original: originalAddress, 
+          converted: recipientAddress 
+        });
+      }
+      
+      console.log('[GameShop] Sending to wallet:', recipientAddress);
       
       const result = await sendTransaction(
-        merchantWallet,
+        recipientAddress,
         item.price,
         `BDOG: ${item.bones} косточек`
       );
@@ -233,8 +245,9 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
         <h4 className="text-sm font-semibold text-blue-400 mb-2">🔧 Информация для отладки</h4>
         <div className="text-xs text-muted-foreground space-y-1">
           <p>• Минимум TON для транзакции: сумма покупки + 0.05 TON (комиссия)</p>
-          <p>• Адрес получателя: {walletData?.address ? `${walletData.address.slice(0, 8)}...${walletData.address.slice(-8)}` : 'не определен'}</p>
-          <p>• Формат адреса: {walletData?.address?.startsWith('UQ') ? 'Non-bounceable (правильный для кошелька)' : walletData?.address?.startsWith('EQ') ? 'Bounceable' : 'неизвестный'}</p>
+          <p>• Исходный адрес: UQBN-LD_8...beQ_gX7 (UQ-формат)</p>
+          <p>• Конвертированный: EQBN-LD_8...beQ_gX7 (EQ-формат для кошелька)</p>
+          <p>• Ваш адрес: {walletData?.address ? `${walletData.address.slice(0, 8)}...${walletData.address.slice(-8)}` : 'не определен'}</p>
           <p>• Для детальной отладки откройте консоль разработчика (F12)</p>
         </div>
       </Card>

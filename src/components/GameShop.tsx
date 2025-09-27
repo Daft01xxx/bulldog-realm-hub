@@ -56,10 +56,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
   ];
 
   const handlePurchase = async (item: typeof shopItems[0]) => {
-    console.log('[GameShop] Starting purchase:', item);
-    
     if (!isConnected) {
-      console.log('[GameShop] Wallet not connected');
       toast({
         title: "Кошелек не подключен",
         description: "Подключите кошелек для покупки",
@@ -70,40 +67,26 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
 
     const availableBalance = parseFloat(walletData?.tonBalance || "0");
     const requiredAmount = parseFloat(item.price);
-    
-    console.log('[GameShop] Balance check:', { 
-      available: availableBalance, 
-      required: requiredAmount,
-      hasEnough: availableBalance >= requiredAmount
-    });
 
-    // Check for minimum transaction amount (0.1 TON for fees)
-    const minRequiredBalance = requiredAmount + 0.05; // Reduced min fee to 0.05 TON
-    if (availableBalance < minRequiredBalance) {
-      console.log('[GameShop] Insufficient balance including fees');
+    if (availableBalance < requiredAmount) {
       toast({
         title: "Недостаточно TON",
-        description: `Нужно ${minRequiredBalance.toFixed(2)} TON (включая комиссию ~0.05), доступно ${availableBalance.toFixed(2)} TON`,
+        description: `Нужно ${item.price} TON, доступно ${availableBalance.toFixed(2)} TON`,
         variant: "destructive",
       });
       return;
     }
 
     setIsProcessing(true);
-    console.log('[GameShop] Processing transaction...');
 
     try {
       // Send transaction to user's TON wallet
       const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"; // User's TON wallet
-      console.log('[GameShop] Sending to wallet:', merchantWallet);
-      
       const result = await sendTransaction(
         merchantWallet,
         item.price,
         `BDOG: ${item.bones} косточек`
       );
-
-      console.log('[GameShop] Transaction result:', result);
 
       if (result) {
         // Update bone balance
@@ -116,24 +99,20 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
           bone: newBoneBalance
         });
 
-        console.log('[GameShop] Purchase successful, updated bones:', newBoneBalance);
         toast({
           title: "Покупка успешна!",
           description: `Получено ${item.bones} косточек`,
         });
-      } else {
-        console.log('[GameShop] Transaction failed - no result');
       }
     } catch (error) {
-      console.error('[GameShop] Purchase failed:', error);
+      console.error('Purchase failed:', error);
       toast({
         title: "Ошибка покупки",
-        description: `Не удалось завершить покупку: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
+        description: "Не удалось завершить покупку",
         variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
-      console.log('[GameShop] Purchase process completed');
     }
   };
 
@@ -226,17 +205,6 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
         <p className="text-sm text-muted-foreground text-center">
           💡 Косточки используются для кормления бульдога и получения роста
         </p>
-      </Card>
-
-      {/* Debug Info Card */}
-      <Card className="card-glow p-4 bg-blue-500/10 border-blue-500/20">
-        <h4 className="text-sm font-semibold text-blue-400 mb-2">🔧 Информация для отладки</h4>
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p>• Минимум TON для транзакции: сумма покупки + 0.05 TON (комиссия)</p>
-          <p>• Адрес получателя: {walletData?.address ? `${walletData.address.slice(0, 8)}...${walletData.address.slice(-8)}` : 'не определен'}</p>
-          <p>• Формат адреса: {walletData?.address?.startsWith('UQ') ? 'Non-bounceable (правильный для кошелька)' : walletData?.address?.startsWith('EQ') ? 'Bounceable' : 'неизвестный'}</p>
-          <p>• Для детальной отладки откройте консоль разработчика (F12)</p>
-        </div>
       </Card>
     </div>
   );

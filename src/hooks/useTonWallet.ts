@@ -173,28 +173,7 @@ export const useBdogTonWallet = () => {
   };
 
   const calculateTransactionFee = (amount: string, currency: 'ton' | 'bdog' = 'ton') => {
-    const numAmount = parseFloat(amount);
-    let feeAmount = 0.1; // Default fee
-
-    if (currency === 'ton') {
-      if (numAmount <= 5) {
-        feeAmount = 0.1;
-      } else if (numAmount <= 50) {
-        feeAmount = 1;
-      } else {
-        feeAmount = 5;
-      }
-    } else if (currency === 'bdog') {
-      if (numAmount <= 1000000) {
-        feeAmount = 0.1;
-      } else if (numAmount <= 10000000) {
-        feeAmount = 1;
-      } else {
-        feeAmount = 5;
-      }
-    }
-
-    return feeAmount;
+    return 0.1; // Fixed fee of 0.1 TON for all transfers
   };
 
   const sendTransaction = async (to: string, amount: string, comment?: string, currency: 'ton' | 'bdog' = 'ton') => {

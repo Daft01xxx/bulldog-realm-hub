@@ -201,14 +201,17 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     }
 
     setGrid(newGrid);
-    setCurrentBlocks(prev => prev.filter(b => b.id !== block.id));
+    
+    // Remove the placed block and get the remaining blocks
+    const remainingBlocks = currentBlocks.filter(b => b.id !== block.id);
+    setCurrentBlocks(remainingBlocks);
     setDraggedBlock(null);
 
-    // Check for completed lines
-    checkAndClearLines(newGrid);
+    // Check for completed lines and handle new block generation
+    checkAndClearLines(newGrid, remainingBlocks);
   };
 
-  const checkAndClearLines = (currentGrid: GridCell[][]) => {
+  const checkAndClearLines = (currentGrid: GridCell[][], remainingBlocks: Block[]) => {
     let newGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
     let linesCleared = 0;
 
@@ -239,20 +242,54 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
       });
     }
 
-    // Check game over first
-    setTimeout(() => {
-      checkGameOver(newGrid);
-      
-      // Generate new blocks if all are placed and game is not over
-      if (currentBlocks.length === 0) {
-        console.log('Generating new blocks...');
+    // Generate new blocks if all are placed
+    if (remainingBlocks.length === 0) {
+      console.log('All blocks placed, generating new blocks...');
+      setTimeout(() => {
         generateRandomBlocks();
-      }
-    }, 100);
+        // Check game over after new blocks are generated
+        setTimeout(() => {
+          checkGameOver(newGrid);
+        }, 50);
+      }, 100);
+    } else {
+      // Check game over with remaining blocks
+      setTimeout(() => {
+        checkGameOverWithBlocks(newGrid, remainingBlocks);
+      }, 100);
+    }
   };
 
   const checkGameOver = (currentGrid: GridCell[][]) => {
-    const hasValidMoves = currentBlocks.some(block => {
+    // Wait a bit for currentBlocks to be updated with new blocks
+    setTimeout(() => {
+      const hasValidMoves = currentBlocks.some(block => {
+        for (let row = 0; row < GRID_SIZE; row++) {
+          for (let col = 0; col < GRID_SIZE; col++) {
+            if (canPlaceBlock(currentGrid, block, row, col)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+
+      if (!hasValidMoves && currentBlocks.length > 0) {
+        setGameOver(true);
+        setGameActive(false);
+        onBonesEarned(bonesEarned);
+        onRecordUpdate(bonesEarned);
+        
+        toast({
+          title: "Игра окончена!",
+          description: `Заработано косточек: ${bonesEarned}`,
+        });
+      }
+    }, 200);
+  };
+
+  const checkGameOverWithBlocks = (currentGrid: GridCell[][], blocksToCheck: Block[]) => {
+    const hasValidMoves = blocksToCheck.some(block => {
       for (let row = 0; row < GRID_SIZE; row++) {
         for (let col = 0; col < GRID_SIZE; col++) {
           if (canPlaceBlock(currentGrid, block, row, col)) {
@@ -263,7 +300,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
       return false;
     });
 
-    if (!hasValidMoves && currentBlocks.length > 0) {
+    if (!hasValidMoves && blocksToCheck.length > 0) {
       setGameOver(true);
       setGameActive(false);
       onBonesEarned(bonesEarned);

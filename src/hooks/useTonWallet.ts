@@ -176,18 +176,35 @@ export const useBdogTonWallet = () => {
     }
 
     try {
+      console.log('Sending transaction:', { to, amount, comment });
+      
+      // Prepare transaction payload
+      let payload = undefined;
+      if (comment) {
+        // Create text comment payload according to TON standards
+        const commentBytes = new TextEncoder().encode(comment);
+        const commentBuffer = new Uint8Array(4 + commentBytes.length);
+        commentBuffer.set([0, 0, 0, 0], 0); // Text comment prefix
+        commentBuffer.set(commentBytes, 4);
+        payload = Buffer.from(commentBuffer).toString('base64');
+      }
+
       const transaction = {
         validUntil: Math.floor(Date.now() / 1000) + 600, // Valid for 10 minutes
         messages: [
           {
             address: to,
             amount: (parseFloat(amount) * 1000000000).toString(), // Convert TON to nanotons
-            payload: comment ? Buffer.from(comment, 'utf8').toString('base64') : undefined
+            payload: payload
           }
         ]
       };
 
+      console.log('Transaction object:', transaction);
+      
       const result = await tonConnectUI.sendTransaction(transaction);
+      
+      console.log('Transaction result:', result);
       
       toast({
         title: "Транзакция отправлена",
@@ -207,15 +224,19 @@ export const useBdogTonWallet = () => {
       
       let errorMessage = "Не удалось отправить транзакцию";
       
-      if (error.message?.includes('user rejected')) {
+      if (error.message?.includes('user rejected') || error.message?.includes('cancelled')) {
         errorMessage = "Транзакция отклонена пользователем";
-      } else if (error.message?.includes('insufficient balance')) {
+      } else if (error.message?.includes('insufficient balance') || error.message?.includes('not enough')) {
         errorMessage = "Недостаточно средств на балансе";
+      } else if (error.message?.includes('invalid address')) {
+        errorMessage = "Неверный адрес получателя";
+      } else if (error.message?.includes('network')) {
+        errorMessage = "Ошибка сети. Попробуйте позже";
       }
       
       toast({
         title: "Ошибка транзакции",
-        description: errorMessage,
+        description: `${errorMessage}: ${error.message || 'Неизвестная ошибка'}`,
         variant: "destructive",
       });
       

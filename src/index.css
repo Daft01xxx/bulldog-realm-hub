@@ -58,7 +58,7 @@ All colors MUST be HSL.
     --surface-muted: 230 35% 10%;
     
     /* Better muted text for readability */
-    --muted-foreground: 215 25% 80%;
+    --muted-foreground: 215 20% 85%;
     
     /* Cosmic Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(240 100% 70%), hsl(270 100% 70%));

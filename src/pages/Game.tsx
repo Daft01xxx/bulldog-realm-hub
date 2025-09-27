@@ -269,7 +269,10 @@ const Game = () => {
     setBoosterTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
   };
 
-  const handleClick = async (event: React.MouseEvent) => {
+  const handleClick = async (event: React.MouseEvent | React.TouchEvent) => {
+    // Prevent default touch behaviors
+    event.preventDefault();
+    
     const currentBone = Number(bone) || 0;
     
     // Strict check - prevent any action if bones are 0 or less
@@ -284,7 +287,7 @@ const Game = () => {
 
     // Simple and reliable vibration for all devices including iPhone
     if (navigator.vibrate) {
-      navigator.vibrate(100);
+      navigator.vibrate(50); // Shorter vibration for multi-touch
     }
 
     // Play tap sound
@@ -292,7 +295,7 @@ const Game = () => {
 
     // Click animation effect
     setIsClicked(true);
-    setTimeout(() => setIsClicked(false), 150);
+    setTimeout(() => setIsClicked(false), 100); // Faster for multi-touch
 
     const currentGrow = Number(grow) || 0;
     const currentGrow1 = Number(grow1) || 1;
@@ -341,19 +344,30 @@ const Game = () => {
     // Reset the flag after a delay to allow profile updates again
     setTimeout(() => {
       setIsUpdatingFromClick(false);
-    }, 2000);
+    }, 1000); // Faster reset for multi-touch
 
-    // Click effect animation
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    // Click effect animation - handle both mouse and touch events
+    let x, y;
+    if ('touches' in event && event.touches.length > 0) {
+      // Touch event
+      const touch = event.touches[0];
+      const rect = (event.target as HTMLElement).getBoundingClientRect();
+      x = touch.clientX - rect.left;
+      y = touch.clientY - rect.top;
+    } else {
+      // Mouse event
+      const mouseEvent = event as React.MouseEvent;
+      const rect = (mouseEvent.target as HTMLElement).getBoundingClientRect();
+      x = mouseEvent.clientX - rect.left;
+      y = mouseEvent.clientY - rect.top;
+    }
     
-    const effectId = Date.now();
+    const effectId = Date.now() + Math.random(); // More unique IDs for multi-touch
     setClickEffect(prev => [...prev, { id: effectId, x, y }]);
     
     setTimeout(() => {
       setClickEffect(prev => prev.filter(effect => effect.id !== effectId));
-    }, 500);
+    }, 300); // Faster effect removal for multi-touch
   };
 
   const buyBooster = async () => {
@@ -481,10 +495,10 @@ const Game = () => {
           <div className="text-center mb-4">
             <Card className="card-glow p-4 max-w-xs mx-auto relative overflow-hidden animate-bounce-in">
               <div 
-                className="relative cursor-pointer group"
-                onClick={(e) => {
-                  handleClick(e);
-                }}
+                className="relative cursor-pointer group select-none"
+                onClick={handleClick}
+                onTouchStart={handleClick}
+                style={{ touchAction: 'manipulation' }}
               >
                 <img 
                   src={bulldogLogoTransparent}

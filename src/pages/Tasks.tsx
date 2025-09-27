@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Gift, Users, MousePointer, Calendar } from 'lucide-react';
+import { CheckCircle, Gift, Users, MousePointer, Calendar, PlayCircle } from 'lucide-react';
 import { NotificationToast } from '@/components/NotificationToast';
+import { VideoWatchModal } from '@/components/VideoWatchModal';
 
 interface Task {
   id: string;
@@ -20,11 +21,12 @@ interface Task {
     amount: number;
   };
   requirement: {
-    type: 'taps' | 'days' | 'referrals';
+    type: 'taps' | 'days' | 'referrals' | 'daily_video';
     target: number;
   };
   progress: number;
   completed: boolean;
+  isDaily?: boolean;
 }
 
 export default function Tasks() {
@@ -34,6 +36,8 @@ export default function Tasks() {
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [tapCount, setTapCount] = useState(0);
   const [dailyStreak, setDailyStreak] = useState(0);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [lastVideoWatchDate, setLastVideoWatchDate] = useState<string | null>(null);
 
   // Load completed tasks from profile and localStorage, setup real-time updates
   useEffect(() => {
@@ -45,6 +49,10 @@ export default function Tasks() {
       completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
     }
     setCompletedTasks(completed);
+    
+    // Load last video watch date
+    const lastDate = localStorage.getItem('bdog-last-video-watch');
+    setLastVideoWatchDate(lastDate);
     
     // Update tap count and daily streak
     const updateCounts = () => {
@@ -61,8 +69,47 @@ export default function Tasks() {
 
   const getTapCount = () => tapCount;
   const getDailyStreak = () => dailyStreak;
+  
+  // Check if daily video task is available (resets at 00:00 UTC)
+  const isDailyVideoAvailable = () => {
+    if (!lastVideoWatchDate) return true;
+    
+    const today = new Date().toDateString();
+    const lastWatchDate = new Date(lastVideoWatchDate).toDateString();
+    
+    return today !== lastWatchDate;
+  };
+
+  const handleVideoComplete = async () => {
+    const today = new Date().toISOString();
+    setLastVideoWatchDate(today);
+    localStorage.setItem('bdog-last-video-watch', today);
+
+    // Add reward
+    const updates: any = {
+      v_bdog_earned: (profile?.v_bdog_earned || 0) + 2000
+    };
+
+    await updateProfile(updates);
+
+    toast({
+      title: "Награда получена!",
+      description: "+2000 V-BDOG за просмотр видео",
+    });
+  };
 
   const tasks: Task[] = [
+    {
+      id: 'task_daily_video',
+      title: 'Посмотри видео 1/2',
+      description: 'Просмотри 2 рекламных ролика подряд и получи награду (обновляется каждый день в 00:00)',
+      icon: <PlayCircle className="h-6 w-6 text-gold" />,
+      reward: { type: 'v_bdog', amount: 2000 },
+      requirement: { type: 'daily_video', target: 1 },
+      progress: isDailyVideoAvailable() ? 0 : 1,
+      completed: !isDailyVideoAvailable(),
+      isDaily: true
+    },
     {
       id: 'task_1000_taps',
       title: 'Сделай 1000 тапов',
@@ -206,7 +253,17 @@ export default function Tasks() {
                       +{task.reward.amount} {task.reward.type === 'v_bdog' ? 'V-BDOG' : 'косточек'}
                     </Badge>
                     
-                    {canClaim && (
+                    {task.id === 'task_daily_video' && isDailyVideoAvailable() && (
+                      <Button 
+                        size="sm" 
+                        onClick={() => setIsVideoModalOpen(true)}
+                        className="button-gradient-gold button-glow"
+                      >
+                        Выполнить
+                      </Button>
+                    )}
+                    
+                    {canClaim && task.id !== 'task_daily_video' && (
                       <Button 
                         size="sm" 
                         onClick={() => handleClaimReward(task)}
@@ -218,7 +275,7 @@ export default function Tasks() {
                     
                     {isCompleted && (
                       <Badge variant="outline" className="text-green-500 border-green-500">
-                        Выполнено
+                        {task.isDaily ? 'Выполнено сегодня' : 'Выполнено'}
                       </Badge>
                     )}
                   </div>
@@ -228,6 +285,13 @@ export default function Tasks() {
           })}
         </div>
       </div>
+      
+      {/* Video Watch Modal */}
+      <VideoWatchModal 
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        onComplete={handleVideoComplete}
+      />
     </div>
   );
 }

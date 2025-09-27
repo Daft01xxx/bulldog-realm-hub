@@ -30,13 +30,13 @@ const Referral = () => {
         });
       }
       
-      const link = `${window.location.origin}?ref=${currentCode}`;
+      const link = `https://preview--bulldog-realm-hub.lovable.app/menu?ref=${currentCode}`;
       setReferralLink(link);
       setReferredCount(profile.referrals || 0);
       setEarnedVBDOG(profile.v_bdog_earned || 0);
     } else {
       const userId = localStorage.getItem("bdog-reg") || "user";
-      const link = `${window.location.origin}?ref=${userId}`;
+      const link = `https://preview--bulldog-realm-hub.lovable.app/menu?ref=${userId}`;
       setReferralLink(link);
       setReferredCount(Number(localStorage.getItem("bdog-referrals")) || 0);
       setEarnedVBDOG(Number(localStorage.getItem("bdog-v-earned")) || 0);

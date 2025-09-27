@@ -11,6 +11,14 @@ import { toast } from "@/hooks/use-toast";
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
+// Import miner images
+import solarCollectorImage from '@/assets/solar-collector-miner.png';
+import quantumHarvesterImage from '@/assets/quantum-harvester-miner.png';
+import stellarMinerImage from '@/assets/stellar-miner.png';
+import boneExtractorImage from '@/assets/bone-extractor-miner.png';
+import voidDrillerImage from '@/assets/void-driller-miner.png';
+import galacticHarvesterImage from '@/assets/galactic-harvester-miner.png';
+
 interface MinerType {
   id: string;
   name: string;
@@ -21,12 +29,12 @@ interface MinerType {
 }
 
 const minerTypes: MinerType[] = [
-  { id: 'default', name: 'DEFOLT', price: '0', income: 100, description: 'Бесплатный майнер для всех', image: '' },
-  { id: 'plus', name: 'PLUS', price: '1', income: 500, description: 'Улучшенная производительность', image: '' },
-  { id: 'silver', name: 'SILVER', price: '3', income: 1400, description: 'Серебряный уровень майнинга', image: '' },
-  { id: 'gold', name: 'GOLD', price: '6', income: 2500, description: 'Золотой стандарт майнинга', image: '' },
-  { id: 'diamond', name: 'DIAMOND', price: '15', income: 6000, description: 'Алмазная мощность', image: '' },
-  { id: 'premium', name: 'PREMIUM', price: '35', income: 10000, description: 'Максимальная производительность', image: '' }
+  { id: 'default', name: 'DEFOLT', price: '0', income: 100, description: 'Бесплатный майнер для всех', image: bdogLogoTransparent },
+  { id: 'plus', name: 'PLUS', price: '1', income: 500, description: 'Улучшенная производительность', image: solarCollectorImage },
+  { id: 'silver', name: 'SILVER', price: '3', income: 1400, description: 'Серебряный уровень майнинга', image: quantumHarvesterImage },
+  { id: 'gold', name: 'GOLD', price: '6', income: 2500, description: 'Золотой стандарт майнинга', image: stellarMinerImage },
+  { id: 'diamond', name: 'DIAMOND', price: '15', income: 6000, description: 'Алмазная мощность', image: boneExtractorImage },
+  { id: 'premium', name: 'PREMIUM', price: '35', income: 10000, description: 'Максимальная производительность', image: galacticHarvesterImage }
 ];
 
 const Miner = () => {
@@ -206,8 +214,8 @@ const Miner = () => {
         <Card className="card-glow p-6 mb-6">
           <div className="text-center">
             <div className="relative w-24 h-24 mx-auto mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30">
-                <img src={bdogLogoTransparent} alt="BDOG" className="w-16 h-16" />
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30 overflow-hidden">
+                <img src={getCurrentMinerData().image} alt={getCurrentMinerData().name} className="w-20 h-20 object-cover rounded-full" />
               </div>
               <div className="absolute -top-2 -right-2 bg-gold text-black text-xs font-bold px-2 py-1 rounded-full">
                 LVL {minerLevel}
@@ -297,8 +305,8 @@ const Miner = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="relative w-16 h-16">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30">
-                      <img src={bdogLogoTransparent} alt="BDOG" className="w-12 h-12" />
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30 overflow-hidden">
+                      <img src={miner.image} alt={miner.name} className="w-14 h-14 object-cover rounded-full" />
                     </div>
                   </div>
                   <div>

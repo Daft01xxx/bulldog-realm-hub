@@ -7,14 +7,14 @@ interface AudioManagerProps {
 
 let globalAudioInstance: HTMLAudioElement | null = null;
 
-export const AudioManager = ({ backgroundMusic = true, volume = 0.15 }: AudioManagerProps) => {
+export const AudioManager = ({ backgroundMusic = true, volume = 0.1 }: AudioManagerProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (backgroundMusic) {
       // Create or use existing global audio instance
       if (!globalAudioInstance) {
-        globalAudioInstance = new Audio('/cosmic-music.ogg');
+        globalAudioInstance = new Audio('/cosmic-ambient.mp3');
         globalAudioInstance.loop = true;
         globalAudioInstance.volume = volume;
         globalAudioInstance.preload = 'auto';

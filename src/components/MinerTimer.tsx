@@ -4,11 +4,40 @@ import { useProfileContext } from '@/components/ProfileProvider';
 const MinerTimer: React.FC = () => {
   const { profile } = useProfileContext();
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const [showFallback, setShowFallback] = useState(false);
+
+  useEffect(() => {
+    // Show fallback timer if no profile after 2 seconds
+    const fallbackTimer = setTimeout(() => {
+      if (!profile) {
+        setShowFallback(true);
+      }
+    }, 2000);
+
+    return () => clearTimeout(fallbackTimer);
+  }, [profile]);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
       if (!profile?.last_miner_reward_at) {
-        setTimeLeft('Награда готова!');
+        if (showFallback) {
+          // Show default countdown for new users
+          const defaultTime = new Date();
+          defaultTime.setMinutes(defaultTime.getMinutes() + 60); // 1 hour from now
+          const currentTime = new Date();
+          const timeDiff = defaultTime.getTime() - currentTime.getTime();
+          
+          if (timeDiff > 0) {
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+            setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+          } else {
+            setTimeLeft('Награда готова!');
+          }
+        } else {
+          setTimeLeft('Загрузка...');
+        }
         return;
       }
 
@@ -37,9 +66,10 @@ const MinerTimer: React.FC = () => {
     const interval = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(interval);
-  }, [profile?.last_miner_reward_at]);
+  }, [profile?.last_miner_reward_at, showFallback]);
 
   const getCurrentMinerIncome = () => {
+    if (!profile && showFallback) return 100; // Default miner income
     if (!profile) return 100;
     
     const minerType = profile?.current_miner || 'default';
@@ -63,15 +93,6 @@ const MinerTimer: React.FC = () => {
 
     return (incomeRates[minerType] || 100) * minerLevel;
   };
-
-  // Don't render if no profile
-  if (!profile) {
-    return (
-      <div className="bg-card/50 backdrop-blur-sm border border-border/20 rounded-xl p-4 text-center">
-        <div className="text-muted-foreground">Загрузка профиля...</div>
-      </div>
-    );
-  }
 
   return (
     <div className="bg-card/50 backdrop-blur-sm border border-border/20 rounded-xl p-4 text-center">

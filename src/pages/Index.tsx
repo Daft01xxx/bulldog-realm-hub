@@ -124,19 +124,27 @@ const Index = () => {
           </div>
         </Card>
 
-        {/* Miner Timer and Rewards */}
+        {/* Miner Timer and Rewards - показываем даже без профиля */}
         <div className="grid gap-4 mb-8">
           <MinerTimer />
           <ClaimMinerRewards />
         </div>
 
-        {/* Debug: Reload Profile Button */}
+        {/* Debug: Profile Status */}
         <div className="text-center mb-4">
+          <div className="text-sm">
+            Профиль: {profile ? '✅ Загружен' : '⏳ Загружается...'}
+            {profile && (
+              <div className="text-xs mt-1">
+                ID: {profile.user_id?.substring(0, 8)}...
+              </div>
+            )}
+          </div>
           <Button
             onClick={() => reloadProfile()}
             size="sm"
             variant="outline"
-            className="text-xs"
+            className="text-xs mt-2"
           >
             <RefreshCw className="w-4 h-4 mr-1" />
             Обновить профиль

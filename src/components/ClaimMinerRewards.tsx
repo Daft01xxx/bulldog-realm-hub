@@ -43,23 +43,29 @@ const ClaimMinerRewards: React.FC = () => {
 
     setClaiming(true);
     try {
-      const { data, error } = await supabase.functions.invoke('claim-miner-reward');
+      const minerType = profile.current_miner || 'default';
+      const minerLevel = profile.miner_level || 1;
+      const reward = getMinerIncome(minerType, minerLevel);
+
+      // Update profile with new reward and timestamp
+      const updatedProfile = {
+        ...profile,
+        v_bdog_earned: (profile.v_bdog_earned || 0) + reward,
+        last_miner_reward_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          v_bdog_earned: updatedProfile.v_bdog_earned,
+          last_miner_reward_at: updatedProfile.last_miner_reward_at,
+        })
+        .eq('user_id', profile.user_id);
 
       if (error) throw error;
 
-      if (data?.success) {
-        // Update local profile state
-        const updatedProfile = {
-          ...profile,
-          v_bdog_earned: data.newBalance,
-          last_miner_reward_at: new Date().toISOString(),
-        };
-
-        updateProfile(updatedProfile);
-        toast.success(data.message);
-      } else {
-        throw new Error(data?.error || 'Failed to claim reward');
-      }
+      updateProfile(updatedProfile);
+      toast.success(`Получено ${reward.toLocaleString()} V-BDOG!`);
     } catch (error: any) {
       console.error('Error claiming miner reward:', error);
       toast.error(error.message || 'Ошибка при получении награды');
@@ -68,7 +74,20 @@ const ClaimMinerRewards: React.FC = () => {
     }
   };
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <Button
+          disabled
+          className="flex items-center gap-2"
+          variant="secondary"
+        >
+          <Gift className="w-4 h-4" />
+          Загрузка профиля...
+        </Button>
+      </div>
+    );
+  }
 
   const isRewardReady = canClaimReward();
   const minerType = profile.current_miner || 'default';

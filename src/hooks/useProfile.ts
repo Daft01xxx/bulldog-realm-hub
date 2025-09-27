@@ -76,34 +76,15 @@ export const useProfile = () => {
     try {
       console.log('Starting profile loading...');
       
-      // Check if user is already authenticated, if not sign in anonymously
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.log('No authenticated user, signing in anonymously...');
-        const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
-        if (authError) {
-          console.error('Anonymous sign in error:', authError);
-          throw authError;
-        }
-        console.log('Anonymous user created:', authData.user?.id);
-      }
-
       // Get device info for profile identification
       const deviceInfo = await getDeviceInfo();
       console.log('Device info:', deviceInfo);
 
-      // Get current authenticated user after potential anonymous sign in
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (!currentUser) {
-        throw new Error('Failed to authenticate user');
-      }
-
-      // Check if profile exists for this authenticated user
+      // Check if profile exists based on device fingerprint or ip
       let { data: existingProfiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', currentUser.id)
+        .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
         .limit(1);
 
       if (fetchError) {
@@ -112,29 +93,6 @@ export const useProfile = () => {
       }
 
       let userProfile = existingProfiles?.[0];
-      
-      // If no profile for this user, check by device fingerprint for migration
-      if (!userProfile) {
-        const { data: deviceProfiles, error: deviceError } = await supabase
-          .from('profiles')
-          .select('*')
-          .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
-          .limit(1);
-
-        if (!deviceError && deviceProfiles?.[0]) {
-          // Migrate existing profile to authenticated user
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({ user_id: currentUser.id })
-            .eq('id', deviceProfiles[0].id);
-            
-          if (!updateError) {
-            userProfile = { ...deviceProfiles[0], user_id: currentUser.id };
-            console.log('Migrated existing profile to authenticated user');
-          }
-        }
-      }
-
       console.log('Existing profile found:', userProfile);
 
       // Handle referral logic only for new users
@@ -179,7 +137,7 @@ export const useProfile = () => {
         console.log('Creating new profile with reg:', regId);
 
         const newProfileData = {
-          user_id: currentUser.id, // Use authenticated user ID
+          user_id: crypto.randomUUID(), // Generate random UUID without auth
           reg: regId,
           device_fingerprint: deviceInfo.device_fingerprint,
           ip_address: deviceInfo.ip_address,
@@ -272,7 +230,7 @@ export const useProfile = () => {
     } catch (error) {
       console.error('Error in loadProfile:', error);
       // Don't show toast error on mount to prevent spam
-      if (error instanceof Error && !error.message.includes('Failed to authenticate')) {
+      if (error instanceof Error && !error.message.includes('captcha')) {
         toast({
           title: "Ошибка",
           description: "Не удалось загрузить профиль пользователя",
@@ -288,16 +246,10 @@ export const useProfile = () => {
     if (!profile) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error('No authenticated user for profile update');
-        return;
-      }
-
       const { error } = await supabase
         .from('profiles')
         .update(updates)
-        .eq('user_id', user.id);
+        .eq('user_id', profile.user_id);
 
       if (error) {
         console.error('Error updating profile:', error);

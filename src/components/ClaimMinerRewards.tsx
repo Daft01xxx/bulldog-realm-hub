@@ -6,11 +6,11 @@ import { toast } from 'sonner';
 import { Gift } from 'lucide-react';
 
 const ClaimMinerRewards: React.FC = () => {
-  const { profile, updateProfile } = useProfileContext();
+  const { profile, updateProfile, loading } = useProfileContext();
   const [claiming, setClaiming] = useState(false);
 
   const canClaimReward = () => {
-    if (!profile?.last_miner_reward_at) return true;
+    if (!profile?.last_miner_reward_at) return true; // New users can claim immediately
     
     const lastRewardTime = new Date(profile.last_miner_reward_at);
     const nextRewardTime = new Date(lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
@@ -39,7 +39,12 @@ const ClaimMinerRewards: React.FC = () => {
   };
 
   const handleClaimReward = async () => {
-    if (!profile || !canClaimReward()) return;
+    if (!profile) {
+      toast.error('Профиль еще загружается, попробуйте снова');
+      return;
+    }
+    
+    if (!canClaimReward()) return;
 
     setClaiming(true);
     try {
@@ -74,7 +79,7 @@ const ClaimMinerRewards: React.FC = () => {
     }
   };
 
-  if (!profile) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center gap-2">
         <Button
@@ -83,15 +88,16 @@ const ClaimMinerRewards: React.FC = () => {
           variant="secondary"
         >
           <Gift className="w-4 h-4" />
-          Загрузка профиля...
+          Загрузка...
         </Button>
       </div>
     );
   }
 
-  const isRewardReady = canClaimReward();
-  const minerType = profile.current_miner || 'default';
-  const minerLevel = profile.miner_level || 1;
+  // Fallback values for new users or when profile is still loading
+  const isRewardReady = profile ? canClaimReward() : true;
+  const minerType = profile?.current_miner || 'default';
+  const minerLevel = profile?.miner_level || 1;
   const reward = getMinerIncome(minerType, minerLevel);
 
   return (

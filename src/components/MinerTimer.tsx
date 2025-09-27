@@ -2,49 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { useProfileContext } from '@/components/ProfileProvider';
 
 const MinerTimer: React.FC = () => {
-  const { profile } = useProfileContext();
+  const { profile, loading } = useProfileContext();
   const [timeLeft, setTimeLeft] = useState<string>('');
-  const [showFallback, setShowFallback] = useState(false);
 
-  useEffect(() => {
-    // Show fallback timer if no profile after 2 seconds
-    const fallbackTimer = setTimeout(() => {
-      if (!profile) {
-        setShowFallback(true);
-      }
-    }, 2000);
-
-    return () => clearTimeout(fallbackTimer);
-  }, [profile]);
+  // Simplified logic - show timer immediately with fallback data if needed
+  const getTimerData = () => {
+    if (profile?.last_miner_reward_at) {
+      return {
+        lastRewardTime: new Date(profile.last_miner_reward_at),
+        hasProfile: true
+      };
+    } else {
+      // Fallback to default time for new users
+      const defaultTime = new Date();
+      defaultTime.setMinutes(defaultTime.getMinutes() - 50); // 50 minutes ago, so 10 minutes left
+      return {
+        lastRewardTime: defaultTime,
+        hasProfile: false
+      };
+    }
+  };
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      if (!profile?.last_miner_reward_at) {
-        if (showFallback) {
-          // Show default countdown for new users
-          const defaultTime = new Date();
-          defaultTime.setMinutes(defaultTime.getMinutes() + 60); // 1 hour from now
-          const currentTime = new Date();
-          const timeDiff = defaultTime.getTime() - currentTime.getTime();
-          
-          if (timeDiff > 0) {
-            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-            setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-          } else {
-            setTimeLeft('Награда готова!');
-          }
-        } else {
-          setTimeLeft('Загрузка...');
-        }
+      if (loading) {
+        setTimeLeft('Загрузка...');
         return;
       }
 
-      const lastRewardTime = new Date(profile.last_miner_reward_at);
-      const nextRewardTime = new Date(lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
+      const timerData = getTimerData();
+      const nextRewardTime = new Date(timerData.lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
       const currentTime = new Date();
-
       const timeDiff = nextRewardTime.getTime() - currentTime.getTime();
 
       if (timeDiff <= 0) {
@@ -66,12 +54,9 @@ const MinerTimer: React.FC = () => {
     const interval = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(interval);
-  }, [profile?.last_miner_reward_at, showFallback]);
+  }, [profile?.last_miner_reward_at, loading]);
 
   const getCurrentMinerIncome = () => {
-    if (!profile && showFallback) return 100; // Default miner income
-    if (!profile) return 100;
-    
     const minerType = profile?.current_miner || 'default';
     const minerLevel = profile?.miner_level || 1;
     

@@ -42,9 +42,8 @@ interface DeviceInfo {
 
 export const useProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const hasLoadedRef = useRef(false);
 
   // Get device info (IP + fingerprint) for unique account identification
   const getDeviceInfo = useCallback(async (): Promise<DeviceInfo> => {
@@ -322,17 +321,19 @@ export const useProfile = () => {
     let isMounted = true;
     
     const initProfile = async () => {
-      if (isMounted) {
+      if (isMounted && !profile) {
         await loadProfile();
       }
     };
     
-    initProfile();
+    if (!profile) {
+      initProfile();
+    }
     
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [loadProfile, profile]);
 
   return {
     profile,

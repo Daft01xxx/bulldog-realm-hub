@@ -6,115 +6,100 @@ interface AudioManagerProps {
 }
 
 let globalAudioInstance: HTMLAudioElement | null = null;
+let currentTrackIndex = 0;
+let isBackgroundMusicEnabled = false;
 
-// Simple classical music generator using Web Audio API
-const createClassicalMusic = () => {
-  let audioContext: AudioContext | null = null;
-  let masterGainNode: GainNode | null = null;
+// Background music tracks
+const ambientTracks = [
+  '/cosmic-ambient.mp3', // Используем существующий трек
+  '/cosmic-music.mp3', // Используем существующий трек
+  '/music/ambient-1.mp3',
+  '/music/ambient-2.mp3', 
+  '/music/ambient-3.mp3',
+  '/music/ambient-4.mp3',
+  '/music/ambient-5.mp3',
+  '/music/ambient-6.mp3'
+];
+
+// Background music manager
+const createBackgroundMusicManager = () => {
+  let currentAudio: HTMLAudioElement | null = null;
   let isPlaying = false;
 
-  const playClassicalSequence = () => {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      masterGainNode = audioContext.createGain();
-      masterGainNode.connect(audioContext.destination);
-      masterGainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+  const playNextTrack = () => {
+    if (!isBackgroundMusicEnabled) return;
+
+    // Stop current track
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
     }
 
-    if (isPlaying) return;
-    isPlaying = true;
+    // Get random track (avoid repeating the same track)
+    const availableTracks = ambientTracks.filter((_, index) => index !== currentTrackIndex);
+    const randomIndex = Math.floor(Math.random() * availableTracks.length);
+    const selectedTrack = availableTracks[randomIndex];
+    
+    // Update current track index
+    currentTrackIndex = ambientTracks.indexOf(selectedTrack);
 
-    // Classical chord progression (C-Am-F-G)
-    const chords = [
-      [261.63, 329.63, 392.0], // C major
-      [220.0, 261.63, 329.63], // A minor  
-      [174.61, 220.0, 261.63], // F major
-      [196.0, 246.94, 293.66]  // G major
-    ];
+    // Create new audio instance
+    currentAudio = new Audio(selectedTrack);
+    currentAudio.volume = 0.15; // Low volume for background
+    currentAudio.loop = false;
 
-    let chordIndex = 0;
-    const playChord = () => {
-      if (!audioContext || !masterGainNode) return;
+    // When track ends, play next one
+    currentAudio.addEventListener('ended', () => {
+      setTimeout(() => {
+        playNextTrack();
+      }, 2000); // 2 second gap between tracks
+    });
 
-      const chord = chords[chordIndex % chords.length];
-      const chordGain = audioContext.createGain();
-      chordGain.connect(masterGainNode);
-      chordGain.gain.setValueAtTime(0, audioContext.currentTime);
-      chordGain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
-      chordGain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 3);
+    // Handle errors (if track doesn't exist, try next one)
+    currentAudio.addEventListener('error', () => {
+      console.log(`Failed to load track: ${selectedTrack}, trying next...`);
+      setTimeout(() => {
+        playNextTrack();
+      }, 1000);
+    });
 
-      chord.forEach(frequency => {
-        const oscillator = audioContext!.createOscillator();
-        oscillator.connect(chordGain);
-        oscillator.frequency.setValueAtTime(frequency, audioContext!.currentTime);
-        oscillator.type = 'sine';
-        oscillator.start(audioContext!.currentTime);
-        oscillator.stop(audioContext!.currentTime + 3);
-      });
-
-      chordIndex++;
-      if (isPlaying) {
-        setTimeout(playChord, 3000);
-      }
-    };
-
-    playChord();
+    currentAudio.play().catch(e => {
+      console.log('Background music play failed:', e);
+      // Try next track after a delay
+      setTimeout(() => {
+        playNextTrack();
+      }, 1000);
+    });
   };
 
-  const stopClassicalMusic = () => {
+  const startBackgroundMusic = () => {
+    if (!isPlaying) {
+      isPlaying = true;
+      isBackgroundMusicEnabled = true;
+      playNextTrack();
+    }
+  };
+
+  const stopBackgroundMusic = () => {
     isPlaying = false;
-    if (audioContext) {
-      audioContext.close();
-      audioContext = null;
-      masterGainNode = null;
+    isBackgroundMusicEnabled = false;
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
     }
   };
 
-  return { playClassicalSequence, stopClassicalMusic };
-};
-
-let classicalMusicInstance: ReturnType<typeof createClassicalMusic> | null = null;
-
-export const AudioManager = ({ backgroundMusic = true, volume = 0.15 }: AudioManagerProps) => {
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  useEffect(() => {
-    if (backgroundMusic) {
-      // Create classical music instance
-      if (!classicalMusicInstance) {
-        classicalMusicInstance = createClassicalMusic();
-      }
-
-      // Start playing on user interaction
-      const startAudio = () => {
-        console.log('Starting classical music...');
-        if (classicalMusicInstance) {
-          classicalMusicInstance.playClassicalSequence();
-        }
-        document.removeEventListener('click', startAudio);
-        document.removeEventListener('touchstart', startAudio);
-        document.removeEventListener('keydown', startAudio);
-      };
-
-      // Add multiple event listeners for different types of user interaction
-      document.addEventListener('click', startAudio);
-      document.addEventListener('touchstart', startAudio);
-      document.addEventListener('keydown', startAudio);
-
-      return () => {
-        document.removeEventListener('click', startAudio);
-        document.removeEventListener('touchstart', startAudio);
-        document.removeEventListener('keydown', startAudio);
-        if (classicalMusicInstance) {
-          classicalMusicInstance.stopClassicalMusic();
-          classicalMusicInstance = null;
-        }
-      };
+  const setVolume = (volume: number) => {
+    if (currentAudio) {
+      currentAudio.volume = volume;
     }
-  }, [backgroundMusic, volume]);
+  };
 
-  return null; // This component doesn't render anything
+  return { startBackgroundMusic, stopBackgroundMusic, setVolume };
 };
+
+let backgroundMusicManager: ReturnType<typeof createBackgroundMusicManager> | null = null;
 
 // Sound effect functions
 export const playTapSound = () => {
@@ -157,3 +142,64 @@ if (typeof window !== 'undefined') {
     }
   });
 }
+
+export const AudioManager = ({ backgroundMusic = true, volume = 0.15 }: AudioManagerProps) => {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (backgroundMusic) {
+      // Create background music manager
+      if (!backgroundMusicManager) {
+        backgroundMusicManager = createBackgroundMusicManager();
+      }
+
+      // Start playing on user interaction
+      const startAudio = () => {
+        console.log('Starting background music...');
+        if (backgroundMusicManager) {
+          backgroundMusicManager.startBackgroundMusic();
+          backgroundMusicManager.setVolume(volume);
+        }
+        document.removeEventListener('click', startAudio);
+        document.removeEventListener('touchstart', startAudio);
+        document.removeEventListener('keydown', startAudio);
+      };
+
+      // Add multiple event listeners for different types of user interaction
+      document.addEventListener('click', startAudio);
+      document.addEventListener('touchstart', startAudio);
+      document.addEventListener('keydown', startAudio);
+
+      return () => {
+        document.removeEventListener('click', startAudio);
+        document.removeEventListener('touchstart', startAudio);
+        document.removeEventListener('keydown', startAudio);
+        if (backgroundMusicManager) {
+          backgroundMusicManager.stopBackgroundMusic();
+        }
+      };
+    }
+  }, [backgroundMusic, volume]);
+
+  return null; // This component doesn't render anything
+};
+
+// Export background music control functions
+export const startBackgroundMusic = () => {
+  if (!backgroundMusicManager) {
+    backgroundMusicManager = createBackgroundMusicManager();
+  }
+  backgroundMusicManager.startBackgroundMusic();
+};
+
+export const stopBackgroundMusic = () => {
+  if (backgroundMusicManager) {
+    backgroundMusicManager.stopBackgroundMusic();
+  }
+};
+
+export const setBackgroundMusicVolume = (volume: number) => {
+  if (backgroundMusicManager) {
+    backgroundMusicManager.setVolume(volume);
+  }
+};

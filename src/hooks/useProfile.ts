@@ -29,6 +29,9 @@ interface UserProfile {
   current_miner?: string;
   miner_level?: number;
   last_miner_reward_at?: string;
+  completed_tasks?: string;
+  keys?: number;
+  bone_farm_record?: number;
 }
 
 interface DeviceInfo {
@@ -50,20 +53,16 @@ export const useProfile = () => {
       
       if (error) {
         console.error('Error getting device info:', error);
-        // Fallback to static fingerprint to avoid constant changes
-        return {
-          ip_address: '127.0.0.1',
-          device_fingerprint: 'fallback-device-static',
-          user_agent: navigator.userAgent || 'unknown'
-        };
+        throw error;
       }
 
-      return data;
+      return data as DeviceInfo;
     } catch (error) {
-      console.error('Error in getDeviceInfo:', error);
+      console.error('Failed to get device info:', error);
+      // Fallback device info
       return {
-        ip_address: '127.0.0.1',
-        device_fingerprint: 'fallback-device-static',
+        ip_address: 'unknown',
+        device_fingerprint: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         user_agent: navigator.userAgent || 'unknown'
       };
     }
@@ -72,36 +71,40 @@ export const useProfile = () => {
   const loadProfile = useCallback(async () => {
     if (loading || hasLoadedRef.current) return;
     
-    hasLoadedRef.current = true;
     setLoading(true);
-    console.log('Starting profile load...');
+    hasLoadedRef.current = true;
 
     try {
-      // Get device information
-      const deviceInfo = await getDeviceInfo();
-      console.log('Device info received:', deviceInfo);
-
-      if (!deviceInfo) {
-        throw new Error('Failed to get device information');
+      console.log('Starting profile loading...');
+      
+      // Check if user is already authenticated, if not sign in anonymously
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log('No authenticated user, signing in anonymously...');
+        const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
+        if (authError) {
+          console.error('Anonymous sign in error:', authError);
+          throw authError;
+        }
+        console.log('Anonymous user created:', authData.user?.id);
       }
 
-      // Check for VPN - DISABLED
-      // const vpnCheck = await supabase.functions.invoke('detect-vpn', {
-      //   body: { ip_address: deviceInfo.ip_address }
-      // });
+      // Get device info for profile identification
+      const deviceInfo = await getDeviceInfo();
+      console.log('Device info:', deviceInfo);
 
-      // if (vpnCheck.error) {
-      //   console.error('VPN check failed:', vpnCheck.error);
-      // }
+      // Get current authenticated user after potential anonymous sign in
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) {
+        throw new Error('Failed to authenticate user');
+      }
 
-      const isVpnDetected = false; // Always false - no VPN banning
-      console.log('VPN detection disabled - no banning:', isVpnDetected);
-
-      // Check if profile exists based on device fingerprint or ip
+      // Check if profile exists for this authenticated user
       let { data: existingProfiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
-        .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
+        .eq('user_id', currentUser.id)
         .limit(1);
 
       if (fetchError) {
@@ -110,43 +113,30 @@ export const useProfile = () => {
       }
 
       let userProfile = existingProfiles?.[0];
+      
+      // If no profile for this user, check by device fingerprint for migration
+      if (!userProfile) {
+        const { data: deviceProfiles, error: deviceError } = await supabase
+          .from('profiles')
+          .select('*')
+          .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
+          .limit(1);
+
+        if (!deviceError && deviceProfiles?.[0]) {
+          // Migrate existing profile to authenticated user
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ user_id: currentUser.id })
+            .eq('id', deviceProfiles[0].id);
+            
+          if (!updateError) {
+            userProfile = { ...deviceProfiles[0], user_id: currentUser.id };
+            console.log('Migrated existing profile to authenticated user');
+          }
+        }
+      }
+
       console.log('Existing profile found:', userProfile);
-
-      // Ban check disabled - users can always enter
-      // if (userProfile && userProfile.ban === 1) {
-      //   console.log('User is banned, clearing data and redirecting to ban page');
-      //   
-      //   // Clear all user data
-      //   localStorage.clear();
-      //   
-      //   // Force redirect to ban page
-      //   setTimeout(() => {
-      //     window.location.href = '/ban';
-      //   }, 100);
-      //   return;
-      // }
-
-      // VPN banning disabled - users will not be banned for VPN
-      // Ban VPN users only if they are not explicitly unbanned by admin
-      // if (isVpnDetected && (!userProfile || userProfile.ban !== 0)) {
-      //   if (userProfile) {
-      //     const { error: banError } = await supabase
-      //       .from('profiles')
-      //       .update({ ban: 1, is_vpn_user: true })
-      //       .eq('id', userProfile.id);
-      //     
-      //     if (banError) {
-      //       console.error('Failed to ban VPN user:', banError);
-      //     }
-      //   }
-      //   
-      //   console.log('VPN detected - user would be banned but banning is disabled');
-      //   // Force redirect to ban page
-      //   // setTimeout(() => {
-      //   //   window.location.href = '/ban';
-      //   // }, 100);
-      //   // return;
-      // }
 
       // Handle referral logic only for new users
       const urlParams = new URLSearchParams(window.location.search);
@@ -190,7 +180,7 @@ export const useProfile = () => {
         console.log('Creating new profile with reg:', regId);
 
         const newProfileData = {
-          user_id: crypto.randomUUID(),
+          user_id: currentUser.id, // Use authenticated user ID
           reg: regId,
           device_fingerprint: deviceInfo.device_fingerprint,
           ip_address: deviceInfo.ip_address,
@@ -198,19 +188,46 @@ export const useProfile = () => {
           balance2: 0,
           grow: 0,
           grow1: 1,
-          bone: 0,
+          bone: 1000,
           referrals: 0,
           referred_by: referrerData?.user_id || null,
-          bdog_balance: 0,
-          v_bdog_earned: 0,
           ban: 0,
-          is_vpn_user: isVpnDetected,
-          referral_code_used: false,
+          is_vpn_user: false,
+          referral_code_used: !!referralCode,
           last_referral_code: referralCode || null,
-          referral_notifications: []
+          referral_notifications: [],
+          current_miner: 'default',
+          miner_level: 1,
+          last_miner_reward_at: new Date().toISOString(),
+          v_bdog_earned: 0,
+          bdog_balance: 0,
+          completed_tasks: '',
+          keys: 3,
+          bone_farm_record: 0,
         };
 
-        const { data: createdProfile, error: createError } = await supabase
+        // If there's a valid referrer, add bonus and update referrer
+        if (referrerData) {
+          newProfileData.balance = 5000; // Referral bonus
+          newProfileData.grow = 5000;
+          
+          // Update referrer
+          const { error: referrerUpdateError } = await supabase
+            .from('profiles')
+            .update({ 
+              referrals: (referrerData.referrals || 0) + 1,
+              v_bdog_earned: (referrerData.v_bdog_earned || 0) + 2500
+            })
+            .eq('user_id', referrerData.user_id);
+
+          if (referrerUpdateError) {
+            console.error('Failed to update referrer:', referrerUpdateError);
+          } else {
+            console.log('Referrer updated with bonus');
+          }
+        }
+
+        const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert([newProfileData])
           .select()
@@ -221,177 +238,97 @@ export const useProfile = () => {
           throw createError;
         }
 
-        userProfile = createdProfile;
+        userProfile = newProfile;
         console.log('New profile created:', userProfile);
-
-        // Award referral bonus and send notification
-        if (referrerData && !isVpnDetected) { // Keep check but isVpnDetected is always false now
-          console.log('Awarding referral bonus to referrer:', referrerData.user_id);
-          
-          const notifications = referrerData.referral_notifications || [];
-          const newNotification = {
-            type: 'new_referral',
-            timestamp: new Date().toISOString(),
-            message: `Новый реферал зарегистрировался! +100,000 V-BDOG`,
-            reg_id: regId,
-            read: false
-          };
-
-          const { error: updateError } = await supabase
-            .from('profiles')
-            .update({
-              referrals: referrerData.referrals + 1,
-              v_bdog_earned: referrerData.v_bdog_earned + 100000,
-              referral_notifications: [...notifications, newNotification]
-            })
-            .eq('user_id', referrerData.user_id);
-
-          if (updateError) {
-            console.error('Error updating referrer:', updateError);
-          } else {
-            // Mark referral code as used
-            const { error: markUsedError } = await supabase
-              .from('profiles')
-              .update({ referral_code_used: true })
-              .eq('reg', referralCode);
-            
-            if (markUsedError) {
-              console.error('Error marking referral code as used:', markUsedError);
-            }
-          }
-        }
       } else {
-        // Update existing profile with new device info if needed
-        const updates: any = {};
+        // Update existing profile with latest device info if needed
+        const updateData: any = {};
         
         if (userProfile.device_fingerprint !== deviceInfo.device_fingerprint) {
-          updates.device_fingerprint = deviceInfo.device_fingerprint;
-        }
-        if (userProfile.ip_address !== deviceInfo.ip_address) {
-          updates.ip_address = deviceInfo.ip_address;
+          updateData.device_fingerprint = deviceInfo.device_fingerprint;
         }
         
-        if (Object.keys(updates).length > 0) {
+        if (userProfile.ip_address !== deviceInfo.ip_address) {
+          updateData.ip_address = deviceInfo.ip_address;
+        }
+
+        if (Object.keys(updateData).length > 0) {
           const { error: updateError } = await supabase
             .from('profiles')
-            .update(updates)
-            .eq('id', userProfile.id);
+            .update(updateData)
+            .eq('user_id', userProfile.user_id);
             
           if (updateError) {
-            console.error('Error updating existing profile:', updateError);
+            console.error('Error updating profile device info:', updateError);
+          } else {
+            console.log('Profile device info updated');
+            userProfile = { ...userProfile, ...updateData };
           }
         }
       }
 
-      // Store profile data - ensure proper conversion from database bigint types
-      setProfile({
-        ...userProfile,
-        grow: Number(userProfile.grow) || 0,
-        grow1: Number(userProfile.grow1) || 1,
-        bone: userProfile.bone !== null && userProfile.bone !== undefined ? Number(userProfile.bone) : 0, // Don't default to 1000
-        balance: Number(userProfile.balance) || 0,
-        balance2: Number(userProfile.balance2) || 0,
-        v_bdog_earned: Number(userProfile.v_bdog_earned) || 0,
-        referrals: Number(userProfile.referrals) || 0,
-        ip_address: userProfile.ip_address as string | null,
-        device_fingerprint: userProfile.device_fingerprint as string | null
-      });
-      
-      // Sync with localStorage - ensure proper number conversion for bigint values
-      localStorage.setItem('bdog-reg', userProfile.reg || '');
-      localStorage.setItem('bdog-balance', String(userProfile.balance || 0));
-      localStorage.setItem('bdog-balance2', String(userProfile.balance2 || 0));
-      localStorage.setItem('bdog-grow', String(Number(userProfile.grow) || 0));
-      localStorage.setItem('bdog-grow1', String(Number(userProfile.grow1) || 1));
-      localStorage.setItem('bdog-bone', String(userProfile.bone !== null && userProfile.bone !== undefined ? Number(userProfile.bone) : 0)); // Don't default to 1000
-      localStorage.setItem('bdog-referrals', String(Number(userProfile.referrals) || 0));
-      localStorage.setItem('bdog-v-earned', String(Number(userProfile.v_bdog_earned) || 0));
-
+      setProfile(userProfile as UserProfile);
       console.log('Profile loaded successfully:', userProfile);
 
     } catch (error) {
-      console.error('Error loading profile:', error);
-      setProfile(null);
+      console.error('Error in loadProfile:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить профиль пользователя",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
-  }, [getDeviceInfo]);
+  }, [loading, getDeviceInfo, toast]);
 
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
-    if (!profile) {
-      console.warn('No profile available for update');
-      return;
-    }
+    if (!profile) return;
 
     try {
-      console.log('Updating profile:', profile.id, 'with updates:', updates);
-      
-      // For anonymous users, update by device_fingerprint
-      // For authenticated users, update by id
-      let updateQuery = supabase.from('profiles').update(updates);
-      
-      if (profile.user_id && profile.user_id !== 'anonymous') {
-        updateQuery = updateQuery.eq('id', profile.id);
-      } else {
-        updateQuery = updateQuery.eq('device_fingerprint', profile.device_fingerprint);
-      }
-      
-      const { data: updatedProfile, error } = await updateQuery
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error updating profile:', error);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('No authenticated user for profile update');
         return;
       }
 
-      console.log('Profile updated successfully:', updatedProfile);
-      setProfile({
-        ...updatedProfile,
-        grow: Number(updatedProfile.grow) || 0,
-        grow1: Number(updatedProfile.grow1) || 1,
-        bone: Number(updatedProfile.bone) || 0,
-        balance: Number(updatedProfile.balance) || 0,
-        balance2: Number(updatedProfile.balance2) || 0,
-        v_bdog_earned: Number(updatedProfile.v_bdog_earned) || 0,
-        referrals: Number(updatedProfile.referrals) || 0,
-        ban: Number(updatedProfile.ban) || 0,
-        ip_address: updatedProfile.ip_address as string | null,
-        device_fingerprint: updatedProfile.device_fingerprint as string | null
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('user_id', user.id);
 
-      // Sync with localStorage - ensure proper number conversion
-      if (updates.balance !== undefined) {
-        localStorage.setItem('bdog-balance', String(Number(updates.balance)));
-      }
-      if (updates.balance2 !== undefined) {
-        localStorage.setItem('bdog-balance2', String(Number(updates.balance2)));
-      }
-      if (updates.grow !== undefined) {
-        localStorage.setItem('bdog-grow', String(Number(updates.grow)));
-      }
-      if (updates.grow1 !== undefined) {
-        localStorage.setItem('bdog-grow1', String(Number(updates.grow1)));
-      }
-      if (updates.bone !== undefined) {
-        localStorage.setItem('bdog-bone', String(Number(updates.bone)));
-      }
-      if (updates.v_bdog_earned !== undefined) {
-        localStorage.setItem('bdog-v-earned', String(Number(updates.v_bdog_earned)));
-      }
-      if (updates.reg !== undefined) {
-        localStorage.setItem('bdog-reg', updates.reg);
+      if (error) {
+        console.error('Error updating profile:', error);
+        throw error;
       }
 
+      // Update state
+      setProfile(prev => prev ? { ...prev, ...updates } : null);
+      console.log('Profile updated successfully');
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Failed to update profile:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить профиль",
+        variant: "destructive",
+      });
     }
-  }, [profile]);
+  }, [profile, toast]);
 
   const fetchWalletBalance = useCallback(async (walletAddress: string) => {
+    if (!walletAddress) {
+      console.error('No wallet address provided');
+      return null;
+    }
+
     try {
+      console.log('Fetching wallet balance for:', walletAddress);
+      
       const { data, error } = await supabase.functions.invoke('tonviewer-api', {
-        body: { walletAddress }
+        body: { 
+          walletAddress,
+          action: 'getBalance'
+        }
       });
 
       if (error) {

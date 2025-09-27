@@ -141,6 +141,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_bdog_balance: {
+        Args: { amount: number }
+        Returns: undefined
+      }
+      add_bones: {
+        Args: { amount: number }
+        Returns: undefined
+      }
+      add_v_bdog_balance: {
+        Args: { amount: number }
+        Returns: undefined
+      }
+      complete_task: {
+        Args: { reward_amount?: number; task_id: string }
+        Returns: boolean
+      }
       find_referrer_safely: {
         Args: { referral_code: string }
         Returns: {

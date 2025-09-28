@@ -325,21 +325,25 @@ const Menu = () => {
               )}
             </div>
             <div className="space-y-3">
-              {parseFloat(bdogBalance) > 0 && (
-                <p className="text-base text-foreground text-center">
-                  BDOG: <span className="text-gradient font-bold text-xl">{bdogBalance}</span>
-                </p>
-              )}
-              {parseFloat(vBdogBalance) > 0 && (
-                <p className="text-base text-foreground text-center">
-                  V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
-                </p>
-              )}
-              {profile?.referrals && profile.referrals > 0 && (
-                <p className="text-sm text-gold text-center">
-                  Рефералов: {profile.referrals}
-                </p>
-              )}
+              {/* Balance Table */}
+              <div className="bg-surface/50 rounded-lg p-3 border border-border/30">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">BDOG:</span>
+                    <span className="text-gradient font-bold text-lg">{parseFloat(bdogBalance).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">V-BDOG:</span>
+                    <span className="text-gradient font-bold text-lg">{parseInt(vBdogBalance).toLocaleString()}</span>
+                  </div>
+                  {profile?.referrals && profile.referrals > 0 && (
+                    <div className="flex justify-between items-center pt-1 border-t border-border/20">
+                      <span className="text-xs text-gold">Рефералов:</span>
+                      <span className="text-xs text-gold font-semibold">{profile.referrals}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </Card>

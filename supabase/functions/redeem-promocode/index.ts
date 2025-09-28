@@ -37,11 +37,11 @@ Deno.serve(async (req) => {
 
     console.log('Processing promocode:', promocode.toUpperCase(), 'for device:', deviceFingerprint)
 
-    // Find user profile by device fingerprint
+    // Find user profile by device fingerprint or IP address
     const { data: profileData, error: profileError } = await supabaseClient
       .from('profiles')
       .select('user_id, v_bdog_earned')
-      .eq('device_fingerprint', deviceFingerprint)
+      .or(`device_fingerprint.eq.${deviceFingerprint},ip_address.eq.${deviceFingerprint}`)
       .maybeSingle()
 
     if (profileError) {

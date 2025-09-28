@@ -23,6 +23,7 @@ const ActivateMinerButton: React.FC = () => {
       const initialReward = 100; // Default miner income
 
       console.log('Activating miner for profile:', profile.user_id);
+      console.log('Current profile state:', profile);
 
       // Try direct database update first
       const { data, error } = await supabase
@@ -37,13 +38,18 @@ const ActivateMinerButton: React.FC = () => {
         .eq('user_id', profile.user_id)
         .select();
 
+      console.log('Direct update result:', { data, error });
+
       if (error) {
         console.error('Direct update error:', error);
         
         // Fallback to edge function
+        console.log('Trying edge function fallback...');
         const { data: edgeData, error: edgeError } = await supabase.functions.invoke('activate-default-miner', {
           body: { userId: profile.user_id }
         });
+
+        console.log('Edge function result:', { edgeData, edgeError });
 
         if (edgeError) {
           throw new Error(`Edge function error: ${edgeError.message}`);
@@ -55,6 +61,7 @@ const ActivateMinerButton: React.FC = () => {
       }
 
       // Force reload profile from database
+      console.log('Reloading profile...');
       await reloadProfile();
       
       toast.success(`Майнер активирован! Получено ${initialReward.toLocaleString()} V-BDOG`);

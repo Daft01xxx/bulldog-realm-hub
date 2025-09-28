@@ -26,3 +26,9 @@ verify_jwt = false
 
 [functions.claim-miner-reward]
 verify_jwt = true
+
+[functions.redeem-promocode]
+verify_jwt = false
+
+[functions.activate-default-miner]
+verify_jwt = false

@@ -125,13 +125,11 @@ const Index = () => {
           </div>
         </Card>
 
-        {/* Miner Timer and Rewards - показываем только если майнер активен */}
-        {(profile as any)?.miner_active && (
-          <div className="grid gap-4 mb-8">
-            <MinerTimer />
-            <ClaimMinerRewards />
-          </div>
-        )}
+        {/* Miner Timer and Rewards - показываем всегда */}
+        <div className="grid gap-4 mb-8">
+          <MinerTimer />
+          {(profile as any)?.miner_active && <ClaimMinerRewards />}
+        </div>
         
         {/* Start Miner Button - показываем только если майнер куплен но не активен */}
         {!(profile as any)?.miner_active && currentMiner !== 'default' && (

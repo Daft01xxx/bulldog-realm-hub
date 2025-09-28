@@ -28,11 +28,15 @@ export const PromocodeForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Submitting promocode:', promocode);
       const { data, error } = await supabase.functions.invoke('redeem-promocode', {
         body: { promocode: promocode.trim() }
       });
 
+      console.log('Promocode response - data:', data, 'error:', error);
+
       if (error) {
+        console.error('Supabase function error:', error);
         throw error;
       }
 

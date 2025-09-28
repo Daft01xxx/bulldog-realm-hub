@@ -237,12 +237,10 @@ const Miner = () => {
               {getCurrentMinerData().description}
             </p>
             
-            {/* Miner Timer - только если майнер активен */}
-            {(profile as any)?.miner_active && (
-              <div className="mb-4">
-                <MinerTimer />
-              </div>
-            )}
+            {/* Miner Timer - показываем всегда */}
+            <div className="mb-4">
+              <MinerTimer />
+            </div>
             
             {/* Start Miner Button - только если майнер куплен но не активен */}
             {!(profile as any)?.miner_active && currentMiner !== 'default' && (

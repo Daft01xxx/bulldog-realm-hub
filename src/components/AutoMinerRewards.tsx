@@ -13,10 +13,11 @@ const AutoMinerRewards: React.FC = () => {
       if (!profile.last_miner_reward_at) return;
       
       const lastRewardTime = new Date(profile.last_miner_reward_at);
-      const nextRewardTime = new Date(lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
       const currentTime = new Date();
+      const timeDiff = currentTime.getTime() - lastRewardTime.getTime();
+      const hoursPassed = Math.floor(timeDiff / (60 * 60 * 1000));
       
-      if (currentTime < nextRewardTime) return;
+      if (hoursPassed <= 0) return;
 
       try {
         const minerType = profile.current_miner || 'default';
@@ -37,13 +38,17 @@ const AutoMinerRewards: React.FC = () => {
           'bone-extractor': 250000,
         };
 
-        const reward = (incomeRates[minerType] || 100) * minerLevel;
+        const hourlyReward = (incomeRates[minerType] || 100) * minerLevel;
+        const totalReward = hourlyReward * hoursPassed;
 
-        // Update profile with new reward and timestamp
+        // Calculate new last reward time (aligned to full hours from the original time)
+        const newLastRewardTime = new Date(lastRewardTime.getTime() + (hoursPassed * 60 * 60 * 1000));
+
+        // Update profile with accumulated rewards
         const updatedProfile = {
           ...profile,
-          v_bdog_earned: (profile.v_bdog_earned || 0) + reward,
-          last_miner_reward_at: new Date().toISOString(),
+          v_bdog_earned: (profile.v_bdog_earned || 0) + totalReward,
+          last_miner_reward_at: newLastRewardTime.toISOString(),
         };
 
         const { error } = await supabase
@@ -56,9 +61,15 @@ const AutoMinerRewards: React.FC = () => {
 
         if (!error) {
           updateProfile(updatedProfile);
-          toast.success(`Автоматически получено ${reward} V-BDOG!`, {
-            duration: 3000,
-          });
+          if (hoursPassed > 1) {
+            toast.success(`Получено ${totalReward.toLocaleString()} V-BDOG за ${hoursPassed} часов!`, {
+              duration: 4000,
+            });
+          } else {
+            toast.success(`Получено ${totalReward.toLocaleString()} V-BDOG!`, {
+              duration: 3000,
+            });
+          }
         }
 
       } catch (error) {
@@ -66,10 +77,20 @@ const AutoMinerRewards: React.FC = () => {
       }
     };
 
-    // Check every 60 seconds
-    const interval = setInterval(checkAndClaimReward, 60000);
+    // Check every 60 seconds for new rewards
+    const interval = setInterval(() => {
+      if (!profile?.last_miner_reward_at) return;
+      
+      const lastRewardTime = new Date(profile.last_miner_reward_at);
+      const nextRewardTime = new Date(lastRewardTime.getTime() + 60 * 60 * 1000);
+      const currentTime = new Date();
+      
+      if (currentTime >= nextRewardTime) {
+        checkAndClaimReward();
+      }
+    }, 60000);
     
-    // Check immediately on mount
+    // Check immediately on mount to catch offline rewards
     checkAndClaimReward();
 
     return () => clearInterval(interval);

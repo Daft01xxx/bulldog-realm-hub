@@ -4,151 +4,109 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { useProfileContext } from '@/components/ProfileProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Gift, Loader2 } from 'lucide-react';
 
 export const PromocodeForm: React.FC = () => {
   const [promocode, setPromocode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { reloadProfile } = useProfileContext();
-  const { toast } = useToast();
+  const { profile, reloadProfile } = useProfileContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!promocode.trim()) {
-      toast({
-        title: "Ошибка",
-        description: "Введите промокод",
-        variant: "destructive"
-      });
+    if (!promocode.trim()) return;
+
+    if (!profile) {
+      toast.error('Профиль не загружен');
       return;
     }
 
     setIsSubmitting(true);
-
+    
     try {
-      console.log('Submitting promocode:', promocode);
-      
-      // Get device fingerprint for authentication
-      const deviceFingerprint = localStorage.getItem('device-fingerprint') || 
-        `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      console.log('Device fingerprint:', deviceFingerprint);
-      
-      const { data, error } = await supabase.functions.invoke('redeem-promocode', {
-        body: { 
-          promocode: promocode.trim(),
-          deviceFingerprint: deviceFingerprint
-        },
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const promocodeUpper = promocode.trim().toUpperCase();
+      console.log('Processing promocode:', promocodeUpper);
 
-      console.log('Promocode response - data:', data, 'error:', error);
-      
-      // Check for successful response first
-      if (data && data.success) {
-        if (data.reward > 0) {
-          toast({
-            title: "Успешно!",
-            description: `${data.message} Получено ${data.reward.toLocaleString()} V-BDOG!`,
-            variant: "default"
-          });
-          await reloadProfile();
-        } else {
-          toast({
-            title: "Промокод обработан",
-            description: "Промокод не найден или недействителен",
-            variant: "default"
-          });
-        }
-        setPromocode('');
+      // Check if promocode exists and is active
+      const { data: promocodeData, error: promocodeError } = await supabase
+        .from('promocodes')
+        .select('id, code, v_bdog_reward, is_active')
+        .eq('code', promocodeUpper)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (promocodeError) {
+        console.error('Promocode lookup error:', promocodeError);
+        toast.error('Ошибка при проверке промокода');
         return;
       }
+
+      if (!promocodeData) {
+        toast.error('Промокод не найден или неактивен');
+        return;
+      }
+
+      // Check if user already used this promocode
+      const { data: usageData, error: usageError } = await supabase
+        .from('promocode_usage')
+        .select('id')
+        .eq('user_id', profile.user_id)
+        .eq('promocode_id', promocodeData.id)
+        .maybeSingle();
+
+      if (usageError) {
+        console.error('Usage check error:', usageError);
+        toast.error('Ошибка при проверке использования промокода');
+        return;
+      }
+
+      if (usageData) {
+        toast.error('Промокод уже использован');
+        return;
+      }
+
+      // Mark promocode as used
+      const { error: insertUsageError } = await supabase
+        .from('promocode_usage')
+        .insert([{
+          user_id: profile.user_id,
+          promocode_id: promocodeData.id
+        }]);
+
+      if (insertUsageError) {
+        console.error('Error marking promocode as used:', insertUsageError);
+        toast.error('Ошибка при использовании промокода');
+        return;
+      }
+
+      // Update user's V-BDOG balance
+      const newBalance = (profile.v_bdog_earned || 0) + promocodeData.v_bdog_reward;
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          v_bdog_earned: newBalance,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', profile.user_id);
+
+      if (updateError) {
+        console.error('Error updating balance:', updateError);
+        toast.error('Ошибка при начислении награды');
+        return;
+      }
+
+      // Success!
+      toast.success(`Промокод ${promocodeData.code} успешно активирован! Получено ${promocodeData.v_bdog_reward.toLocaleString()} V-BDOG`);
       
-      // Handle errors - if it's a network error, try direct fetch
-      if (error && (error.message?.includes('Failed to send') || error.message?.includes('fetch'))) {
-        console.log('Network error detected, trying direct API call...');
-        // Try alternative approach - direct API call
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2a21kYWVzb2NocWthaHNjZXpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDMxMjQsImV4cCI6MjA3Mzc3OTEyNH0.BZjHjBiHQ7BekZTvEcjerCkja189JwELwoO0K1Ls1wI";
-        
-        try {
-          const response = await fetch(`https://vvkmdaesochqkahscezp.supabase.co/functions/v1/redeem-promocode`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-              'apikey': SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({
-              promocode: promocode.trim(),
-              deviceFingerprint: deviceFingerprint
-            })
-          });
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const result = await response.json();
-          console.log('Direct API response:', result);
-          
-          if (result.success) {
-            if (result.reward > 0) {
-              toast({
-                title: "Успешно!",
-                description: `${result.message} Получено ${result.reward.toLocaleString()} V-BDOG!`,
-                variant: "default"
-              });
-              await reloadProfile();
-            } else {
-              toast({
-                title: "Промокод обработан",
-                description: "Промокод не найден или недействителен",
-                variant: "default"
-              });
-            }
-            setPromocode('');
-            return;
-          } else {
-            throw new Error(result.error || 'Неизвестная ошибка');
-          }
-        } catch (fetchError) {
-          console.error('Direct fetch also failed:', fetchError);
-          throw error; // Use original error
-        }
-      }
+      // Reload profile to show updated balance
+      await reloadProfile();
 
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message || 'Ошибка при вызове функции');
-      }
-
-      // Handle unexpected cases
-      if (data?.error) {
-        toast({
-          title: "Ошибка",
-          description: data.error,
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Ошибка",
-          description: "Неизвестная ошибка при активации промокода",
-          variant: "destructive"
-        });
-      }
     } catch (error: any) {
-      console.error('Promocode error:', error);
-      toast({
-        title: "Ошибка",
-        description: error.message || "Произошла ошибка при активации промокода",
-        variant: "destructive"
-      });
+      console.error('Error processing promocode:', error);
+      toast.error(`Ошибка: ${error.message || 'Неизвестная ошибка'}`);
     } finally {
       setIsSubmitting(false);
+      setPromocode('');
     }
   };
 

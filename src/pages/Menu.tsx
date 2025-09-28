@@ -38,14 +38,14 @@ const Menu = () => {
       const walletBdogBalance = isConnected ? parseFloat(walletData?.bdogBalance || '0') : 0;
       const profileBdogBalance = profile.bdog_balance || 0;
       setBdogBalance(Math.max(walletBdogBalance, profileBdogBalance).toString());
-      // V-BDOG balance (internal game balance + referral rewards)
-      const totalVBdog = (profile.balance2 || 0) + (profile.v_bdog_earned || 0);
+      // V-BDOG balance (unified balance)
+      const totalVBdog = profile.v_bdog_earned || 0;
       setVBdogBalance(totalVBdog.toString());
     } else {
       setReg(localStorage.getItem("bdog-reg") || "");
       setBdogBalance("0");
-      const localBalance2 = localStorage.getItem("bdog-balance2") || "0";
-      setVBdogBalance(localBalance2);
+      const localVBdog = localStorage.getItem("bdog-v-bdog-earned") || "0";
+      setVBdogBalance(localVBdog);
     }
     
     // Check if daily gift can be claimed and calculate time remaining
@@ -132,11 +132,11 @@ const Menu = () => {
     if (random <= 10) {
       // 10% chance for 10,000 V-BDOG
       reward = "10,000 V-BDOG";
-      updateData.balance2 = (profile?.balance2 || 0) + 10000;
+      updateData.v_bdog_earned = (profile?.v_bdog_earned || 0) + 10000;
     } else if (random <= 15) {
       // 5% chance for 20,000 V-BDOG
       reward = "20,000 V-BDOG";
-      updateData.balance2 = (profile?.balance2 || 0) + 20000;
+      updateData.v_bdog_earned = (profile?.v_bdog_earned || 0) + 20000;
     } else if (random <= 65) {
       // 50% chance for 100 bones
       reward = "100 косточек";
@@ -152,8 +152,8 @@ const Menu = () => {
         await updateProfile(updateData);
       } else {
         // Update localStorage if no profile
-        if (updateData.balance2) {
-          localStorage.setItem("bdog-balance2", updateData.balance2.toString());
+        if (updateData.v_bdog_earned) {
+          localStorage.setItem("bdog-v-bdog-earned", updateData.v_bdog_earned.toString());
         }
       }
 
@@ -335,9 +335,9 @@ const Menu = () => {
                   V-BDOG: <span className="text-gradient font-bold text-xl">{vBdogBalance}</span>
                 </p>
               )}
-              {profile?.v_bdog_earned && profile.v_bdog_earned > 0 && (
+              {profile?.referrals && profile.referrals > 0 && (
                 <p className="text-sm text-gold text-center">
-                  (включая {profile.v_bdog_earned.toLocaleString()} V-BDOG за рефералов)
+                  Рефералов: {profile.referrals}
                 </p>
               )}
             </div>

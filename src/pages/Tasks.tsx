@@ -31,7 +31,7 @@ interface Task {
 
 export default function Tasks() {
   const navigate = useNavigate();
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, reloadProfile } = useProfile();
   const { toast } = useToast();
   const [completedTasks, setCompletedTasks] = useState<string[]>([]);
   const [tapCount, setTapCount] = useState(0);
@@ -90,12 +90,23 @@ export default function Tasks() {
       v_bdog_earned: (profile?.v_bdog_earned || 0) + 2000
     };
 
-    await updateProfile(updates);
-
-    toast({
-      title: "Награда получена!",
-      description: "+2000 V-BDOG за просмотр видео",
-    });
+    try {
+      await updateProfile(updates);
+      // Reload profile to get updated balance
+      await reloadProfile();
+      
+      toast({
+        title: "Видео просмотрено! 🎉",
+        description: "Вы получили 2000 V-BDOG за просмотр видео!",
+      });
+    } catch (error) {
+      console.error('Error updating profile after video watch:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось получить награду за видео",
+        variant: "destructive",
+      });
+    }
   };
 
   const tasks: Task[] = [

@@ -479,21 +479,12 @@ const Game = () => {
     <div className="min-h-screen bg-background px-2 py-4">
       <AudioManager backgroundMusic={true} volume={0.1} />
       {/* Navigation */}
-      <div className="flex justify-between items-center mb-4 pt-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate('/game')}
-          className="button-outline-gold text-xs px-2 py-1"
-        >
-          <ArrowLeft className="w-3 h-3 mr-1 text-gold" />
-          В меню
-        </Button>
+      <div className="flex justify-center gap-4 mb-4 pt-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/tasks")}
-          className="button-outline-gold text-xs px-2 py-1"
+          className="button-outline-gold text-xs px-3 py-2 hover:scale-105 transition-all duration-200"
         >
           <ClipboardList className="w-3 h-3 mr-1 text-gold" />
           Задания
@@ -502,7 +493,7 @@ const Game = () => {
           variant="outline"
           size="sm"
           onClick={() => navigate("/menu")}
-          className="button-outline-gold text-xs px-2 py-1"
+          className="button-outline-gold text-xs px-3 py-2 hover:scale-105 transition-all duration-200"
         >
           <Home className="w-3 h-3 mr-1 text-gold" />
           Меню
@@ -511,31 +502,31 @@ const Game = () => {
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6 bg-card/50 backdrop-blur-sm">
           <TabsTrigger 
             value="game" 
-            className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
+            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
           >
-            <Gamepad2 className="w-4 h-4" />
+            <Gamepad2 className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
             Игра
           </TabsTrigger>
           <TabsTrigger 
             value="shop" 
-            className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
+            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
           >
-            <ShoppingCart className="w-4 h-4" />
+            <ShoppingCart className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
             Магазин
           </TabsTrigger>
           <TabsTrigger 
             value="bonefarm" 
-            className="flex items-center gap-2 data-[state=active]:bg-gold/20 data-[state=active]:text-gold"
+            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
           >
-            <Coins className="w-4 h-4" />
+            <Coins className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
             Фарм
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="game" className="space-y-4">
+        <TabsContent value="game" className="space-y-4 animate-fade-in animate-scale-in transition-all duration-500">
           {/* Game stats */}
           <div className="grid grid-cols-3 gap-2 mb-4 max-w-sm mx-auto">
             <Card className="card-glow p-2 text-center animate-fade-in-up">
@@ -686,7 +677,7 @@ const Game = () => {
           )}
         </TabsContent>
 
-        <TabsContent value="shop">
+        <TabsContent value="shop" className="animate-fade-in animate-scale-in transition-all duration-500">
           <div className="max-w-sm mx-auto">
             <GameShop 
               bone={bone}
@@ -696,7 +687,7 @@ const Game = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="bonefarm">
+        <TabsContent value="bonefarm" className="animate-fade-in animate-scale-in transition-all duration-500">
           <BoneFarmGame 
             keys={keys}
             onKeysUpdate={handleKeysUpdate}

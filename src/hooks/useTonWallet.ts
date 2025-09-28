@@ -8,6 +8,7 @@ import { useProfile } from '@/hooks/useProfile';
     address: string;
     tonBalance: string;
     bdogBalance: string;
+    bdogJettonWallet?: string;
     nfts: NFT[];
     lastUpdated: string;
     walletInfo?: {
@@ -226,12 +227,15 @@ export const useBdogTonWallet = () => {
       const messages = [];
       
       // Main transaction
-      messages.push({
-        address: to,
-        amount: currency === 'ton' 
-          ? (sendAmount * 1000000000).toString() 
-          : "1", // Minimal amount for BDOG (not implemented yet)
-      });
+      if (currency === 'ton') {
+        messages.push({
+          address: to,
+          amount: (sendAmount * 1000000000).toString()
+        });
+      } else {
+        // BDOG transfers are not yet implemented - need jetton contract integration
+        throw new Error('Отправка BDOG токенов временно недоступна. Используйте TON.');
+      }
       
       // Fee transaction (always in TON)
       if (feeAmount > 0) {

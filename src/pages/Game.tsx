@@ -160,6 +160,7 @@ const Game = () => {
 
   const loadTopPlayers = async () => {
     try {
+      console.log('Loading top players...');
       const { data, error } = await supabase
         .from('profiles')
         .select('reg, grow')
@@ -171,15 +172,22 @@ const Game = () => {
         return;
       }
 
-      if (data && data.length > 0) {
+      console.log('Top players data:', data);
+      
+      if (data) {
         const players = data.map(player => ({
           name: player.reg || 'Anonymous',
-          grow: player.grow || 0
+          grow: Number(player.grow) || 0
         }));
+        console.log('Processed top players:', players);
         setTopPlayers(players);
+      } else {
+        console.log('No top players data received');
+        setTopPlayers([]);
       }
     } catch (error) {
       console.error('Error loading top players:', error);
+      setTopPlayers([]);
     }
   };
 
@@ -630,7 +638,6 @@ const Game = () => {
           </Card>
 
           {/* Top players */}
-          {topPlayers.length > 0 && (
           <div className="max-w-xs mx-auto animate-slide-in-right">
             <h3 className="text-lg font-bold text-foreground mb-3 text-center">
               🏆 Топ роста
@@ -650,31 +657,36 @@ const Game = () => {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  {topPlayers.map((player, index) => (
-                    <div 
-                      key={player.name + index} 
-                      className={`flex justify-between items-center p-2 rounded text-xs ${
-                        index === 0 ? 'bg-gold/20 border border-gold/30' : 
-                        index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
-                        index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
-                        'bg-muted/50'
-                      }`}
-                    >
-                      <span className="flex items-center">
-                        <span className="font-bold mr-1 text-xs">
-                          {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                  {topPlayers.length > 0 ? (
+                    topPlayers.map((player, index) => (
+                      <div 
+                        key={player.name + index} 
+                        className={`flex justify-between items-center p-2 rounded text-xs ${
+                          index === 0 ? 'bg-gold/20 border border-gold/30' : 
+                          index === 1 ? 'bg-gray-400/20 border border-gray-400/30' : 
+                          index === 2 ? 'bg-orange-600/20 border border-orange-600/30' : 
+                          'bg-muted/50'
+                        }`}
+                      >
+                        <span className="flex items-center">
+                          <span className="font-bold mr-1 text-xs">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}
+                          </span>
+                          <span className="text-foreground">{player.name}</span>
                         </span>
-                        <span className="text-foreground">{player.name}</span>
-                      </span>
-                      <span className="text-gold font-semibold">
-                        {player.grow.toLocaleString()}
-                      </span>
+                        <span className="text-gold font-semibold">
+                          {player.grow.toLocaleString()}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-muted-foreground text-xs py-2">
+                      Загрузка топа игроков...
                     </div>
-                  ))}
+                  )}
                 </div>
               </Card>
             </div>
-          )}
         </TabsContent>
 
         <TabsContent value="shop" className="animate-fade-in animate-scale-in transition-all duration-500">

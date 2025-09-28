@@ -50,7 +50,7 @@ const Wallet = () => {
 
   return (
     <div className="min-h-screen bg-background px-1 py-2">
-      <AudioManager backgroundMusic={true} volume={0.05} />
+      <AudioManager backgroundMusic={false} volume={0.05} />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-3 pt-2">
         <Button

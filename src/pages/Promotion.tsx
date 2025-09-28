@@ -41,7 +41,7 @@ const Promotion = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/20 px-2 py-4">
-      <AudioManager backgroundMusic={true} volume={0.05} />
+      <AudioManager backgroundMusic={false} volume={0.05} />
       {/* Navigation */}
       <div className="flex justify-between items-center mb-4 pt-4">
         <Button

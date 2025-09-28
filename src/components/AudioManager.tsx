@@ -6,7 +6,7 @@ interface AudioManagerProps {
   volume?: number;
 }
 
-export const AudioManager = ({ backgroundMusic = true, volume = 0.1 }: AudioManagerProps) => {
+export const AudioManager = ({ backgroundMusic = false, volume = 0.1 }: AudioManagerProps) => {
   return backgroundMusic ? <BackgroundMusic enabled={true} volume={volume} /> : null;
 };
 

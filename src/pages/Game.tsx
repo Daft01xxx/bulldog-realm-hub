@@ -485,7 +485,7 @@ const Game = () => {
 
   return (
     <div className="min-h-screen bg-background px-2 py-4">
-      <AudioManager backgroundMusic={true} volume={0.1} />
+      <AudioManager backgroundMusic={false} volume={0.1} />
       {/* Navigation */}
       <div className="flex justify-center gap-4 mb-4 pt-4">
         <Button

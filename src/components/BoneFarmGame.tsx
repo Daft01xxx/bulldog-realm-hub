@@ -479,17 +479,6 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     return (
       <div className="min-h-screen bg-background px-4 py-8">
         <div className="max-w-md mx-auto">
-          <div className="flex items-center mb-6">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/game')}
-              className="button-outline-gold"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Назад
-            </Button>
-          </div>
 
           <Card className="card-glow p-6 text-center mb-6">
             <h2 className="text-2xl font-bold mb-4 text-gold">Фарм косточек</h2>

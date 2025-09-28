@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
         const { data, error } = await supabaseClient
           .from('profiles')
           .update(updates)
-          .eq('id', userId)
+          .eq('user_id', userId)
           .select();
 
         if (error) {
@@ -87,7 +87,7 @@ Deno.serve(async (req) => {
         const { data, error } = await supabaseClient
           .from('profiles')
           .update({ ban: 1 })
-          .eq('id', userId)
+          .eq('user_id', userId)
           .select();
 
         if (error) {
@@ -123,7 +123,7 @@ Deno.serve(async (req) => {
         const { data, error } = await supabaseClient
           .from('profiles')
           .update({ ban: 0 })
-          .eq('id', userId)
+          .eq('user_id', userId)
           .select();
 
         if (error) {
@@ -159,7 +159,7 @@ Deno.serve(async (req) => {
         const { data, error } = await supabaseClient
           .from('profiles')
           .update({ grow1: 1, booster_expires_at: null })
-          .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
+          .neq('user_id', '00000000-0000-0000-0000-000000000000') // Update all records
           .select();
 
         if (error) {
@@ -173,6 +173,74 @@ Deno.serve(async (req) => {
             success: true, 
             message: `Reset boosters for ${data?.length || 0} users`,
             count: data?.length || 0
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200 
+          }
+        );
+
+      } else if (action === 'list_users') {
+        console.log('Listing all users for admin panel');
+        
+        const { data: profilesData, error: profilesError } = await supabaseClient
+          .from('profiles')
+          .select('user_id, reg, grow, bone, v_bdog_earned, referrals, ip_address, device_fingerprint, wallet_address, created_at, grow1, booster_expires_at, current_miner, miner_active, miner_level, ban')
+          .order('created_at', { ascending: false });
+
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: profilesError.message 
+            }),
+            { 
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 500 
+            }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            profiles: profilesData,
+            count: profilesData?.length || 0
+          }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 200 
+          }
+        );
+
+      } else if (action === 'delete_all_users') {
+        console.log('Deleting all user profiles');
+        
+        const { error } = await supabaseClient
+          .from('profiles')
+          .delete()
+          .neq('user_id', '00000000-0000-0000-0000-000000000000'); // Delete all records
+
+        if (error) {
+          console.error('Delete all users error:', error);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              error: error.message 
+            }),
+            { 
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 500 
+            }
+          );
+        }
+
+        console.log('All user profiles deleted');
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: 'All user profiles deleted successfully'
           }),
           { 
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -10,7 +10,7 @@ import BanUserModal from "@/components/BanUserModal";
 import UnbanUserModal from "@/components/UnbanUserModal";
 
 interface UserProfile {
-  id: string;
+  user_id: string;
   reg: string | null;
   grow: number;
   bone: number;
@@ -22,12 +22,18 @@ interface UserProfile {
   created_at: string;
   grow1: number;
   booster_expires_at: string | null;
+  current_miner?: string;
+  miner_active?: boolean;
+  miner_level?: number;
+  ban?: number;
 }
 
 const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
+  const [filteredProfiles, setFilteredProfiles] = useState<UserProfile[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,6 +44,7 @@ const Admin = () => {
     v_bdog_earned: "",
     grow1: ""
   });
+  const [activatingMiner, setActivatingMiner] = useState<string | null>(null);
 
   // All hooks must be called before any conditional returns
   useEffect(() => {
@@ -45,6 +52,21 @@ const Admin = () => {
       loadUsers();
     }
   }, [isAuthenticated]);
+
+  // Filter profiles based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredProfiles(profiles);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = profiles.filter(profile => 
+        (profile.reg && profile.reg.toLowerCase().includes(query)) ||
+        (profile.ip_address && profile.ip_address.includes(query)) ||
+        (profile.user_id && profile.user_id.toLowerCase().includes(query))
+      );
+      setFilteredProfiles(filtered);
+    }
+  }, [profiles, searchQuery]);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +126,7 @@ const Admin = () => {
 
       if (data?.success) {
         setProfiles(data.profiles || []);
+        setFilteredProfiles(data.profiles || []);
         toast({
           title: "Пользователи загружены",
           description: `Найдено ${data.count} пользователей`,
@@ -184,6 +207,7 @@ const Admin = () => {
           description: data.message,
         });
         setProfiles([]);
+        setFilteredProfiles([]);
       }
     } catch (error) {
       console.error('Error deleting all users:', error);
@@ -219,6 +243,36 @@ const Admin = () => {
         description: "Не удалось сбросить ускорители",
         variant: "destructive",
       });
+    }
+  };
+
+  const activateDefaultMiner = async (userId: string) => {
+    setActivatingMiner(userId);
+    try {
+      const { data, error } = await supabase.functions.invoke('activate-default-miner', {
+        body: { userId }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.success) {
+        toast({
+          title: "Майнер активирован",
+          description: `Дефолтный майнер активирован. Начислено ${data.data.initialReward} V-BDOG`,
+        });
+        loadUsers(); // Reload users
+      }
+    } catch (error) {
+      console.error('Error activating miner:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось активировать майнер",
+        variant: "destructive",
+      });
+    } finally {
+      setActivatingMiner(null);
     }
   };
 
@@ -279,6 +333,22 @@ const Admin = () => {
         <p className="text-muted-foreground">
           Управление пользователями и системой
         </p>
+        <div className="mt-4 text-sm text-muted-foreground">
+          Всего пользователей: <span className="text-gold font-semibold">{profiles.length}</span>
+          {searchQuery && (
+            <> | Найдено: <span className="text-gold font-semibold">{filteredProfiles.length}</span></>
+          )}
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="max-w-md mx-auto mb-6">
+        <Input
+          placeholder="Поиск по имени, IP или ID пользователя..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full"
+        />
       </div>
 
       {/* Actions */}
@@ -406,68 +476,105 @@ const Admin = () => {
       </Card>
 
       {/* Users List */}
-      {profiles.length > 0 && (
+      {filteredProfiles.length > 0 && (
         <div className="max-w-6xl mx-auto">
           <h3 className="text-xl font-bold text-foreground mb-4 text-center">
-            Все пользователи ({profiles.length})
+            {searchQuery ? `Результаты поиска (${filteredProfiles.length})` : `Все пользователи (${filteredProfiles.length})`}
           </h3>
           
           <div className="grid gap-4">
-            {profiles.map((profile) => (
-              <Card key={profile.id} className="card-glow p-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <strong>ID:</strong><br/>
-                    <span className="text-xs font-mono">{profile.id.substring(0, 8)}...</span>
-                  </div>
-                  <div>
-                    <strong>Имя:</strong><br/>
-                    {profile.reg || 'Anonymous'}
-                  </div>
-                  <div>
-                    <strong>Рост:</strong><br/>
-                    <span className="text-gold font-semibold">{profile.grow.toLocaleString()}</span>
-                  </div>
-                  <div>
-                    <strong>Косточки:</strong><br/>
-                    {profile.bone}
-                  </div>
-                  <div>
-                    <strong>V-BDOG:</strong><br/>
-                    <span className="text-gold">{profile.v_bdog_earned.toLocaleString()}</span>
-                  </div>
-                  <div>
-                    <strong>Множитель:</strong><br/>
-                    <span className={profile.grow1 > 1 ? "text-primary font-bold" : ""}>{profile.grow1}x</span>
-                    {profile.booster_expires_at && new Date(profile.booster_expires_at) > new Date() && (
-                      <div className="text-xs text-primary">Активен</div>
+            {filteredProfiles.map((profile) => {
+              const hasDefaultInactiveMiner = profile.current_miner === 'default' && !profile.miner_active;
+              
+              return (
+                <Card key={profile.user_id} className="card-glow p-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <strong>ID:</strong><br/>
+                      <span className="text-xs font-mono">{profile.user_id.substring(0, 8)}...</span>
+                    </div>
+                    <div>
+                      <strong>Имя:</strong><br/>
+                      {profile.reg || 'Anonymous'}
+                    </div>
+                    <div>
+                      <strong>Рост:</strong><br/>
+                      <span className="text-gold font-semibold">{profile.grow.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <strong>Косточки:</strong><br/>
+                      {profile.bone}
+                    </div>
+                    <div>
+                      <strong>V-BDOG:</strong><br/>
+                      <span className="text-gold">{profile.v_bdog_earned.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <strong>Множитель:</strong><br/>
+                      <span className={profile.grow1 > 1 ? "text-primary font-bold" : ""}>{profile.grow1}x</span>
+                      {profile.booster_expires_at && new Date(profile.booster_expires_at) > new Date() && (
+                        <div className="text-xs text-primary">Активен</div>
+                      )}
+                    </div>
+                    <div>
+                      <strong>Рефералы:</strong><br/>
+                      {profile.referrals}
+                    </div>
+                    <div>
+                      <strong>IP:</strong><br/>
+                      <span className="text-xs">{profile.ip_address || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <strong>Майнер:</strong><br/>
+                      <span className="text-xs">
+                        {profile.current_miner || 'Нет'} 
+                        {profile.miner_active ? ' (Активен)' : ' (Неактивен)'}
+                      </span>
+                    </div>
+                    <div>
+                      <strong>Создан:</strong><br/>
+                      <span className="text-xs">{new Date(profile.created_at).toLocaleDateString('ru-RU')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedUserId(profile.user_id)}
+                        className="text-xs"
+                      >
+                        Выбрать
+                      </Button>
+                      {hasDefaultInactiveMiner && (
+                        <Button
+                          size="sm"
+                          variant="default"
+                          onClick={() => activateDefaultMiner(profile.user_id)}
+                          disabled={activatingMiner === profile.user_id}
+                          className="text-xs bg-green-600 hover:bg-green-700"
+                        >
+                          {activatingMiner === profile.user_id ? (
+                            <>
+                              <Zap className="w-3 h-3 mr-1 animate-pulse" />
+                              Активирую...
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-3 h-3 mr-1" />
+                              Активировать
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                    {profile.ban === 1 && (
+                      <div className="col-span-2">
+                        <span className="text-red-500 font-bold text-xs">ЗАБЛОКИРОВАН</span>
+                      </div>
                     )}
                   </div>
-                  <div>
-                    <strong>Рефералы:</strong><br/>
-                    {profile.referrals}
-                  </div>
-                  <div>
-                    <strong>IP:</strong><br/>
-                    <span className="text-xs">{profile.ip_address || 'N/A'}</span>
-                  </div>
-                  <div>
-                    <strong>Создан:</strong><br/>
-                    <span className="text-xs">{new Date(profile.created_at).toLocaleDateString('ru-RU')}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setSelectedUserId(profile.id)}
-                      className="text-xs"
-                    >
-                      Выбрать
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </div>
       )}

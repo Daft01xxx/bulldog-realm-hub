@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy, Moon, Sun } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy, Moon, Sun, Shield } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -28,6 +28,7 @@ const Menu = () => {
   const [canClaimDaily, setCanClaimDaily] = useState(false);
   const [timeUntilNextGift, setTimeUntilNextGift] = useState("");
   const [showCoins, setShowCoins] = useState(false);
+  const [showAdminButton, setShowAdminButton] = useState(false);
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -71,6 +72,13 @@ const Menu = () => {
       // No previous gift, can claim
       setCanClaimDaily(true);
       setTimeUntilNextGift("");
+    }
+    
+    // Check if admin button should be shown based on IP
+    if (profile && profile.ip_address) {
+      // Show admin panel for specific IP addresses (add your admin IP here)
+      const adminIPs = ['178.205.158.61', '127.0.0.1', 'localhost']; // Add your admin IP addresses here
+      setShowAdminButton(adminIPs.includes(profile.ip_address));
     }
     
     // Trigger animations
@@ -232,6 +240,17 @@ const Menu = () => {
       external: true
     }
   ];
+
+  // Add admin panel button if user has admin IP
+  if (showAdminButton) {
+    menuItems.splice(-1, 0, {
+      title: "Админ панель",
+      icon: Shield,
+      path: "/admin",
+      description: "Управление системой",
+      delay: "0.55s"
+    });
+  }
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">

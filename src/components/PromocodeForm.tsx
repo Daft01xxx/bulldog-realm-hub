@@ -34,6 +34,8 @@ export const PromocodeForm: React.FC = () => {
       const deviceFingerprint = localStorage.getItem('device-fingerprint') || 
         `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
+      console.log('Device fingerprint:', deviceFingerprint);
+      
       const { data, error } = await supabase.functions.invoke('redeem-promocode', {
         body: { 
           promocode: promocode.trim(),
@@ -45,7 +47,7 @@ export const PromocodeForm: React.FC = () => {
 
       if (error) {
         console.error('Supabase function error:', error);
-        throw error;
+        throw new Error(error.message || 'Ошибка при вызове функции');
       }
 
       if (data?.success) {
@@ -70,12 +72,18 @@ export const PromocodeForm: React.FC = () => {
           description: data.error,
           variant: "destructive"
         });
+      } else {
+        toast({
+          title: "Ошибка",
+          description: "Неизвестная ошибка при активации промокода",
+          variant: "destructive"
+        });
       }
     } catch (error: any) {
       console.error('Promocode error:', error);
       toast({
         title: "Ошибка",
-        description: "Произошла ошибка при активации промокода",
+        description: error.message || "Произошла ошибка при активации промокода",
         variant: "destructive"
       });
     } finally {

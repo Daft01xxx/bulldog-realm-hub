@@ -22,27 +22,40 @@ const ActivateMinerButton: React.FC = () => {
     try {
       const initialReward = 100; // Default miner income
 
-      // Activate default miner: give initial reward and set as active
-      const updatedProfile = {
-        miner_active: true,
-        current_miner: 'default',
-        miner_level: 1,
-        v_bdog_earned: (profile.v_bdog_earned || 0) + initialReward,
-        last_miner_reward_at: new Date().toISOString(),
-      };
+      console.log('Activating miner for profile:', profile.user_id);
 
-      const { error } = await supabase
+      // Try direct database update first
+      const { data, error } = await supabase
         .from('profiles')
-        .update(updatedProfile)
-        .eq('user_id', profile.user_id);
+        .update({
+          miner_active: true,
+          current_miner: 'default',
+          miner_level: 1,
+          v_bdog_earned: (profile.v_bdog_earned || 0) + initialReward,
+          last_miner_reward_at: new Date().toISOString(),
+        })
+        .eq('user_id', profile.user_id)
+        .select();
 
       if (error) {
-        console.error('Supabase error:', error);
-        throw error;
+        console.error('Direct update error:', error);
+        
+        // Fallback to edge function
+        const { data: edgeData, error: edgeError } = await supabase.functions.invoke('activate-default-miner', {
+          body: { userId: profile.user_id }
+        });
+
+        if (edgeError) {
+          throw new Error(`Edge function error: ${edgeError.message}`);
+        }
+
+        if (!edgeData?.success) {
+          throw new Error(edgeData?.error || 'Неизвестная ошибка');
+        }
       }
 
-      await updateProfile(updatedProfile);
-      await reloadProfile(); // Reload profile to ensure consistency
+      // Force reload profile from database
+      await reloadProfile();
       
       toast.success(`Майнер активирован! Получено ${initialReward.toLocaleString()} V-BDOG`);
     } catch (error: any) {

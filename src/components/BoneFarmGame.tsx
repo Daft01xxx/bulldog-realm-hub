@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from './ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BoneFarmGameProps {
   keys: number;
@@ -419,17 +420,47 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
           <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
           <Button 
-            onClick={() => {
-              onBonesEarned(bonesEarned);
-              toast({
-                title: "Косточки получены!",
-                description: `Добавлено ${bonesEarned} косточек в инвентарь`,
-              });
-              navigate('/game');
+            onClick={async () => {
+              if (bonesEarned <= 0) return;
+              
+              try {
+                // Add bones to database using RPC function
+                const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
+                
+                if (error) {
+                  console.error('Error adding bones:', error);
+                  toast({
+                    title: "Ошибка",
+                    description: "Не удалось сохранить косточки",
+                    variant: "destructive"
+                  });
+                  return;
+                }
+                
+                // Update local state  
+                onBonesEarned(bonesEarned);
+                
+                toast({
+                  title: "Косточки получены!",
+                  description: `Добавлено ${bonesEarned} косточек в инвентарь`,
+                });
+                
+                // Redirect to farm tab
+                navigate('/menu?tab=farm');
+                
+              } catch (error) {
+                console.error('Error claiming bones:', error);
+                toast({
+                  title: "Ошибка",
+                  description: "Произошла ошибка при получении косточек",
+                  variant: "destructive"
+                });
+              }
             }}
             className="button-gold w-full mb-4"
+            disabled={bonesEarned <= 0}
           >
-            Забрать косточки
+            Забрать косточки ({bonesEarned})
           </Button>
           <div className="flex gap-2">
             <Button onClick={() => navigate('/game')} variant="outline" className="button-outline-gold flex-1">

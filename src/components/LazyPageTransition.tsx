@@ -8,7 +8,7 @@ interface LazyPageTransitionProps {
 
 const LazyPageTransition = memo(function LazyPageTransition({ children }: LazyPageTransitionProps) {
   const location = useLocation();
-  const { reduceAnimations } = useDevicePerformance();
+  const { reduceAnimations, disableAllAnimations, isVeryLowEnd } = useDevicePerformance();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [displayLocation, setDisplayLocation] = useState(location);
 
@@ -16,8 +16,10 @@ const LazyPageTransition = memo(function LazyPageTransition({ children }: LazyPa
     if (location !== displayLocation) {
       setIsTransitioning(true);
       
-      // Faster transition on low-end devices
-      const transitionTime = reduceAnimations ? 100 : 200;
+      // Much faster transitions on very low-end devices, no transition on extreme cases
+      let transitionTime = 200;
+      if (disableAllAnimations || isVeryLowEnd) transitionTime = 50;
+      else if (reduceAnimations) transitionTime = 100;
       
       const timer = setTimeout(() => {
         setDisplayLocation(location);
@@ -26,16 +28,18 @@ const LazyPageTransition = memo(function LazyPageTransition({ children }: LazyPa
 
       return () => clearTimeout(timer);
     }
-  }, [location, displayLocation, reduceAnimations]);
+  }, [location, displayLocation, reduceAnimations, disableAllAnimations, isVeryLowEnd]);
 
-  // Skip animations entirely on low-end devices
-  if (reduceAnimations) {
+  // Skip animations entirely on very low-end devices
+  if (disableAllAnimations || isVeryLowEnd) {
     return <>{children}</>;
   }
 
   return (
     <div 
-      className={`transition-all duration-300 ${
+      className={`transition-all ${
+        reduceAnimations ? 'duration-100' : 'duration-300'
+      } ${
         isTransitioning 
           ? 'opacity-0 scale-105 blur-sm' 
           : 'opacity-100 scale-100 blur-none animate-page-transition-in'

@@ -43,34 +43,36 @@ interface FallingCoins2DProps {
 }
 
 const FallingCoins2D = memo(function FallingCoins2D({ count = 8 }: FallingCoins2DProps) {
-  const { reduceAnimations, isMobile } = useDevicePerformance();
+  const { reduceAnimations, disableAllAnimations, isMobile, isVeryLowEnd } = useDevicePerformance();
   const [coins, setCoins] = useState<CoinProps[]>([]);
 
   useEffect(() => {
-    // Skip coins on devices with reduced animations preference
-    if (reduceAnimations) {
+    // Skip coins on devices with reduced animations preference or very low-end devices
+    if (disableAllAnimations || isVeryLowEnd) {
       setCoins([]);
       return;
     }
 
     const generateCoins = () => {
-      // Reduce coin count on mobile for better performance
-      const coinCount = isMobile ? Math.min(count, 4) : count;
+      // Drastically reduce coin count on very low-end devices
+      let coinCount = count;
+      if (isVeryLowEnd) coinCount = Math.min(count, 2);
+      else if (isMobile) coinCount = Math.min(count, 4);
       
       return Array.from({ length: coinCount }, (_, i) => ({
         id: i,
         delay: Math.random() * 8, // Random delay up to 8 seconds
-        duration: 10 + Math.random() * 8, // Slower on mobile for smoother animation
+        duration: isVeryLowEnd ? 15 + Math.random() * 10 : 10 + Math.random() * 8, // Much slower on very low-end
         leftPosition: Math.random() * 100, // Random horizontal position
-        size: 30 + Math.random() * 20, // 30-50px size
+        size: isVeryLowEnd ? 24 : 30 + Math.random() * 20, // Smaller coins on very low-end
       }));
     };
 
     setCoins(generateCoins());
-  }, [count, reduceAnimations, isMobile]);
+  }, [count, reduceAnimations, disableAllAnimations, isMobile, isVeryLowEnd]);
 
-  // Don't render if animations should be reduced
-  if (reduceAnimations) {
+  // Don't render if animations should be reduced or very low-end device
+  if (disableAllAnimations || isVeryLowEnd) {
     return null;
   }
 

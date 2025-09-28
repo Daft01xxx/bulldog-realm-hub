@@ -12,36 +12,38 @@ interface Particle {
 }
 
 const FloatingParticles = memo(function FloatingParticles({ count = 8 }: { count?: number }) {
-  const { reduceAnimations, isMobile } = useDevicePerformance();
+  const { reduceAnimations, disableAllAnimations, isMobile, isVeryLowEnd } = useDevicePerformance();
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
     // Skip particles on low-end devices or if user prefers reduced motion
-    if (reduceAnimations) {
+    if (disableAllAnimations || isVeryLowEnd) {
       setParticles([]);
       return;
     }
 
     const generateParticles = () => {
-      // Reduce particle count on mobile
-      const particleCount = isMobile ? Math.min(count, 4) : count;
+      // Drastically reduce particle count on very low-end devices
+      let particleCount = count;
+      if (isVeryLowEnd) particleCount = Math.min(count, 2);
+      else if (isMobile) particleCount = Math.min(count, 4);
       
       return Array.from({ length: particleCount }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: 1 + Math.random() * 2, // 1-3px size
-        duration: 30 + Math.random() * 30, // Slower on mobile for better performance
+        size: isVeryLowEnd ? 1 : 1 + Math.random() * 2, // Smaller particles on very low-end
+        duration: isVeryLowEnd ? 60 + Math.random() * 60 : 30 + Math.random() * 30, // Much slower on very low-end
         delay: Math.random() * 10, // 0-10 seconds delay
         direction: ['up', 'down', 'left', 'right'][Math.floor(Math.random() * 4)] as Particle['direction'],
       }));
     };
 
     setParticles(generateParticles());
-  }, [count, reduceAnimations, isMobile]);
+  }, [count, reduceAnimations, disableAllAnimations, isMobile, isVeryLowEnd]);
 
   // Don't render anything if animations should be reduced
-  if (reduceAnimations) {
+  if (disableAllAnimations || isVeryLowEnd) {
     return null;
   }
 

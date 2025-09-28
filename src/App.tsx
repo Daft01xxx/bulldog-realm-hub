@@ -38,7 +38,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
-  const { reduceAnimations, isMobile } = useDevicePerformance();
+  const { reduceAnimations, disableAllAnimations, isMobile, isVeryLowEnd } = useDevicePerformance();
   // Temporarily disable profile loading to avoid infinite loading
   // const { profile, loading } = useProfile();
   const isOnBanPage = location.pathname === '/ban';
@@ -82,18 +82,22 @@ function AppContent() {
   return (
     <>
       <Suspense fallback={null}>
-        {!reduceAnimations && <FloatingCosmicCoins count={isMobile ? 6 : 12} />}
+        {!disableAllAnimations && <FloatingCosmicCoins count={isVeryLowEnd ? 3 : isMobile ? 6 : 12} />}
       </Suspense>
       <AudioManager backgroundMusic={false} volume={isMobile ? 0.05 : 0.1} />
       <AutoMinerRewards />
-      <Suspense fallback={null}>
-        {!reduceAnimations && <FloatingParticles count={isMobile ? 4 : 8} />}
-      </Suspense>
+      {!isVeryLowEnd && (
+        <Suspense fallback={null}>
+          {!disableAllAnimations && <FloatingParticles count={isVeryLowEnd ? 2 : isMobile ? 4 : 8} />}
+        </Suspense>
+      )}
       <Toaster />
       <Sonner />
-      <Suspense fallback={null}>
-        {location.pathname === '/menu' && !reduceAnimations && <FallingCoins2D count={isMobile ? 3 : 8} />}
-      </Suspense>
+      {!isVeryLowEnd && (
+        <Suspense fallback={null}>
+          {location.pathname === '/menu' && !disableAllAnimations && <FallingCoins2D count={isVeryLowEnd ? 2 : isMobile ? 3 : 8} />}
+        </Suspense>
+      )}
       <PageTransition>
         <Routes>
           <Route path="/" element={<Index />} />

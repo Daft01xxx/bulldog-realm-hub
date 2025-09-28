@@ -2,9 +2,11 @@ import React, { useEffect } from 'react';
 import { useProfileContext } from '@/components/ProfileProvider';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 
 const AutoMinerRewards: React.FC = () => {
   const { profile, updateProfile } = useProfileContext();
+  const { isVeryLowEnd, isMobile } = useDevicePerformance();
 
   useEffect(() => {
     if (!profile || !profile.miner_active) return; // Only work for active miners
@@ -77,7 +79,10 @@ const AutoMinerRewards: React.FC = () => {
       }
     };
 
-    // Check every 60 seconds for new rewards
+    // Much longer intervals on very low-end devices to reduce load
+    const checkInterval = isVeryLowEnd ? 300000 : isMobile ? 180000 : 60000; // 5min, 3min, 1min
+
+    // Check every interval for new rewards
     const interval = setInterval(() => {
       if (!profile?.last_miner_reward_at) return;
       
@@ -88,13 +93,13 @@ const AutoMinerRewards: React.FC = () => {
       if (currentTime >= nextRewardTime) {
         checkAndClaimReward();
       }
-    }, 60000);
+    }, checkInterval);
     
     // Check immediately on mount to catch offline rewards
     checkAndClaimReward();
 
     return () => clearInterval(interval);
-  }, [profile?.miner_active, profile, updateProfile]);
+  }, [profile?.miner_active, profile, updateProfile, isVeryLowEnd, isMobile]);
 
   return null; // This component doesn't render anything
 };

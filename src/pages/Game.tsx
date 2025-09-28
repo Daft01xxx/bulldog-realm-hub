@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2, Coins } from "lucide-react";
+import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2, Coins, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } 
 
 import GameShop from '@/components/GameShop';
 import { BoneFarmGame } from '@/components/BoneFarmGame';
+import { PromocodeForm } from '@/components/PromocodeForm';
 
 const Game = () => {
   const navigate = useNavigate();
@@ -510,7 +511,7 @@ const Game = () => {
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-card/50 backdrop-blur-sm">
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-card/50 backdrop-blur-sm">
           <TabsTrigger 
             value="game" 
             className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
@@ -531,6 +532,13 @@ const Game = () => {
           >
             <Coins className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
             Фарм
+          </TabsTrigger>
+          <TabsTrigger 
+            value="promocode" 
+            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
+          >
+            <Gift className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
+            Промокод
           </TabsTrigger>
         </TabsList>
 
@@ -706,6 +714,10 @@ const Game = () => {
             onBonesEarned={handleBonesEarned}
             onRecordUpdate={handleRecordUpdate}
           />
+        </TabsContent>
+
+        <TabsContent value="promocode" className="animate-fade-in animate-scale-in transition-all duration-500">
+          <PromocodeForm />
         </TabsContent>
       </Tabs>
 

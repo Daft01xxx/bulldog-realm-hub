@@ -124,6 +124,62 @@ export type Database = {
           },
         ]
       }
+      promocode_usage: {
+        Row: {
+          id: string
+          promocode_id: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          promocode_id: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          promocode_id?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promocode_usage_promocode_id_fkey"
+            columns: ["promocode_id"]
+            isOneToOne: false
+            referencedRelation: "promocodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      promocodes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          updated_at: string
+          v_bdog_reward: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          v_bdog_reward?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          v_bdog_reward?: number
+        }
+        Relationships: []
+      }
       wallet_data: {
         Row: {
           balance: number | null

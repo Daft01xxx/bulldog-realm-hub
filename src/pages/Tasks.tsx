@@ -38,21 +38,35 @@ export default function Tasks() {
   const [dailyStreak, setDailyStreak] = useState(0);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [lastVideoWatchDate, setLastVideoWatchDate] = useState<string | null>(null);
+  const [videoRewardClaimed, setVideoRewardClaimed] = useState(false);
 
   // Load completed tasks from profile and localStorage, setup real-time updates
   useEffect(() => {
     // Load completed tasks from profile first, then fallback to localStorage
     let completed = [];
-    if ((profile as any)?.completed_tasks) {
-      completed = JSON.parse((profile as any).completed_tasks as string);
-    } else {
-      completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
+    try {
+      if ((profile as any)?.completed_tasks) {
+        const tasksString = (profile as any).completed_tasks as string;
+        if (tasksString && tasksString !== '[]') {
+          completed = JSON.parse(tasksString);
+        }
+      } else {
+        completed = JSON.parse(localStorage.getItem('bdog-completed-tasks') || '[]');
+      }
+    } catch (error) {
+      console.error('Error parsing completed tasks:', error);
+      completed = [];
     }
     setCompletedTasks(completed);
     
     // Load last video watch date
     const lastDate = localStorage.getItem('bdog-last-video-watch');
     setLastVideoWatchDate(lastDate);
+    
+    // Check if video reward was claimed today
+    const claimedDate = localStorage.getItem('bdog-video-reward-claimed');
+    const today = new Date().toDateString();
+    setVideoRewardClaimed(claimedDate === today);
     
     // Update tap count and daily streak
     const updateCounts = () => {
@@ -65,7 +79,7 @@ export default function Tasks() {
     // Check every second for updates
     const interval = setInterval(updateCounts, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [profile]);
 
   const getTapCount = () => tapCount;
   const getDailyStreak = () => dailyStreak;
@@ -80,10 +94,28 @@ export default function Tasks() {
     return today !== lastWatchDate;
   };
 
+  const isVideoWatched = () => {
+    if (!lastVideoWatchDate) return false;
+    
+    const today = new Date().toDateString();
+    const lastWatchDate = new Date(lastVideoWatchDate).toDateString();
+    
+    return today === lastWatchDate;
+  };
+
   const handleVideoComplete = async () => {
     const today = new Date().toISOString();
     setLastVideoWatchDate(today);
     localStorage.setItem('bdog-last-video-watch', today);
+
+    toast({
+      title: "Видео просмотрено! 🎉",
+      description: "Теперь вы можете забрать награду 2000 V-BDOG!",
+    });
+  };
+
+  const handleClaimVideoReward = async () => {
+    if (videoRewardClaimed) return;
 
     // Add reward
     const updates: any = {
@@ -92,11 +124,17 @@ export default function Tasks() {
 
     try {
       await updateProfile(updates);
+      
+      // Mark reward as claimed today
+      const today = new Date().toDateString();
+      localStorage.setItem('bdog-video-reward-claimed', today);
+      setVideoRewardClaimed(true);
+      
       // Reload profile to get updated balance
       await reloadProfile();
       
       toast({
-        title: "Видео просмотрено! 🎉",
+        title: "Награда получена! 🎉",
         description: "Вы получили 2000 V-BDOG за просмотр видео!",
       });
     } catch (error) {
@@ -117,8 +155,8 @@ export default function Tasks() {
       icon: <PlayCircle className="h-6 w-6 text-gold" />,
       reward: { type: 'v_bdog', amount: 2000 },
       requirement: { type: 'daily_video', target: 1 },
-      progress: isDailyVideoAvailable() ? 0 : 1,
-      completed: !isDailyVideoAvailable(),
+      progress: isVideoWatched() ? 1 : 0,
+      completed: isVideoWatched(),
       isDaily: true
     },
     {
@@ -164,7 +202,20 @@ export default function Tasks() {
   ];
 
   const handleClaimReward = async (task: Task) => {
-    if (!profile || task.completed && completedTasks.includes(task.id)) return;
+    if (!profile) return;
+    
+    // Check if task is already completed
+    if (completedTasks.includes(task.id)) return;
+    
+    // Check if task requirements are met
+    if (!task.completed) {
+      toast({
+        title: "Задание не выполнено",
+        description: "Сначала выполните требования задания",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const updates: any = {};
     
@@ -174,21 +225,30 @@ export default function Tasks() {
       updates.bone = (profile.bone || 0) + task.reward.amount;
     }
 
-    // Save completed task to profile to persist across sessions
-    const currentCompletedTasks = (profile as any).completed_tasks ? JSON.parse((profile as any).completed_tasks as string) : [];
-    const newCompletedTasks = [...currentCompletedTasks, task.id];
-    (updates as any).completed_tasks = JSON.stringify(newCompletedTasks);
+    try {
+      // Save completed task to profile to persist across sessions
+      const currentCompletedTasks = (profile as any).completed_tasks ? JSON.parse((profile as any).completed_tasks as string) : [];
+      const newCompletedTasks = [...currentCompletedTasks, task.id];
+      (updates as any).completed_tasks = JSON.stringify(newCompletedTasks);
 
-    await updateProfile(updates);
+      await updateProfile(updates);
 
-    const newCompleted = [...completedTasks, task.id];
-    setCompletedTasks(newCompleted);
-    localStorage.setItem('bdog-completed-tasks', JSON.stringify(newCompleted));
+      const newCompleted = [...completedTasks, task.id];
+      setCompletedTasks(newCompleted);
+      localStorage.setItem('bdog-completed-tasks', JSON.stringify(newCompleted));
 
-    toast({
-      title: "Награда получена!",
-      description: `+${task.reward.amount} ${task.reward.type === 'v_bdog' ? 'V-BDOG' : 'косточек'}`,
-    });
+      toast({
+        title: "Награда получена!",
+        description: `+${task.reward.amount} ${task.reward.type === 'v_bdog' ? 'V-BDOG' : 'косточек'}`,
+      });
+    } catch (error) {
+      console.error('Error claiming reward:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось получить награду",
+        variant: "destructive",
+      });
+    }
   };
 
   const getProgressPercentage = (task: Task) => {
@@ -273,6 +333,16 @@ export default function Tasks() {
                         Выполнить
                       </Button>
                     )}
+
+                    {task.id === 'task_daily_video' && isVideoWatched() && !videoRewardClaimed && (
+                      <Button 
+                        size="sm" 
+                        onClick={handleClaimVideoReward}
+                        className="button-gradient-gold button-glow"
+                      >
+                        Забрать награду
+                      </Button>
+                    )}
                     
                     {canClaim && task.id !== 'task_daily_video' && (
                       <Button 
@@ -284,7 +354,7 @@ export default function Tasks() {
                       </Button>
                     )}
                     
-                    {isCompleted && (
+                    {(isCompleted || (task.id === 'task_daily_video' && videoRewardClaimed)) && (
                       <Badge variant="outline" className="text-green-500 border-green-500">
                         {task.isDaily ? 'Выполнено сегодня' : 'Выполнено'}
                       </Badge>

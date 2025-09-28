@@ -140,7 +140,7 @@ export const VideoWatchModal = ({ isOpen, onClose, onComplete }: VideoWatchModal
             <p className="text-sm text-muted-foreground mb-4">
               {!canClose 
                 ? "Необходимо просмотреть оба видео до конца для получения награды" 
-                : "Все видео просмотрены! Вы получили 2000 V-BDOG"
+                : "Все видео просмотрены! Теперь вы можете закрыть окно и забрать награду в заданиях."
               }
             </p>
             

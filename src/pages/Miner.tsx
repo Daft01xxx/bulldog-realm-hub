@@ -12,6 +12,7 @@ import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import StartMinerButton from '@/components/StartMinerButton';
+import ActivateMinerButton from '@/components/ActivateMinerButton';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
@@ -242,10 +243,10 @@ const Miner = () => {
               <MinerTimer />
             </div>
             
-            {/* Start Miner Button - только если майнер куплен но не активен */}
-            {!(profile as any)?.miner_active && currentMiner !== 'default' && (
+            {/* Activate/Start Miner Button - показываем если майнер не активен */}
+            {!(profile as any)?.miner_active && (
               <div className="mb-4">
-                <StartMinerButton />
+                {currentMiner !== 'default' ? <StartMinerButton /> : <ActivateMinerButton />}
               </div>
             )}
           </div>

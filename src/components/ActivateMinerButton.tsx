@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { Play, Zap } from 'lucide-react';
 
 const ActivateMinerButton: React.FC = () => {
-  const { profile, updateProfile } = useProfileContext();
+  const { profile, updateProfile, reloadProfile } = useProfileContext();
   const [starting, setStarting] = useState(false);
 
   // Check if default miner can be activated
@@ -36,13 +36,18 @@ const ActivateMinerButton: React.FC = () => {
         .update(updatedProfile)
         .eq('user_id', profile.user_id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
-      updateProfile(updatedProfile);
+      await updateProfile(updatedProfile);
+      await reloadProfile(); // Reload profile to ensure consistency
+      
       toast.success(`Майнер активирован! Получено ${initialReward.toLocaleString()} V-BDOG`);
     } catch (error: any) {
       console.error('Error activating miner:', error);
-      toast.error(error.message || 'Ошибка при активации майнера');
+      toast.error(`Ошибка при активации майнера: ${error.message || error}`);
     } finally {
       setStarting(false);
     }

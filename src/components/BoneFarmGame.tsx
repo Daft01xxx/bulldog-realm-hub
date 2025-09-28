@@ -224,7 +224,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     }
 
     if (linesCleared > 0) {
-      const bonesEarned = linesCleared;
+      const bonesEarned = linesCleared * 3; // 3x больше косточек
       setBonesEarnedLocal(prev => prev + bonesEarned);
       setGrid(newGrid);
       
@@ -418,8 +418,21 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <Trophy className="w-16 h-16 mx-auto mb-4 text-gold" />
           <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
           <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
-          <div className="flex gap-2 mt-6">
-            <Button onClick={() => navigate('/game')} className="button-gold flex-1">
+          <Button 
+            onClick={() => {
+              onBonesEarned(bonesEarned);
+              toast({
+                title: "Косточки получены!",
+                description: `Добавлено ${bonesEarned} косточек в инвентарь`,
+              });
+              navigate('/game');
+            }}
+            className="button-gold w-full mb-4"
+          >
+            Забрать косточки
+          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate('/game')} variant="outline" className="button-outline-gold flex-1">
               Назад в BDOG GAME
             </Button>
             <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold flex-1">

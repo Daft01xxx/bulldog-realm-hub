@@ -5,54 +5,36 @@ const MinerTimer: React.FC = () => {
   const { profile, loading } = useProfileContext();
   const [timeLeft, setTimeLeft] = useState<string>('');
 
-  // Simplified logic - show timer immediately with fallback data if needed
-  const getTimerData = () => {
-    // Only show timer if miner is active
-    if (!profile?.miner_active) {
-      return null;
-    }
-    
-    if (profile?.last_miner_reward_at) {
-      return {
-        lastRewardTime: new Date(profile.last_miner_reward_at),
-        hasProfile: true
-      };
-    } else {
-      // Fallback to default time for new users
-      const defaultTime = new Date();
-      defaultTime.setMinutes(defaultTime.getMinutes() - 50); // 50 minutes ago, so 10 minutes left
-      return {
-        lastRewardTime: defaultTime,
-        hasProfile: false
-      };
-    }
-  };
-
   useEffect(() => {
     const calculateTimeLeft = () => {
-      console.log('Timer update - loading:', loading, 'profile:', !!profile, 'miner_active:', profile?.miner_active);
+      console.log('MinerTimer update - loading:', loading, 'profile:', !!profile, 'miner_active:', profile?.miner_active);
       
-      // Show loading only for first 3 seconds
+      // Show loading only for first 5 seconds
       if (loading && !profile) {
         const startTime = Date.now();
-        setTimeout(() => {
-          if (Date.now() - startTime > 3000) {
-            console.log('Force showing timer after 3 seconds');
-          }
-        }, 3000);
-        setTimeLeft('Загрузка...');
-        return;
+        if (startTime < 5000) { // Only show loading for 5 seconds max
+          setTimeLeft('Загрузка...');
+          return;
+        }
       }
 
-      const timerData = getTimerData();
-      
-      // If no timer data (miner not active), don't show anything
-      if (!timerData) {
+      // If no profile or miner not active, show appropriate message
+      if (!profile?.miner_active) {
         setTimeLeft('Майнер не активен');
         return;
       }
       
-      const nextRewardTime = new Date(timerData.lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
+      let lastRewardTime: Date;
+      
+      if (profile.last_miner_reward_at) {
+        lastRewardTime = new Date(profile.last_miner_reward_at);
+      } else {
+        // Fallback for new users - set last reward 50 minutes ago for 10 min countdown
+        lastRewardTime = new Date();
+        lastRewardTime.setMinutes(lastRewardTime.getMinutes() - 50);
+      }
+      
+      const nextRewardTime = new Date(lastRewardTime.getTime() + 60 * 60 * 1000); // Add 1 hour
       const currentTime = new Date();
       const timeDiff = nextRewardTime.getTime() - currentTime.getTime();
 
@@ -72,9 +54,7 @@ const MinerTimer: React.FC = () => {
     calculateTimeLeft();
     
     // Then update every second
-    const interval = setInterval(() => {
-      calculateTimeLeft();
-    }, 1000);
+    const interval = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(interval);
   }, [profile?.last_miner_reward_at, profile?.miner_active, loading]);
@@ -106,7 +86,7 @@ const MinerTimer: React.FC = () => {
     <div className="bg-card/50 backdrop-blur-sm border border-border/20 rounded-xl p-4 text-center">
       <div className="flex items-center justify-center gap-2 mb-2">
         <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-        <h3 className="text-lg font-semibold text-foreground">Майнер работает</h3>
+        <h3 className="text-lg font-semibold text-foreground">Майнер</h3>
       </div>
       
       <div className="space-y-2">
@@ -114,13 +94,21 @@ const MinerTimer: React.FC = () => {
           {timeLeft}
         </div>
         
-        <div className="text-sm text-muted-foreground">
-          до следующей награды
-        </div>
-        
-        <div className="text-sm font-medium text-foreground">
-          +{getCurrentMinerIncome().toLocaleString()} V-BDOG/час
-        </div>
+        {profile?.miner_active ? (
+          <>
+            <div className="text-sm text-muted-foreground">
+              до следующей награды
+            </div>
+            
+            <div className="text-sm font-medium text-foreground">
+              +{getCurrentMinerIncome().toLocaleString()} V-BDOG/час
+            </div>
+          </>
+        ) : (
+          <div className="text-sm text-muted-foreground">
+            {profile ? 'Активируйте майнер для получения дохода' : 'Подключение...'}
+          </div>
+        )}
       </div>
     </div>
   );

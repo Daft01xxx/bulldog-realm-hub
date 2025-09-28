@@ -14,26 +14,10 @@ Deno.serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     )
 
-    // Get user from JWT token
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
-    
-    if (userError || !user) {
-      console.error('Authentication error:', userError)
-      return new Response(
-        JSON.stringify({ success: false, error: 'Unauthorized' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-      )
-    }
-
-    const { promocode } = await req.json()
+    const { promocode, deviceFingerprint } = await req.json()
     
     if (!promocode || typeof promocode !== 'string') {
       console.error('Invalid promocode:', promocode)
@@ -43,7 +27,38 @@ Deno.serve(async (req) => {
       )
     }
 
-    console.log('Processing promocode:', promocode.toUpperCase(), 'for user:', user.id)
+    if (!deviceFingerprint) {
+      console.error('Device fingerprint is required')
+      return new Response(
+        JSON.stringify({ success: false, error: 'Device fingerprint is required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
+    console.log('Processing promocode:', promocode.toUpperCase(), 'for device:', deviceFingerprint)
+
+    // Find user profile by device fingerprint
+    const { data: profileData, error: profileError } = await supabaseClient
+      .from('profiles')
+      .select('user_id, v_bdog_earned')
+      .eq('device_fingerprint', deviceFingerprint)
+      .maybeSingle()
+
+    if (profileError) {
+      console.error('Error fetching profile:', profileError)
+      return new Response(
+        JSON.stringify({ success: false, error: 'Ошибка при получении профиля' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      )
+    }
+
+    if (!profileData) {
+      console.log('Profile not found for device:', deviceFingerprint)
+      return new Response(
+        JSON.stringify({ success: false, error: 'Профиль не найден' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
+      )
+    }
 
     // Find the promocode
     const { data: promocodeData, error: promocodeError } = await supabaseClient
@@ -51,7 +66,7 @@ Deno.serve(async (req) => {
       .select('id, code, v_bdog_reward, is_active')
       .eq('code', promocode.toUpperCase())
       .eq('is_active', true)
-      .single()
+      .maybeSingle()
 
     if (promocodeError || !promocodeData) {
       console.log('Promocode not found or inactive:', promocode)
@@ -68,9 +83,17 @@ Deno.serve(async (req) => {
     const { data: usageData, error: usageError } = await supabaseClient
       .from('promocode_usage')
       .select('id')
-      .eq('user_id', user.id)
+      .eq('user_id', profileData.user_id)
       .eq('promocode_id', promocodeData.id)
       .maybeSingle()
+
+    if (usageError) {
+      console.error('Error checking promocode usage:', usageError)
+      return new Response(
+        JSON.stringify({ success: false, error: 'Ошибка при проверке промокода' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      )
+    }
 
     if (usageData) {
       console.log('User already used this promocode')
@@ -84,7 +107,7 @@ Deno.serve(async (req) => {
     const { error: insertUsageError } = await supabaseClient
       .from('promocode_usage')
       .insert([{
-        user_id: user.id,
+        user_id: profileData.user_id,
         promocode_id: promocodeData.id
       }])
 
@@ -98,23 +121,6 @@ Deno.serve(async (req) => {
 
     console.log('Marked promocode as used')
 
-    // Get current V-BDOG balance
-    const { data: profileData, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('v_bdog_earned')
-      .eq('user_id', user.id)
-      .maybeSingle()
-
-    if (profileError) {
-      console.error('Error fetching profile:', profileError)
-      return new Response(
-        JSON.stringify({ success: false, error: 'Ошибка при получении профиля' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-      )
-    }
-
-    console.log('Current profile data:', profileData)
-
     // Add V-BDOG reward to user's profile
     const newBalance = (profileData?.v_bdog_earned || 0) + promocodeData.v_bdog_reward
     const { error: updateError } = await supabaseClient
@@ -122,7 +128,7 @@ Deno.serve(async (req) => {
       .update({ 
         v_bdog_earned: newBalance
       })
-      .eq('user_id', user.id)
+      .eq('user_id', profileData.user_id)
 
     if (updateError) {
       console.error('Error updating user profile:', updateError)

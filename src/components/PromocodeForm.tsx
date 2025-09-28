@@ -29,8 +29,16 @@ export const PromocodeForm: React.FC = () => {
 
     try {
       console.log('Submitting promocode:', promocode);
+      
+      // Get device fingerprint for authentication
+      const deviceFingerprint = localStorage.getItem('device-fingerprint') || 
+        `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
       const { data, error } = await supabase.functions.invoke('redeem-promocode', {
-        body: { promocode: promocode.trim() }
+        body: { 
+          promocode: promocode.trim(),
+          deviceFingerprint: deviceFingerprint
+        }
       });
 
       console.log('Promocode response - data:', data, 'error:', error);

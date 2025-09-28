@@ -70,10 +70,6 @@ export const useProfile = () => {
 
   const loadProfile = useCallback(async () => {
     console.log('loadProfile called, current loading state:', loading);
-    if (loading) {
-      console.log('Already loading, skipping');
-      return;
-    }
     
     setLoading(true);
 
@@ -83,6 +79,9 @@ export const useProfile = () => {
       // Get device info for profile identification
       const deviceInfo = await getDeviceInfo();
       console.log('Device info:', deviceInfo);
+
+      // Store device fingerprint in localStorage for promocode functionality
+      localStorage.setItem('device-fingerprint', deviceInfo.device_fingerprint);
 
       // Check if profile exists based on device fingerprint or ip
       let { data: existingProfiles, error: fetchError } = await supabase
@@ -328,7 +327,7 @@ export const useProfile = () => {
     
     const initProfile = async () => {
       console.log('initProfile called, profile exists:', !!profile, 'loading:', loading);
-      if (isMounted && !profile && !loading) {
+      if (isMounted && !profile) {
         console.log('Starting profile load...');
         await loadProfile();
       }

@@ -34,10 +34,14 @@ const Menu = () => {
     // Load user data from profile or localStorage
     if (profile) {
       setReg(profile.reg || "");
-      // BDOG token balance from wallet (if connected) or profile
-      const walletBdogBalance = isConnected ? parseFloat(walletData?.bdogBalance || '0') : 0;
-      const profileBdogBalance = profile.bdog_balance || 0;
-      setBdogBalance(Math.max(walletBdogBalance, profileBdogBalance).toString());
+      
+      // BDOG token balance prioritizing wallet data
+      if (isConnected && walletData?.bdogBalance) {
+        setBdogBalance(walletData.bdogBalance);
+      } else {
+        setBdogBalance((profile.bdog_balance || 0).toString());
+      }
+      
       // V-BDOG balance (unified balance)
       const totalVBdog = profile.v_bdog_earned || 0;
       setVBdogBalance(totalVBdog.toString());

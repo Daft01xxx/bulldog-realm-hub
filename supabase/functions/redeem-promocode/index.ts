@@ -26,6 +26,7 @@ Deno.serve(async (req) => {
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
     
     if (userError || !user) {
+      console.error('Authentication error:', userError)
       return new Response(
         JSON.stringify({ success: false, error: 'Unauthorized' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
@@ -35,11 +36,14 @@ Deno.serve(async (req) => {
     const { promocode } = await req.json()
     
     if (!promocode || typeof promocode !== 'string') {
+      console.error('Invalid promocode:', promocode)
       return new Response(
         JSON.stringify({ success: false, error: 'Promocode is required' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
+
+    console.log('Processing promocode:', promocode.toUpperCase(), 'for user:', user.id)
 
     // Find the promocode
     const { data: promocodeData, error: promocodeError } = await supabaseClient
@@ -50,6 +54,7 @@ Deno.serve(async (req) => {
       .single()
 
     if (promocodeError || !promocodeData) {
+      console.log('Promocode not found or inactive:', promocode)
       // Return success but with no reward (as requested - don't give anything for invalid codes)
       return new Response(
         JSON.stringify({ success: true, message: 'Промокод обработан', reward: 0 }),
@@ -57,15 +62,18 @@ Deno.serve(async (req) => {
       )
     }
 
+    console.log('Found promocode:', promocodeData)
+
     // Check if user already used this promocode
     const { data: usageData, error: usageError } = await supabaseClient
       .from('promocode_usage')
       .select('id')
       .eq('user_id', user.id)
       .eq('promocode_id', promocodeData.id)
-      .single()
+      .maybeSingle()
 
     if (usageData) {
+      console.log('User already used this promocode')
       return new Response(
         JSON.stringify({ success: false, error: 'Промокод уже использован' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
@@ -88,12 +96,14 @@ Deno.serve(async (req) => {
       )
     }
 
+    console.log('Marked promocode as used')
+
     // Get current V-BDOG balance
     const { data: profileData, error: profileError } = await supabaseClient
       .from('profiles')
       .select('v_bdog_earned')
       .eq('user_id', user.id)
-      .single()
+      .maybeSingle()
 
     if (profileError) {
       console.error('Error fetching profile:', profileError)
@@ -102,6 +112,8 @@ Deno.serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       )
     }
+
+    console.log('Current profile data:', profileData)
 
     // Add V-BDOG reward to user's profile
     const newBalance = (profileData?.v_bdog_earned || 0) + promocodeData.v_bdog_reward
@@ -119,6 +131,8 @@ Deno.serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       )
     }
+
+    console.log('Updated V-BDOG balance from', (profileData?.v_bdog_earned || 0), 'to', newBalance)
 
     return new Response(
       JSON.stringify({ 

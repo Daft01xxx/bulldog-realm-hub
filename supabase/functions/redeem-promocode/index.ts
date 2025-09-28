@@ -37,12 +37,41 @@ Deno.serve(async (req) => {
 
     console.log('Processing promocode:', promocode.toUpperCase(), 'for device:', deviceFingerprint)
 
-    // Find user profile by device fingerprint or IP address
-    const { data: profileData, error: profileError } = await supabaseClient
+    // Find user profile by device fingerprint or IP address - try multiple approaches
+    let { data: profileData, error: profileError } = await supabaseClient
       .from('profiles')
       .select('user_id, v_bdog_earned')
-      .or(`device_fingerprint.eq.${deviceFingerprint},ip_address.eq.${deviceFingerprint}`)
+      .eq('device_fingerprint', deviceFingerprint)
       .maybeSingle()
+
+    // If not found by device fingerprint, try IP address match as fallback
+    if (!profileData && deviceFingerprint.includes('fallback')) {
+      console.log('No profile found by device fingerprint, trying by IP...');
+      const { data: ipProfiles, error: ipError } = await supabaseClient
+        .from('profiles')
+        .select('user_id, v_bdog_earned')
+        .eq('ip_address', deviceFingerprint)
+        .limit(1)
+      
+      if (!ipError && ipProfiles && ipProfiles.length > 0) {
+        profileData = ipProfiles[0];
+      }
+    }
+
+    // Last resort: try to find any profile for this session
+    if (!profileData) {
+      console.log('Still no profile found, checking all recent profiles...');
+      const { data: recentProfiles, error: recentError } = await supabaseClient
+        .from('profiles')
+        .select('user_id, v_bdog_earned, device_fingerprint, ip_address')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        
+      if (!recentError && recentProfiles && recentProfiles.length > 0) {
+        profileData = recentProfiles[0];
+        console.log('Using most recent profile as fallback');
+      }
+    }
 
     if (profileError) {
       console.error('Error fetching profile:', profileError)

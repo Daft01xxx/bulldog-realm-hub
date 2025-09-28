@@ -25,7 +25,7 @@ const ActivateMinerButton: React.FC = () => {
       console.log('Activating miner for profile:', profile.user_id);
       console.log('Current profile state:', profile);
 
-      // Try direct database update first
+      // Since we don't use auth, activate miner directly without edge function
       const { data, error } = await supabase
         .from('profiles')
         .update({
@@ -41,30 +41,17 @@ const ActivateMinerButton: React.FC = () => {
       console.log('Direct update result:', { data, error });
 
       if (error) {
-        console.error('Direct update error:', error);
-        
-        // Fallback to edge function
-        console.log('Trying edge function fallback...');
-        const { data: edgeData, error: edgeError } = await supabase.functions.invoke('activate-default-miner', {
-          body: { userId: profile.user_id }
-        });
-
-        console.log('Edge function result:', { edgeData, edgeError });
-
-        if (edgeError) {
-          throw new Error(`Edge function error: ${edgeError.message}`);
-        }
-
-        if (!edgeData?.success) {
-          throw new Error(edgeData?.error || 'Неизвестная ошибка');
-        }
+        console.error('Miner activation error:', error);
+        throw new Error(`Ошибка активации майнера: ${error.message}`);
       }
 
-      // Force reload profile from database
-      console.log('Reloading profile...');
-      await reloadProfile();
-      
-      toast.success(`Майнер активирован! Получено ${initialReward.toLocaleString()} V-BDOG`);
+      if (data && data.length > 0) {
+        console.log('Miner activated successfully, reloading profile...');
+        await reloadProfile();
+        toast.success(`Майнер активирован! Получено ${initialReward.toLocaleString()} V-BDOG`);
+      } else {
+        throw new Error('Не удалось активировать майнер - данные не обновились');
+      }
     } catch (error: any) {
       console.error('Error activating miner:', error);
       toast.error(`Ошибка при активации майнера: ${error.message || error}`);

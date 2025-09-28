@@ -36,7 +36,6 @@ export const PromocodeForm: React.FC = () => {
       
       console.log('Device fingerprint:', deviceFingerprint);
       
-      // Try direct call first with better error handling
       const { data, error } = await supabase.functions.invoke('redeem-promocode', {
         body: { 
           promocode: promocode.trim(),
@@ -49,60 +48,8 @@ export const PromocodeForm: React.FC = () => {
 
       console.log('Promocode response - data:', data, 'error:', error);
       
-      // Better error handling for network issues
-      if (error && error.message && error.message.includes('Failed to send')) {
-        // Try alternative approach - direct API call
-        console.log('Trying direct API call...');
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2a21kYWVzb2NocWthaHNjZXpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDMxMjQsImV4cCI6MjA3Mzc3OTEyNH0.BZjHjBiHQ7BekZTvEcjerCkja189JwELwoO0K1Ls1wI";
-        
-        const response = await fetch(`https://vvkmdaesochqkahscezp.supabase.co/functions/v1/redeem-promocode`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-            'apikey': SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({
-            promocode: promocode.trim(),
-            deviceFingerprint: deviceFingerprint
-          })
-        });
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('Direct API response:', result);
-        
-        if (result.success) {
-          if (result.reward > 0) {
-            toast({
-              title: "Успешно!",
-              description: `${result.message} Получено ${result.reward.toLocaleString()} V-BDOG!`,
-              variant: "default"
-            });
-            await reloadProfile();
-          } else {
-            toast({
-              title: "Промокод обработан",
-              description: "Промокод не найден или недействителен",
-              variant: "default"
-            });
-          }
-          setPromocode('');
-          return;
-        } else {
-          throw new Error(result.error || 'Неизвестная ошибка');
-        }
-      }
-
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message || 'Ошибка при вызове функции');
-      }
-
-      if (data?.success) {
+      // Check for successful response first
+      if (data && data.success) {
         if (data.reward > 0) {
           toast({
             title: "Успешно!",
@@ -118,7 +65,69 @@ export const PromocodeForm: React.FC = () => {
           });
         }
         setPromocode('');
-      } else if (data?.error) {
+        return;
+      }
+      
+      // Handle errors - if it's a network error, try direct fetch
+      if (error && (error.message?.includes('Failed to send') || error.message?.includes('fetch'))) {
+        console.log('Network error detected, trying direct API call...');
+        // Try alternative approach - direct API call
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2a21kYWVzb2NocWthaHNjZXpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMDMxMjQsImV4cCI6MjA3Mzc3OTEyNH0.BZjHjBiHQ7BekZTvEcjerCkja189JwELwoO0K1Ls1wI";
+        
+        try {
+          const response = await fetch(`https://vvkmdaesochqkahscezp.supabase.co/functions/v1/redeem-promocode`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+              'apikey': SUPABASE_ANON_KEY,
+            },
+            body: JSON.stringify({
+              promocode: promocode.trim(),
+              deviceFingerprint: deviceFingerprint
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const result = await response.json();
+          console.log('Direct API response:', result);
+          
+          if (result.success) {
+            if (result.reward > 0) {
+              toast({
+                title: "Успешно!",
+                description: `${result.message} Получено ${result.reward.toLocaleString()} V-BDOG!`,
+                variant: "default"
+              });
+              await reloadProfile();
+            } else {
+              toast({
+                title: "Промокод обработан",
+                description: "Промокод не найден или недействителен",
+                variant: "default"
+              });
+            }
+            setPromocode('');
+            return;
+          } else {
+            throw new Error(result.error || 'Неизвестная ошибка');
+          }
+        } catch (fetchError) {
+          console.error('Direct fetch also failed:', fetchError);
+          throw error; // Use original error
+        }
+      }
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Ошибка при вызове функции');
+      }
+
+      // Handle unexpected cases
+      if (data?.error) {
         toast({
           title: "Ошибка",
           description: data.error,

@@ -83,16 +83,13 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
   const calculateGridPosition = (clientX: number, clientY: number): { row: number; col: number } | null => {
     if (!gameGridRef.current) {
-      console.log('gameGridRef.current is null');
       return null;
     }
     
     const gridRect = gameGridRef.current.getBoundingClientRect();
-    console.log('Grid rect:', gridRect);
     
     // Убеждаемся что элемент видим и имеет правильные размеры
     if (gridRect.width === 0 || gridRect.height === 0) {
-      console.log('Grid has zero dimensions');
       return null;
     }
     
@@ -101,22 +98,9 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     const relativeX = clientX - gridRect.left;
     const relativeY = clientY - gridRect.top;
     
-    console.log('Touch calculation:', {
-      clientX, clientY,
-      gridLeft: gridRect.left, gridTop: gridRect.top,
-      relativeX, relativeY,
-      cellSize
-    });
-    
-    const col = Math.floor(relativeX / cellSize);
-    const row = Math.floor(relativeY / cellSize);
-    
-    console.log('Calculated position:', { row, col });
-    
-    if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
-      console.log('Position out of bounds:', { row, col, GRID_SIZE });
-      return null;
-    }
+    // Добавляем небольшой отступ для лучшего попадания в нижние ячейки
+    const col = Math.max(0, Math.min(GRID_SIZE - 1, Math.floor((relativeX + cellSize * 0.1) / cellSize)));
+    const row = Math.max(0, Math.min(GRID_SIZE - 1, Math.floor((relativeY + cellSize * 0.1) / cellSize)));
     
     return { row, col };
   };
@@ -331,59 +315,41 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   };
 
   const handleTouchStart = (e: React.TouchEvent, block: Block) => {
-    console.log('=== TOUCH START ===');
-    console.log('Event:', e);
-    console.log('Block:', block);
-    console.log('Current state - isDragging:', isDragging, 'draggedBlock:', draggedBlock);
-    
     e.preventDefault();
     e.stopPropagation();
     
     const touch = e.touches[0];
-    console.log('Touch info:', {
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-      touches_length: e.touches.length
-    });
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    console.log('Element rect:', rect);
     
     setDraggedBlock(block);
     setIsDragging(true);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDragPosition({ x: touch.clientX, y: touch.clientY });
     
-    console.log('State updated - setting draggedBlock:', block, 'isDragging: true');
+    // Добавляем визуальную обратную связь
+    const target = e.currentTarget as HTMLElement;
+    target.style.transform = 'scale(1.05)';
+    target.style.transition = 'transform 0.1s ease';
   };
 
   const handleTouchMove = useCallback((e: React.TouchEvent | TouchEvent) => {
-    console.log('=== TOUCH MOVE ===');
-    console.log('isDragging:', isDragging, 'draggedBlock:', draggedBlock);
-    
     e.preventDefault();
     e.stopPropagation();
     
     if (!isDragging || !draggedBlock) {
-      console.log('Skipping touch move - not dragging or no block');
       return;
     }
     
     const touch = e.touches[0];
-    console.log('Touch move position:', touch.clientX, touch.clientY);
     setDragPosition({ x: touch.clientX, y: touch.clientY });
     
-    // Calculate ghost position on grid
+    // Calculate ghost position on grid with improved precision
     const gridPos = calculateGridPosition(touch.clientX, touch.clientY);
-    console.log('Touch move - grid position:', gridPos, 'Touch coords:', touch.clientX, touch.clientY);
     setGhostGridPosition(gridPos);
   }, [isDragging, draggedBlock, calculateGridPosition]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent | TouchEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    console.log('Touch end, isDragging:', isDragging, 'draggedBlock:', draggedBlock, 'ghostGridPosition:', ghostGridPosition);
     
     if (!isDragging || !draggedBlock) {
       setIsDragging(false);
@@ -396,17 +362,26 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
     // Use ghost grid position for placement
     if (ghostGridPosition && canPlaceBlock(grid, draggedBlock, ghostGridPosition.row, ghostGridPosition.col)) {
-      console.log('Placing block at ghost position:', ghostGridPosition);
       placeBlock(ghostGridPosition.row, ghostGridPosition.col, draggedBlock);
-    } else {
-      console.log('Cannot place block - invalid ghost position');
+      // Вибрация при успешном размещении (если поддерживается)
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
     }
     
+    // Reset all drag states
     setIsDragging(false);
     setDraggedBlock(null);
     setDragPosition(null);
     setGhostGridPosition(null);
     setTouchStartPos(null);
+    
+    // Сбрасываем стили всех блоков
+    document.querySelectorAll('[data-block-card]').forEach(el => {
+      const htmlEl = el as HTMLElement;
+      htmlEl.style.transform = '';
+      htmlEl.style.transition = '';
+    });
   }, [isDragging, draggedBlock, ghostGridPosition, grid, canPlaceBlock, placeBlock]);
 
   // Add global touch event listeners for drag operations
@@ -494,7 +469,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-background px-2 py-4">
+    <div className="min-h-screen bg-background px-2 py-4 pb-8">
         <div className="max-w-md mx-auto">
           <div className="flex justify-between items-center mb-4">
             <div className="text-center">
@@ -512,8 +487,8 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           </div>
 
         {/* Game Grid */}
-        <Card className="card-glow p-2 mb-4">
-          <div ref={gameGridRef} className="grid grid-cols-9 gap-0.5 mb-4">
+        <Card className="card-glow p-3 mb-6">
+          <div ref={gameGridRef} className="grid grid-cols-9 gap-1 mx-auto" style={{ maxWidth: '320px' }}>
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака
@@ -537,12 +512,12 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                     key={`${rowIndex}-${colIndex}`}
                     data-row={rowIndex}
                     data-col={colIndex}
-                    className={`aspect-square border border-muted-foreground/20 rounded-sm w-7 h-7 ${
+                    className={`aspect-square border border-muted-foreground/30 rounded-sm w-8 h-8 transition-all duration-200 ${
                       cell.filled 
-                        ? cell.color 
+                        ? `${cell.color} shadow-lg` 
                         : isGhostCell 
-                          ? 'bg-gold/30 border-gold border-2' 
-                          : 'bg-muted/20'
+                          ? 'bg-gold/40 border-gold border-2 shadow-gold/50 shadow-md animate-pulse' 
+                          : 'bg-muted/10 hover:bg-muted/20'
                     }`}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
@@ -554,16 +529,19 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
         </Card>
 
         {/* Available Blocks */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4 mt-4">
           {currentBlocks.map((block) => (
             <Card
               key={block.id}
-              className={`card-glow p-2 cursor-move transition-all hover:scale-105 select-none ${
-                isDragging && draggedBlock?.id === block.id ? 'opacity-50' : ''
+              data-block-card
+              className={`card-glow p-4 cursor-move transition-all hover:scale-105 select-none shadow-lg ${
+                isDragging && draggedBlock?.id === block.id ? 'opacity-50 scale-95' : 'hover:shadow-gold/20'
               }`}
               onTouchStart={(e) => handleTouchStart(e, block)}
+              draggable
+              onDragStart={(e) => handleDragStart(e, block)}
             >
-              <div className="grid gap-0.5 max-w-[60px] mx-auto" style={{
+              <div className="grid gap-1 max-w-[80px] mx-auto" style={{
                 gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
                 gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`
               }}>
@@ -571,10 +549,10 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                   row.map((cell, colIndex) => (
                     <div
                       key={`${rowIndex}-${colIndex}`}
-                      className={`aspect-square rounded-sm ${
-                        cell ? block.color : 'bg-transparent'
+                      className={`aspect-square rounded-sm transition-all ${
+                        cell ? `${block.color} shadow-sm` : 'bg-transparent'
                       }`}
-                      style={{ minWidth: '6px', minHeight: '6px' }}
+                      style={{ minWidth: '8px', minHeight: '8px' }}
                     />
                   ))
                 )}

@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pickaxe, TrendingUp, Gamepad2, Play, RefreshCw } from "lucide-react";
 import { useProfileContext } from '@/components/ProfileProvider';
+import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import StartMinerButton from '@/components/StartMinerButton';
 import ActivateMinerButton from '@/components/ActivateMinerButton';
 import MinerDebug from '@/components/MinerDebug';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
+import OptimizedImage from '@/components/OptimizedImage';
 
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import { AudioManager } from '@/components/AudioManager';
@@ -25,9 +27,10 @@ const minerTypes = [
   { id: 'premium', name: 'PREMIUM', income: 10000 }
 ];
 
-const Index = () => {
+const Index = memo(function Index() {
   const navigate = useNavigate();
   const { profile, reloadProfile } = useProfileContext();
+  const { reduceAnimations, isMobile } = useDevicePerformance();
   const [currentMiner, setCurrentMiner] = useState('default');
   const [minerLevel, setMinerLevel] = useState(1);
   const [vBdogEarned, setVBdogEarned] = useState(0);
@@ -58,21 +61,22 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <FloatingCosmicCoins />
-      <AudioManager backgroundMusic={false} volume={0.1} />
+      {!reduceAnimations && <FloatingCosmicCoins count={isMobile ? 6 : 12} />}
+      <AudioManager backgroundMusic={false} volume={isMobile ? 0.05 : 0.1} />
       <AutoMinerRewards />
       
       <div className="mx-auto px-4 py-8 relative z-10">
         {/* Welcome Section */}
         <div className="text-center mb-8">
           <div className="mb-6">
-            <img 
+            <OptimizedImage 
               src={bdogMainLogo} 
               alt="BDOG" 
               className="w-32 h-32 mx-auto rounded-full shadow-2xl"
               style={{
-                filter: 'drop-shadow(0 0 20px hsl(var(--gold) / 0.5))'
+                filter: isMobile ? 'none' : 'drop-shadow(0 0 20px hsl(var(--gold) / 0.5))'
               }}
+              loading="eager"
             />
           </div>
           <h1 className="text-4xl font-bold text-gradient animate-glow-text mb-4">
@@ -89,7 +93,12 @@ const Index = () => {
             <h2 className="text-lg font-semibold text-gold mb-4">Ваш майнер</h2>
             <div className="relative w-20 h-20 mx-auto mb-4">
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30">
-                <img src={bdogLogoTransparent} alt="BDOG" className="w-14 h-14" />
+                <OptimizedImage 
+                  src={bdogLogoTransparent} 
+                  alt="BDOG" 
+                  className="w-14 h-14" 
+                  loading="eager" 
+                />
               </div>
               <div className="absolute -top-2 -right-2 bg-gold text-black text-xs font-bold px-2 py-1 rounded-full">
                 LVL {minerLevel}
@@ -198,7 +207,12 @@ const Index = () => {
           
           <Card className="card-glow p-4 text-center">
             <div className="w-8 h-8 mx-auto mb-2">
-              <img src={bdogLogoTransparent} alt="BDOG" className="w-8 h-8" />
+              <OptimizedImage 
+                src={bdogLogoTransparent} 
+                alt="BDOG" 
+                className="w-8 h-8" 
+                loading="lazy" 
+              />
             </div>
             <h3 className="font-semibold text-foreground mb-1">Токены</h3>
             <p className="text-sm text-muted-foreground">BDOG и V-BDOG экосистема</p>
@@ -219,6 +233,6 @@ const Index = () => {
       </div>
     </div>
   );
-};
+});
 
 export default Index;

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
+import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 import bulldogCoinImage from '@/assets/bulldog-coin.png';
 
 interface CoinProps {
@@ -9,7 +10,9 @@ interface CoinProps {
   size: number;
 }
 
-function FallingCoin({ id, delay, duration, leftPosition, size }: CoinProps) {
+const FallingCoin = memo(function FallingCoin({ id, delay, duration, leftPosition, size }: CoinProps) {
+  const { isMobile } = useDevicePerformance();
+  
   return (
     <div
       className="fixed pointer-events-none z-10 opacity-70"
@@ -28,33 +31,48 @@ function FallingCoin({ id, delay, duration, leftPosition, size }: CoinProps) {
         style={{
           width: `${Math.max(size * 0.8, 24)}px`, // Minimum size on mobile
           height: `${Math.max(size * 0.8, 24)}px`,
-          filter: 'drop-shadow(0 0 8px hsl(var(--gold) / 0.3))',
+          filter: isMobile ? 'none' : 'drop-shadow(0 0 8px hsl(var(--gold) / 0.3))', // Remove filter on mobile
         }}
       />
     </div>
   );
-}
+});
 
 interface FallingCoins2DProps {
   count?: number;
 }
 
-export default function FallingCoins2D({ count = 8 }: FallingCoins2DProps) {
+const FallingCoins2D = memo(function FallingCoins2D({ count = 8 }: FallingCoins2DProps) {
+  const { reduceAnimations, isMobile } = useDevicePerformance();
   const [coins, setCoins] = useState<CoinProps[]>([]);
 
   useEffect(() => {
+    // Skip coins on devices with reduced animations preference
+    if (reduceAnimations) {
+      setCoins([]);
+      return;
+    }
+
     const generateCoins = () => {
-      return Array.from({ length: count }, (_, i) => ({
+      // Reduce coin count on mobile for better performance
+      const coinCount = isMobile ? Math.min(count, 4) : count;
+      
+      return Array.from({ length: coinCount }, (_, i) => ({
         id: i,
         delay: Math.random() * 8, // Random delay up to 8 seconds
-        duration: 8 + Math.random() * 6, // 8-14 seconds fall time
+        duration: 10 + Math.random() * 8, // Slower on mobile for smoother animation
         leftPosition: Math.random() * 100, // Random horizontal position
         size: 30 + Math.random() * 20, // 30-50px size
       }));
     };
 
     setCoins(generateCoins());
-  }, [count]);
+  }, [count, reduceAnimations, isMobile]);
+
+  // Don't render if animations should be reduced
+  if (reduceAnimations) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -70,4 +88,6 @@ export default function FallingCoins2D({ count = 8 }: FallingCoins2DProps) {
       ))}
     </div>
   );
-}
+});
+
+export default FallingCoins2D;

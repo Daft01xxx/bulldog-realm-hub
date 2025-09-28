@@ -4,16 +4,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { useEffect, useRef } from "react";
-import FallingCoins2D from "./components/FallingCoins2D";
-import FloatingParticles from "./components/FloatingParticles";
-import PageTransition from "./components/PageTransition";
+import { useEffect, useRef, lazy, Suspense } from "react";
+import { useDevicePerformance } from "./hooks/useDevicePerformance";
+import PageTransition from "./components/LazyPageTransition";
 import { AudioManager } from "./components/AudioManager";
-import FloatingCosmicCoins from "./components/FloatingCosmicCoins";
 import { AuthProvider } from "./hooks/useAuth";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { ProfileProvider } from "./components/ProfileProvider";
 import AutoMinerRewards from "./components/AutoMinerRewards";
+
+// Lazy load heavy components for better performance
+const FallingCoins2D = lazy(() => import("./components/FallingCoins2D"));
+const FloatingParticles = lazy(() => import("./components/FloatingParticles"));
+const FloatingCosmicCoins = lazy(() => import("./components/FloatingCosmicCoins"));
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
 import Menu from "./pages/Menu";
@@ -35,6 +38,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
+  const { reduceAnimations, isMobile } = useDevicePerformance();
   // Temporarily disable profile loading to avoid infinite loading
   // const { profile, loading } = useProfile();
   const isOnBanPage = location.pathname === '/ban';
@@ -77,13 +81,19 @@ function AppContent() {
 
   return (
     <>
-      <FloatingCosmicCoins />
-      <AudioManager backgroundMusic={false} volume={0.1} />
+      <Suspense fallback={null}>
+        {!reduceAnimations && <FloatingCosmicCoins count={isMobile ? 6 : 12} />}
+      </Suspense>
+      <AudioManager backgroundMusic={false} volume={isMobile ? 0.05 : 0.1} />
       <AutoMinerRewards />
-      <FloatingParticles />
+      <Suspense fallback={null}>
+        {!reduceAnimations && <FloatingParticles count={isMobile ? 4 : 8} />}
+      </Suspense>
       <Toaster />
       <Sonner />
-      {location.pathname === '/menu' && <FallingCoins2D />}
+      <Suspense fallback={null}>
+        {location.pathname === '/menu' && !reduceAnimations && <FallingCoins2D count={isMobile ? 3 : 8} />}
+      </Suspense>
       <PageTransition>
         <Routes>
           <Route path="/" element={<Index />} />

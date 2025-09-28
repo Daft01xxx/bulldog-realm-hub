@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2, Coins, Gift } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
+import { useDevicePerformance } from "@/hooks/useDevicePerformance";
 import { supabase } from "@/integrations/supabase/client";
 import bulldogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } from '@/components/AudioManager';
@@ -14,10 +15,11 @@ import GameShop from '@/components/GameShop';
 import { BoneFarmGame } from '@/components/BoneFarmGame';
 import { PromocodeForm } from '@/components/PromocodeForm';
 
-const Game = () => {
+const Game = memo(function Game() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { profile, updateProfile, loading } = useProfile();
+  const { isMobile, reduceAnimations } = useDevicePerformance();
   const [grow, setGrow] = useState(0);
   const [grow1, setGrow1] = useState(1);
   const [bone, setBone] = useState(0);
@@ -159,7 +161,109 @@ const Game = () => {
     }
   }, [keys]);
 
-  const loadTopPlayers = async () => {
+  // Memoize timer calculations to avoid repeated work
+  const memoizedTimers = useMemo(() => ({
+    calculateTimeLeft: () => {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      
+      const diff = tomorrow.getTime() - now.getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    },
+    calculateWeeklyTimeLeft: async () => {
+      try {
+        const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset');
+        
+        if (error) {
+          console.error('Error getting next reset time:', error);
+          const now = new Date();
+          const nextSunday = new Date(now);
+          const daysUntilSunday = (7 - now.getDay()) % 7;
+          if (daysUntilSunday === 0 && now.getHours() >= 10) {
+            nextSunday.setDate(now.getDate() + 7);
+          } else {
+            nextSunday.setDate(now.getDate() + daysUntilSunday);
+          }
+          nextSunday.setHours(20, 0, 0, 0);
+          
+          const diff = nextSunday.getTime() - now.getTime();
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+          
+          setWeeklyTimeLeft(`${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+          return;
+        }
+        
+        const resetTime = new Date(nextReset);
+        const now = new Date();
+        const diff = resetTime.getTime() - now.getTime();
+        
+        if (diff <= 0) {
+          setWeeklyTimeLeft("0д 00:00:00");
+          return;
+        }
+        
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        setWeeklyTimeLeft(`${days}д ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      } catch (error) {
+        console.error('Error calculating weekly time left:', error);
+        setWeeklyTimeLeft("Ошибка расчета");
+      }
+    },
+    calculateBoosterTimeLeft: () => {
+      const expirationTime = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : boosterEndTime;
+      
+      if (!expirationTime) {
+        setBoosterTimeLeft("");
+        return;
+      }
+
+      const now = Date.now();
+      if (now >= expirationTime) {
+        if (grow1 > 1) {
+          setIsUpdatingFromClick(true);
+          
+          const resetGrow1 = 1;
+          setGrow1(resetGrow1);
+          
+          localStorage.setItem("bdog-grow1", resetGrow1.toString());
+          localStorage.removeItem("bdog-booster-end");
+          localStorage.removeItem("bdog-booster-expires");
+          
+          updateProfile({ grow1: resetGrow1, booster_expires_at: null });
+          
+          setTimeout(() => {
+            setIsUpdatingFromClick(false);
+          }, 2000);
+        }
+        
+        setBoosterEndTime(null);
+        setBoosterTimeLeft("");
+        return;
+      }
+
+      const diff = expirationTime - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setBoosterTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+    }
+  }), [profile, boosterEndTime, grow1, updateProfile]);
+
+  const loadTopPlayers = useCallback(async () => {
     try {
       console.log('Loading top players...');
       const { data, error } = await supabase
@@ -190,9 +294,9 @@ const Game = () => {
       console.error('Error loading top players:', error);
       setTopPlayers([]);
     }
-  };
+  }, []);
 
-  const calculateTimeLeft = () => {
+  const calculateTimeLeft = useCallback(() => {
     const now = new Date();
     const tomorrow = new Date(now);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -204,9 +308,9 @@ const Game = () => {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
     
     setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-  };
+  }, []);
 
-  const calculateWeeklyTimeLeft = async () => {
+  const calculateWeeklyTimeLeft = useCallback(async () => {
     try {
       // Get next Sunday 10:00 AM Moscow time from database function
       const { data: nextReset, error } = await supabase.rpc('get_next_sunday_reset');
@@ -254,9 +358,9 @@ const Game = () => {
       console.error('Error calculating weekly time left:', error);
       setWeeklyTimeLeft("Ошибка расчета");
     }
-  };
+  }, []);
 
-  const calculateBoosterTimeLeft = () => {
+  const calculateBoosterTimeLeft = useCallback(() => {
     // Check if user has active booster from profile
     const expirationTime = profile?.booster_expires_at ? new Date(profile.booster_expires_at).getTime() : boosterEndTime;
     
@@ -298,9 +402,9 @@ const Game = () => {
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
     
     setBoosterTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-  };
+  }, [grow1, updateProfile]);
 
-  const handleClick = async (event: React.MouseEvent | React.TouchEvent) => {
+  const handleClick = useCallback(async (event: React.MouseEvent | React.TouchEvent) => {
     // Prevent default touch behaviors
     event.preventDefault();
     event.stopPropagation();
@@ -394,7 +498,7 @@ const Game = () => {
     
     // Throttle database updates - only update if enough time has passed
     const now = Date.now();
-    if (now - lastUpdateTime > 500) { // Update DB max every 500ms
+    if (now - lastUpdateTime > (isMobile ? 1000 : 500)) { // Update DB max every 500ms on desktop, 1s on mobile
       setLastUpdateTime(now);
       updateProfile({
         grow: newGrow,
@@ -416,27 +520,27 @@ const Game = () => {
         setClickEffect(prev => prev.filter(effect => effect.id !== effectId));
       }, 300);
     });
-  };
+  }, [bone, grow, grow1, totalTaps, updateProfile, toast, isMobile, lastUpdateTime]);
 
-  const handleKeysUpdate = (newKeys: number) => {
+  const handleKeysUpdate = useCallback((newKeys: number) => {
     // Keys are now infinite, no need to update
-  };
+  }, []);
 
-  const handleBonesEarned = (bones: number) => {
+  const handleBonesEarned = useCallback((bones: number) => {
     const newBone = bone + bones;
     setBone(newBone);
     localStorage.setItem("bdog-bone", String(newBone));
     updateProfile({ bone: newBone });
-  };
+  }, [bone, updateProfile]);
 
-  const handleRecordUpdate = (record: number) => {
+  const handleRecordUpdate = useCallback((record: number) => {
     if (record > boneFarmRecord) {
       setBoneFarmRecord(record);
       updateProfile({ bone_farm_record: record } as any);
     }
-  };
+  }, [boneFarmRecord, updateProfile]);
 
-  const buyBooster = async () => {
+  const buyBooster = useCallback(async () => {
     const currentBone = profile?.bone || Number(localStorage.getItem("bdog-bone")) || bone;
     if (currentBone < 500) {
       toast({
@@ -481,7 +585,20 @@ const Game = () => {
       title: "Ускоритель активирован!",
       description: "Рост удвоен на 1 час",
     });
-  };
+  }, [profile?.bone, bone, grow1, updateProfile, toast]);
+
+  // Use longer timer intervals on mobile to save battery
+  useEffect(() => {
+    const timerInterval = isMobile ? 2000 : 1000; // 2 seconds on mobile, 1 second on desktop
+    
+    const timer = setInterval(() => {
+      memoizedTimers.calculateTimeLeft();
+      memoizedTimers.calculateWeeklyTimeLeft();
+      memoizedTimers.calculateBoosterTimeLeft();
+    }, timerInterval);
+    
+    return () => clearInterval(timer);
+  }, [isMobile, memoizedTimers]);
 
 
   return (
@@ -765,6 +882,6 @@ const Game = () => {
       )}
     </div>
   );
-};
+});
 
 export default Game;

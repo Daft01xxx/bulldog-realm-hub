@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
+import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 
 interface Particle {
   id: number;
@@ -10,24 +11,39 @@ interface Particle {
   direction: 'up' | 'down' | 'left' | 'right';
 }
 
-export default function FloatingParticles({ count = 8 }: { count?: number }) {
+const FloatingParticles = memo(function FloatingParticles({ count = 8 }: { count?: number }) {
+  const { reduceAnimations, isMobile } = useDevicePerformance();
   const [particles, setParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
+    // Skip particles on low-end devices or if user prefers reduced motion
+    if (reduceAnimations) {
+      setParticles([]);
+      return;
+    }
+
     const generateParticles = () => {
-      return Array.from({ length: count }, (_, i) => ({
+      // Reduce particle count on mobile
+      const particleCount = isMobile ? Math.min(count, 4) : count;
+      
+      return Array.from({ length: particleCount }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
         size: 1 + Math.random() * 2, // 1-3px size
-        duration: 20 + Math.random() * 20, // 20-40 seconds
+        duration: 30 + Math.random() * 30, // Slower on mobile for better performance
         delay: Math.random() * 10, // 0-10 seconds delay
         direction: ['up', 'down', 'left', 'right'][Math.floor(Math.random() * 4)] as Particle['direction'],
       }));
     };
 
     setParticles(generateParticles());
-  }, [count]);
+  }, [count, reduceAnimations, isMobile]);
+
+  // Don't render anything if animations should be reduced
+  if (reduceAnimations) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -42,11 +58,13 @@ export default function FloatingParticles({ count = 8 }: { count?: number }) {
             height: `${particle.size}px`,
             animationDuration: `${particle.duration}s`,
             animationDelay: `${particle.delay}s`,
-            filter: 'blur(0.5px)',
-            boxShadow: '0 0 6px hsl(var(--primary) / 0.3)',
+            filter: isMobile ? 'none' : 'blur(0.5px)', // Remove blur on mobile
+            boxShadow: isMobile ? 'none' : '0 0 6px hsl(var(--primary) / 0.3)', // Remove shadows on mobile
           }}
         />
       ))}
     </div>
   );
-}
+});
+
+export default FloatingParticles;

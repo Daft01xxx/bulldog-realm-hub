@@ -7,8 +7,7 @@ import { useProfileContext } from '@/components/ProfileProvider';
 import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
-import StartMinerButton from '@/components/StartMinerButton';
-import ActivateMinerButton from '@/components/ActivateMinerButton';
+import { MinerControlSystem } from '@/components/MinerControlSystem';
 import MinerDebug from '@/components/MinerDebug';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
 import OptimizedImage from '@/components/OptimizedImage';
@@ -141,22 +140,10 @@ const Index = memo(function Index() {
           {(profile as any)?.miner_active && <ClaimMinerRewards />}
         </div>
         
-        {/* Activate Default Miner Button - показываем если майнер не активен */}
-        {!(profile as any)?.miner_active && (
-          <div className="mb-8 text-center">
-            <div className="bg-card/50 backdrop-blur-sm border border-border/20 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                {currentMiner !== 'default' ? 'Майнер готов к запуску' : 'Активируйте базовый майнер'}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {currentMiner !== 'default' 
-                  ? 'Запустите майнер для начала автоматического получения V-BDOG' 
-                  : 'Активируйте базовый майнер чтобы начать зарабатывать V-BDOG автоматически'}
-              </p>
-              {currentMiner !== 'default' ? <StartMinerButton /> : <ActivateMinerButton />}
-            </div>
-          </div>
-        )}
+        {/* Advanced Miner Control System */}
+        <div className="mb-8">
+          <MinerControlSystem />
+        </div>
 
         {/* Debug: Profile Status */}
         <div className="text-center mb-4">

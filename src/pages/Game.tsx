@@ -13,7 +13,7 @@ import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } 
 
 import GameShop from '@/components/GameShop';
 import { BoneFarmGame } from '@/components/BoneFarmGame';
-import { PromocodeForm } from '@/components/PromocodeForm';
+import { AdvancedPromocodeSystem } from '@/components/AdvancedPromocodeSystem';
 
 const Game = memo(function Game() {
   const navigate = useNavigate();
@@ -834,7 +834,7 @@ const Game = memo(function Game() {
         </TabsContent>
 
         <TabsContent value="promocode" className="animate-fade-in animate-scale-in transition-all duration-500">
-          <PromocodeForm />
+          <AdvancedPromocodeSystem />
         </TabsContent>
       </Tabs>
 

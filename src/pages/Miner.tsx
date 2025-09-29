@@ -11,8 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
-import StartMinerButton from '@/components/StartMinerButton';
-import ActivateMinerButton from '@/components/ActivateMinerButton';
+import { MinerControlSystem } from '@/components/MinerControlSystem';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
@@ -243,12 +242,10 @@ const Miner = () => {
               <MinerTimer />
             </div>
             
-            {/* Activate/Start Miner Button - показываем если майнер не активен */}
-            {!(profile as any)?.miner_active && (
-              <div className="mb-4">
-                {currentMiner !== 'default' ? <StartMinerButton /> : <ActivateMinerButton />}
-              </div>
-            )}
+            {/* Advanced Miner Control System */}
+            <div className="mb-4">
+              <MinerControlSystem />
+            </div>
           </div>
 
           <div className="flex gap-3 mt-6 justify-center">

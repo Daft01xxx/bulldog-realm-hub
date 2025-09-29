@@ -15,7 +15,8 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle2,
-  Clock
+  Clock,
+  Loader2
 } from 'lucide-react';
 import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 
@@ -50,12 +51,6 @@ export const MinerControlSystem: React.FC = () => {
   });
   
   const [isProcessing, setIsProcessing] = useState(false);
-  const [actionHistory, setActionHistory] = useState<MinerAction[]>([]);
-  const [performanceMetrics, setPerformanceMetrics] = useState({
-    avgRewardTime: 3600, // seconds
-    successRate: 100,
-    errorCount: 0
-  });
 
   const { profile, updateProfile, reloadProfile } = useProfileContext();
   const { isVeryLowEnd, isMobile } = useDevicePerformance();
@@ -73,41 +68,25 @@ export const MinerControlSystem: React.FC = () => {
     }
   }, [profile]);
 
-  // Real-time efficiency calculation
+  // Real-time efficiency calculation - miners work continuously at 100%
   const calculateEfficiency = useCallback(() => {
     if (!minerState.isActive) return 0;
-    
-    const now = Date.now();
-    const lastRewardTime = minerState.lastReward?.getTime() || now;
-    const timeSinceLastReward = (now - lastRewardTime) / 1000; // seconds
-    
-    // Efficiency drops over time without maintenance
-    let efficiency = 100;
-    if (timeSinceLastReward > 7200) { // 2 hours
-      efficiency = Math.max(50, 100 - (timeSinceLastReward - 7200) / 3600 * 10);
-    }
-    
-    // Device performance affects efficiency
-    if (isVeryLowEnd) efficiency *= 0.8;
-    if (isMobile) efficiency *= 0.9;
-    
-    return Math.round(efficiency);
-  }, [minerState.isActive, minerState.lastReward, isVeryLowEnd, isMobile]);
+    return 100; // Miners always work at 100% efficiency when active
+  }, [minerState.isActive]);
 
-  // Advanced timer system
+  // Continuous timer system - miners work non-stop
   useEffect(() => {
-    if (!minerState.isActive || minerState.isPaused) return;
+    if (!minerState.isActive) return;
 
     const interval = setInterval(() => {
       setMinerState(prev => {
-        const newEfficiency = calculateEfficiency();
         const now = Date.now();
         const lastRewardTime = prev.lastReward?.getTime() || now;
         const nextRewardIn = Math.max(0, 3600 - (now - lastRewardTime) / 1000);
         
         return {
           ...prev,
-          efficiency: newEfficiency,
+          efficiency: 100, // Always 100% when active
           uptime: prev.uptime + 1,
           nextRewardIn
         };
@@ -115,75 +94,46 @@ export const MinerControlSystem: React.FC = () => {
     }, isVeryLowEnd ? 2000 : 1000);
 
     return () => clearInterval(interval);
-  }, [minerState.isActive, minerState.isPaused, calculateEfficiency, isVeryLowEnd]);
+  }, [minerState.isActive, isVeryLowEnd]);
 
-  // Log action to history
-  const logAction = useCallback((action: Omit<MinerAction, 'timestamp'>) => {
-    setActionHistory(prev => [
-      { ...action, timestamp: new Date() },
-      ...prev.slice(0, 9) // Keep last 10 actions
-    ]);
-  }, []);
 
-  // Advanced database operations with error handling
+  // Database operations for miner activation only
   const performDatabaseOperation = useCallback(async (
     operation: () => Promise<any>,
-    actionType: MinerAction['type'],
     successMessage: string
   ) => {
     setIsProcessing(true);
     
     try {
       await operation();
-      
-      logAction({
-        type: actionType,
-        result: 'success',
-        message: successMessage
-      });
-      
       toast.success(successMessage);
-      
-      // Update performance metrics
-      setPerformanceMetrics(prev => ({
-        ...prev,
-        successRate: Math.min(100, prev.successRate + 0.1)
-      }));
-      
       return true;
       
     } catch (error: any) {
-      console.error(`Miner ${actionType} error:`, error);
-      
-      logAction({
-        type: actionType,
-        result: 'error',
-        message: error.message || 'Неизвестная ошибка'
-      });
-      
+      console.error('Miner operation error:', error);
       toast.error(`Ошибка: ${error.message || 'Неизвестная ошибка'}`);
-      
-      // Update performance metrics
-      setPerformanceMetrics(prev => ({
-        ...prev,
-        successRate: Math.max(0, prev.successRate - 1),
-        errorCount: prev.errorCount + 1
-      }));
-      
       return false;
     } finally {
       setIsProcessing(false);
       await reloadProfile();
     }
-  }, [logAction, reloadProfile]);
+  }, [reloadProfile]);
 
-  // Start miner with advanced logic
-  const startMiner = useCallback(async () => {
-    if (!profile || minerState.isActive) return;
+  // Activate miner - works continuously after activation
+  const activateMiner = useCallback(async () => {
+    if (!profile) return;
 
-    const canStart = profile.current_miner && profile.current_miner !== 'default';
-    if (!canStart) {
-      toast.error('Сначала приобретите майнер');
+    // Check if can activate default miner
+    const canActivateDefault = (profile.current_miner === 'default' || !profile.current_miner) && !profile.miner_active;
+    // Check if can start purchased miner
+    const canStartPurchased = profile.current_miner && profile.current_miner !== 'default' && !profile.miner_active;
+
+    if (!canActivateDefault && !canStartPurchased) {
+      if (profile.miner_active) {
+        toast.success('Майнер уже работает!');
+      } else {
+        toast.error('Невозможно активировать майнер');
+      }
       return;
     }
 
@@ -191,15 +141,17 @@ export const MinerControlSystem: React.FC = () => {
       async () => {
         const incomeRates: { [key: string]: number } = {
           default: 100,
-          silver: 250,
-          gold: 500,
-          diamond: 1000,
-          premium: 2000
+          silver: 1400,
+          gold: 2500,
+          diamond: 6000,
+          premium: 10000,
+          plus: 500
         };
 
-        const baseIncome = incomeRates[profile.current_miner] || 100;
+        const minerType = profile.current_miner || 'default';
+        const baseIncome = incomeRates[minerType] || 100;
         const levelMultiplier = profile.miner_level || 1;
-        const initialReward = Math.floor(baseIncome * levelMultiplier * 0.1);
+        const initialReward = Math.floor(baseIncome * levelMultiplier * 0.2); // 20% as starting bonus
 
         const { error } = await supabase
           .from('profiles')
@@ -219,117 +171,32 @@ export const MinerControlSystem: React.FC = () => {
           isPaused: false,
           lastReward: new Date()
         }));
+        
+        return { initialReward, minerType };
       },
-      'start',
-      `Майнер запущен! Получен стартовый бонус`
+      '🚀 Майнер активирован и работает непрерывно!'
     );
-  }, [profile, minerState.isActive, performDatabaseOperation]);
+  }, [profile, performDatabaseOperation]);
 
-  // Pause miner
-  const pauseMiner = useCallback(async () => {
-    if (!profile || !minerState.isActive || minerState.isPaused) return;
 
-    return performDatabaseOperation(
-      async () => {
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', profile.user_id);
-
-        if (error) throw error;
-
-        setMinerState(prev => ({
-          ...prev,
-          isPaused: true
-        }));
-      },
-      'pause',
-      'Майнер приостановлен'
-    );
-  }, [profile, minerState.isActive, minerState.isPaused, performDatabaseOperation]);
-
-  // Resume miner
-  const resumeMiner = useCallback(async () => {
-    if (!profile || !minerState.isActive || !minerState.isPaused) return;
-
-    return performDatabaseOperation(
-      async () => {
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', profile.user_id);
-
-        if (error) throw error;
-
-        setMinerState(prev => ({
-          ...prev,
-          isPaused: false
-        }));
-      },
-      'start',
-      'Майнер возобновлен'
-    );
-  }, [profile, minerState.isActive, minerState.isPaused, performDatabaseOperation]);
-
-  // Stop miner completely
-  const stopMiner = useCallback(async () => {
-    if (!profile || !minerState.isActive) return;
-
-    return performDatabaseOperation(
-      async () => {
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            miner_active: false,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', profile.user_id);
-
-        if (error) throw error;
-
-        setMinerState(prev => ({
-          ...prev,
-          isActive: false,
-          isPaused: false,
-          uptime: 0
-        }));
-      },
-      'stop',
-      'Майнер остановлен'
-    );
-  }, [profile, minerState.isActive, performDatabaseOperation]);
-
-  // Memoized status display
+  // Memoized status display - miners work continuously
   const statusDisplay = useMemo(() => {
     if (!minerState.isActive) {
       return {
-        status: 'Неактивен',
+        status: 'Ожидает активации',
         color: 'text-muted-foreground',
         icon: <Square className="w-4 h-4" />,
-        description: 'Майнер остановлен'
-      };
-    }
-
-    if (minerState.isPaused) {
-      return {
-        status: 'Приостановлен',
-        color: 'text-yellow-500',
-        icon: <Pause className="w-4 h-4" />,
-        description: 'Временно приостановлен'
+        description: 'Майнер готов к запуску'
       };
     }
 
     return {
-      status: 'Активен',
+      status: 'Работает непрерывно',
       color: 'text-green-500',
       icon: <Activity className="w-4 h-4 animate-pulse" />,
-      description: `Эффективность: ${minerState.efficiency}%`
+      description: `Производительность: ${minerState.efficiency}% • Автоматические награды каждый час`
     };
-  }, [minerState.isActive, minerState.isPaused, minerState.efficiency]);
+  }, [minerState.isActive, minerState.efficiency]);
 
   // Format time helper
   const formatTime = useCallback((seconds: number) => {
@@ -405,26 +272,23 @@ export const MinerControlSystem: React.FC = () => {
           </div>
         </div>
 
-        {/* Performance Metrics */}
+        {/* Mining Statistics */}
         <div className="bg-surface/30 rounded-lg p-4">
           <h4 className="font-medium mb-3 flex items-center gap-2">
             <Zap className="w-4 h-4 text-primary" />
-            Метрики производительности
+            Статистика майнинга
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Эффективность:</span>
-              <div className={`font-medium ${
-                minerState.efficiency >= 80 ? 'text-green-500' :
-                minerState.efficiency >= 60 ? 'text-yellow-500' : 'text-red-500'
-              }`}>
+              <span className="text-muted-foreground">Производительность:</span>
+              <div className="font-medium text-green-500">
                 {minerState.efficiency}%
               </div>
             </div>
             <div>
-              <span className="text-muted-foreground">Успешность:</span>
-              <div className="font-medium text-primary">
-                {performanceMetrics.successRate.toFixed(1)}%
+              <span className="text-muted-foreground">Тип майнера:</span>
+              <div className="font-medium text-primary capitalize">
+                {profile?.current_miner || 'default'}
               </div>
             </div>
             <div>
@@ -440,93 +304,90 @@ export const MinerControlSystem: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Control Buttons */}
-        <div className="flex flex-wrap gap-3 justify-center">
-          {!minerState.isActive ? (
-            <Button
-              onClick={startMiner}
-              disabled={isProcessing}
-              className="button-gold flex items-center gap-2"
-            >
-              <Play className="w-4 h-4" />
-              Запустить майнер
-            </Button>
-          ) : (
-            <>
-              {!minerState.isPaused ? (
-                <Button
-                  onClick={pauseMiner}
-                  disabled={isProcessing}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
-                  <Pause className="w-4 h-4" />
-                  Приостановить
-                </Button>
-              ) : (
-                <Button
-                  onClick={resumeMiner}
-                  disabled={isProcessing}
-                  className="button-gold flex items-center gap-2"
-                >
-                  <Play className="w-4 h-4" />
-                  Возобновить
-                </Button>
-              )}
-              
-              <Button
-                onClick={stopMiner}
-                disabled={isProcessing}
-                variant="destructive"
-                className="flex items-center gap-2"
-              >
-                <Square className="w-4 h-4" />
-                Остановить
-              </Button>
-            </>
+          
+          {minerState.isActive && (
+            <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+              <div className="flex items-center gap-2 text-green-500 text-sm">
+                <CheckCircle2 className="w-4 h-4" />
+                <span className="font-medium">Майнер работает автономно</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Автоматические награды каждый час. Майнер будет работать непрерывно.
+              </p>
+            </div>
           )}
         </div>
 
-        {/* Action History */}
-        {actionHistory.length > 0 && !isVeryLowEnd && (
-          <div className="bg-surface/20 rounded-lg p-4">
-            <h4 className="font-medium mb-3 flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              История действий
-            </h4>
-            <div className="space-y-2 max-h-32 overflow-y-auto">
-              {actionHistory.map((action, index) => (
-                <div key={index} className="flex items-center gap-2 text-xs">
-                  {action.result === 'success' ? (
-                    <CheckCircle2 className="w-3 h-3 text-green-500 flex-shrink-0" />
-                  ) : (
-                    <AlertTriangle className="w-3 h-3 text-red-500 flex-shrink-0" />
-                  )}
-                  <span className="text-muted-foreground">
-                    {action.timestamp.toLocaleTimeString()}
-                  </span>
-                  <span>{action.message}</span>
-                </div>
-              ))}
-            </div>
+        {/* Activation Button - Only for inactive miners */}
+        {!minerState.isActive && (
+          <div className="text-center">
+            <Button
+              onClick={activateMiner}
+              disabled={isProcessing}
+              className="button-gold flex items-center gap-2 mx-auto"
+              size="lg"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Активация...
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5" />
+                  {profile?.current_miner === 'default' || !profile?.current_miner 
+                    ? 'Активировать базовый майнер' 
+                    : `Запустить ${profile.current_miner} майнер`}
+                </>
+              )}
+            </Button>
+            
+            <p className="text-xs text-muted-foreground mt-2">
+              {profile?.current_miner === 'default' || !profile?.current_miner 
+                ? 'Базовый майнер будет работать непрерывно' 
+                : 'Майнер будет работать автономно после активации'}
+            </p>
           </div>
         )}
 
-        {/* Error Count Warning */}
-        {performanceMetrics.errorCount > 3 && (
-          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-            <div className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="w-4 h-4" />
-              <span className="text-sm font-medium">
-                Обнаружены проблемы с производительностью
-              </span>
+        {/* Active Miner Info */}
+        {minerState.isActive && (
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full">
+              <Activity className="w-4 h-4 animate-pulse text-green-500" />
+              <span className="text-green-500 font-medium">Майнер работает автономно</span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Количество ошибок: {performanceMetrics.errorCount}. 
-              Рекомендуется перезапустить майнер.
+            <p className="text-xs text-muted-foreground mt-2">
+              Награды начисляются автоматически каждый час
             </p>
+          </div>
+        )}
+
+        {/* Mining Info */}
+        {minerState.isActive && (
+          <div className="bg-surface/20 rounded-lg p-4">
+            <h4 className="font-medium mb-3 flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Информация о майнинге
+            </h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Время работы:</span>
+                <span className="font-medium">{formatTime(minerState.uptime)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Последняя награда:</span>
+                <span className="font-medium">
+                  {minerState.lastReward 
+                    ? minerState.lastReward.toLocaleTimeString() 
+                    : 'Не получена'}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Статус:</span>
+                <span className="font-medium text-green-500">Работает непрерывно</span>
+              </div>
+            </div>
           </div>
         )}
       </div>

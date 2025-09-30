@@ -7,8 +7,6 @@ import { useProfileContext } from '@/components/ProfileProvider';
 import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
-import { MinerControlSystem } from '@/components/MinerControlSystem';
-import MinerDebug from '@/components/MinerDebug';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
 import OptimizedImage from '@/components/OptimizedImage';
 
@@ -134,15 +132,10 @@ const Index = memo(function Index() {
           </div>
         </Card>
 
-        {/* Miner Timer and Rewards - показываем всегда */}
+        {/* Miner Timer and Rewards */}
         <div className="grid gap-4 mb-8">
           <MinerTimer />
           {(profile as any)?.miner_active && <ClaimMinerRewards />}
-        </div>
-        
-        {/* Advanced Miner Control System */}
-        <div className="mb-8">
-          <MinerControlSystem />
         </div>
 
         {/* Debug: Profile Status */}

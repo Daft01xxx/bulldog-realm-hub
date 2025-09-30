@@ -415,7 +415,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   if (gameOver) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <Card className="card-glow p-8 max-w-md w-full text-center">
+        <Card className="glass-card p-8 max-w-md w-full text-center">
           <Trophy className="w-16 h-16 mx-auto mb-4 text-gold" />
           <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
           <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
@@ -424,7 +424,6 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
               if (bonesEarned <= 0) return;
               
               try {
-                // Add bones to database using RPC function
                 const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
                 
                 if (error) {
@@ -437,16 +436,17 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                   return;
                 }
                 
-                // Update local state  
                 onBonesEarned(bonesEarned);
                 
                 toast({
-                  title: "Косточки получены!",
-                  description: `Добавлено ${bonesEarned} косточек в инвентарь`,
+                  title: "✅ Косточки успешно зачислены!",
+                  description: `Добавлено ${bonesEarned} косточек. Переход в тапалку...`,
                 });
                 
-                // Redirect to farm tab
-                navigate('/menu?tab=farm');
+                // Navigate to game (tap game)
+                setTimeout(() => {
+                  navigate('/game');
+                }, 1000);
                 
               } catch (error) {
                 console.error('Error claiming bones:', error);
@@ -464,7 +464,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           </Button>
           <div className="flex gap-2">
             <Button onClick={() => navigate('/game')} variant="outline" className="button-outline-gold flex-1">
-              Назад в BDOG GAME
+              Тапалка
             </Button>
             <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold flex-1">
               Меню

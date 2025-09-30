@@ -8,80 +8,68 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Cosmic Space Theme */
-    --background: 230 30% 8%;
-    --foreground: 210 20% 98%;
+    /* Glass Minimalist Theme */
+    --background: 240 10% 5%;
+    --foreground: 0 0% 98%;
 
-    --card: 235 30% 12%;
-    --card-foreground: 210 20% 98%;
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 235 30% 12%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 240 100% 70%;
+    --primary: 45 100% 55%;
     --primary-foreground: 0 0% 0%;
 
-    --secondary: 220 30% 20%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 220 30% 20%;
-    --muted-foreground: 215 25% 80%;
+    --muted: 240 5% 20%;
+    --muted-foreground: 240 5% 70%;
 
-    --accent: 220 30% 20%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 240 5% 18%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 30% 20%;
-    --input: 220 30% 20%;
-    --ring: 240 100% 70%;
+    --border: 240 5% 20%;
+    --input: 240 5% 18%;
+    --ring: 45 100% 55%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    /* Cosmic Gold Colors */
-    --gold: 50 100% 65%;
-    --gold-light: 55 100% 75%;
-    --gold-dark: 45 100% 55%;
-    --gold-muted: 48 80% 60%;
-    --gold-bright: 52 100% 80%;
-    --gold-accent: 60 100% 85%;
+    /* Gold Colors */
+    --gold: 45 100% 55%;
+    --gold-light: 50 100% 65%;
+    --gold-dark: 40 100% 45%;
+    --gold-muted: 45 80% 50%;
+    --gold-bright: 50 100% 70%;
+    --gold-accent: 55 100% 75%;
     
-    /* Cosmic Space Colors */
-    --cosmic-blue: 240 100% 70%;
-    --cosmic-purple: 270 100% 70%;
-    --cosmic-cyan: 180 100% 60%;
+    /* Glass Surface Colors */
+    --surface: 240 10% 8%;
+    --surface-elevated: 240 10% 12%;
+    --surface-muted: 240 10% 6%;
     
-    /* Surface Colors with better contrast */
-    --surface: 235 30% 12%;
-    --surface-elevated: 240 25% 15%;
-    --surface-muted: 230 35% 10%;
-    
-    /* Better muted text for readability */
-    --muted-foreground: 215 20% 85%;
-    
-    /* Cosmic Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(240 100% 70%), hsl(270 100% 70%));
-    --gradient-surface: linear-gradient(135deg, hsl(235 30% 12%), hsl(240 25% 15%));
-    --gradient-accent: linear-gradient(135deg, hsl(50 100% 65%), hsl(55 100% 75%));
-    --gradient-gold: linear-gradient(135deg, hsl(50 100% 65%), hsl(55 100% 75%));
-    --gradient-cosmic: radial-gradient(circle at center, hsl(240 100% 70% / 0.3), hsl(270 100% 70% / 0.1) 50%, transparent 80%);
-    --gradient-space: linear-gradient(180deg, hsl(230 30% 8%), hsl(240 35% 15%) 50%, hsl(250 40% 20%));
-    --gradient-nebula: radial-gradient(ellipse at top, hsl(270 100% 70% / 0.2), hsl(180 100% 60% / 0.1) 60%, transparent);
+    /* Gradients - Minimal */
+    --gradient-primary: linear-gradient(135deg, hsl(45 100% 55%), hsl(50 100% 65%));
+    --gradient-surface: linear-gradient(135deg, hsl(240 10% 8% / 0.6), hsl(240 10% 12% / 0.4));
+    --gradient-accent: linear-gradient(135deg, hsl(45 100% 55%), hsl(50 100% 65%));
+    --gradient-gold: linear-gradient(135deg, hsl(45 100% 55%), hsl(50 100% 65%));
+    --gradient-glass: linear-gradient(135deg, hsl(240 10% 15% / 0.3), hsl(240 10% 20% / 0.2));
 
-    /* Cosmic Shadows */
-    --shadow-primary: 0 10px 30px -5px hsl(240 100% 70% / 0.4);
-    --shadow-elevated: 0 20px 50px -10px hsl(230 30% 4% / 0.8);
-    --shadow-subtle: 0 2px 10px -2px hsl(230 30% 4% / 0.5);
-    --shadow-gold: 0 8px 32px -8px hsl(50 100% 65% / 0.4);
-    --shadow-neon: 0 0 20px hsl(240 100% 70% / 0.6), 0 0 40px hsl(270 100% 70% / 0.3);
-    --shadow-cosmic: 0 15px 60px -15px hsl(240 100% 70% / 0.5);
-    --shadow-nebula: 0 0 40px hsl(180 100% 60% / 0.3), 0 0 80px hsl(270 100% 70% / 0.2);
+    /* Glass Shadows */
+    --shadow-primary: 0 8px 32px hsl(45 100% 55% / 0.2);
+    --shadow-elevated: 0 10px 40px hsl(0 0% 0% / 0.5);
+    --shadow-subtle: 0 2px 8px hsl(0 0% 0% / 0.3);
+    --shadow-gold: 0 4px 20px hsl(45 100% 55% / 0.3);
+    --shadow-glass: 0 8px 32px hsl(0 0% 0% / 0.4), inset 0 1px 0 hsl(255 255 255 / 0.1);
     
     /* Smooth transitions */
-    --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   .light {
@@ -153,19 +141,19 @@ All colors MUST be HSL.
   }
 
   body {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    line-height: 1.5;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
     font-weight: 400;
-    background: var(--gradient-space);
+    background: hsl(var(--background));
     color: hsl(var(--foreground));
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
-    background-attachment: fixed;
     position: relative;
     overflow-x: hidden;
+    min-height: 100vh;
   }
 
   body::before {
@@ -175,9 +163,12 @@ All colors MUST be HSL.
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--gradient-nebula);
+    background: 
+      radial-gradient(circle at 20% 50%, hsl(45 100% 55% / 0.05), transparent 50%),
+      radial-gradient(circle at 80% 80%, hsl(45 100% 55% / 0.03), transparent 50%),
+      hsl(var(--background));
     pointer-events: none;
-    z-index: -1;
+    z-index: 0;
   }
 
   /* Custom Animations */
@@ -481,22 +472,23 @@ All colors MUST be HSL.
     box-shadow: var(--shadow-gold);
   }
 
-  .card-glow {
-    @apply shadow-lg border border-border/50;
-    background: linear-gradient(135deg, hsl(var(--card) / 0.9), hsl(var(--surface-elevated) / 0.8));
-    backdrop-filter: blur(12px);
+  /* Glass Card Styles */
+  .card-glow, .glass-card {
+    @apply border border-border/30;
+    background: linear-gradient(135deg, hsl(var(--card) / 0.4), hsl(var(--surface-elevated) / 0.3));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     box-shadow: 
-      0 0 0 1px hsl(var(--border) / 0.5),
-      var(--shadow-nebula),
-      inset 0 1px 0 hsl(255 255 255 / 0.1);
+      0 0 0 1px hsl(255 255 255 / 0.05),
+      var(--shadow-glass);
   }
 
-  .card-glow:hover {
+  .card-glow:hover, .glass-card:hover {
     transform: translateY(-1px);
+    background: linear-gradient(135deg, hsl(var(--card) / 0.5), hsl(var(--surface-elevated) / 0.4));
     box-shadow: 
-      0 0 0 1px hsl(var(--border) / 0.7),
-      var(--shadow-nebula),
-      var(--shadow-cosmic),
-      inset 0 1px 0 hsl(255 255 255 / 0.15);
+      0 0 0 1px hsl(255 255 255 / 0.1),
+      var(--shadow-elevated),
+      inset 0 1px 0 hsl(255 255 255 / 0.1);
   }
 }

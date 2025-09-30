@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -25,7 +25,7 @@ interface UserProfile {
   is_vpn_user?: boolean;
   referral_code_used?: boolean;
   last_referral_code?: string;
-  referral_notifications?: any; // JSON data from database
+  referral_notifications?: any;
   current_miner?: string;
   miner_level?: number;
   miner_active?: boolean;
@@ -46,74 +46,50 @@ export const useProfile = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Get device info (IP + fingerprint) for unique account identification
   const getDeviceInfo = useCallback(async (): Promise<DeviceInfo> => {
     try {
       const { data, error } = await supabase.functions.invoke('get-device-info');
       
-      if (error) {
-        console.error('Error getting device info:', error);
-        throw error;
-      }
-
+      if (error) throw error;
       return data as DeviceInfo;
     } catch (error) {
       console.error('Failed to get device info:', error);
-      // Fallback device info
       return {
         ip_address: 'unknown',
-        device_fingerprint: `fallback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        device_fingerprint: `FB_${Date.now()}_${Math.random().toString(36).substring(2, 11).toUpperCase()}`,
         user_agent: navigator.userAgent || 'unknown'
       };
     }
   }, []);
 
   const loadProfile = useCallback(async () => {
-    console.log('loadProfile called, current loading state:', loading);
-    
     setLoading(true);
 
     try {
-      console.log('Starting profile loading...');
-      
-      // Get device info for profile identification
       const deviceInfo = await getDeviceInfo();
-      console.log('Device info:', deviceInfo);
-
-      // Store device fingerprint in localStorage for promocode functionality
       localStorage.setItem('device-fingerprint', deviceInfo.device_fingerprint);
 
-      // Check if profile exists based on device fingerprint or ip
       let { data: existingProfiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
         .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
         .limit(1);
 
-      if (fetchError) {
-        console.error('Error fetching profile:', fetchError);
-        throw fetchError;
-      }
+      if (fetchError) throw fetchError;
 
       let userProfile = existingProfiles?.[0];
-      console.log('Existing profile found:', userProfile);
 
-      // Handle referral logic only for new users
       const urlParams = new URLSearchParams(window.location.search);
       const referralCode = urlParams.get('ref');
       let referrerData = null;
 
       if (referralCode && !userProfile) {
-        console.log('Processing referral code:', referralCode);
-        
         const { data: referrerResult, error: referrerError } = await supabase
           .rpc('find_referrer_safely', { referral_code: referralCode });
 
         if (!referrerError && referrerResult && referrerResult.length > 0) {
           referrerData = referrerResult[0];
-          console.log('Referrer found:', referrerData);
 
-          // Check if referral code was already used
           const { data: codeUsageCheck } = await supabase
             .from('profiles')
             .select('id')
@@ -121,26 +97,20 @@ export const useProfile = () => {
             .limit(1);
 
           if (codeUsageCheck && codeUsageCheck.length > 0) {
-            console.log('Referral code already used, no reward');
             referrerData = null;
           }
 
-          // Check if it's the referrer themselves
           if (referrerData && referrerData.reg === referralCode) {
-            console.log('Self-referral detected, no reward');
             referrerData = null;
           }
         }
       }
 
       if (!userProfile) {
-        // Generate unique registration ID
-        const regId = `BDOG${Date.now()}${Math.random().toString(36).substr(2, 5)}`.toUpperCase();
-        
-        console.log('Creating new profile with reg:', regId);
+        const regId = `BDOG_${Date.now()}_${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
 
         const newProfileData = {
-          user_id: crypto.randomUUID(), // Generate random UUID without auth
+          user_id: crypto.randomUUID(),
           reg: regId,
           device_fingerprint: deviceInfo.device_fingerprint,
           ip_address: deviceInfo.ip_address,
@@ -167,25 +137,17 @@ export const useProfile = () => {
           bone_farm_record: 0,
         };
 
-        // If there's a valid referrer, add bonus and update referrer
         if (referrerData) {
-          newProfileData.balance = 5000; // Referral bonus
+          newProfileData.balance = 5000;
           newProfileData.grow = 5000;
           
-          // Update referrer
-          const { error: referrerUpdateError } = await supabase
+          await supabase
             .from('profiles')
             .update({ 
               referrals: (referrerData.referrals || 0) + 1,
               v_bdog_earned: (referrerData.v_bdog_earned || 0) + 2500
             })
             .eq('user_id', referrerData.user_id);
-
-          if (referrerUpdateError) {
-            console.error('Failed to update referrer:', referrerUpdateError);
-          } else {
-            console.log('Referrer updated with bonus');
-          }
         }
 
         const { data: newProfile, error: createError } = await supabase
@@ -194,15 +156,9 @@ export const useProfile = () => {
           .select()
           .single();
 
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          throw createError;
-        }
-
+        if (createError) throw createError;
         userProfile = newProfile;
-        console.log('New profile created:', userProfile);
       } else {
-        // Update existing profile with latest device info if needed
         const updateData: any = {};
         
         if (userProfile.device_fingerprint !== deviceInfo.device_fingerprint) {
@@ -214,31 +170,23 @@ export const useProfile = () => {
         }
 
         if (Object.keys(updateData).length > 0) {
-          const { error: updateError } = await supabase
+          await supabase
             .from('profiles')
             .update(updateData)
             .eq('user_id', userProfile.user_id);
             
-          if (updateError) {
-            console.error('Error updating profile device info:', updateError);
-          } else {
-            console.log('Profile device info updated');
-            userProfile = { ...userProfile, ...updateData };
-          }
+          userProfile = { ...userProfile, ...updateData };
         }
       }
 
       setProfile(userProfile as UserProfile);
-      console.log('Profile loaded successfully:', userProfile);
-
     } catch (error) {
       console.error('Error in loadProfile:', error);
       
-      // Create fallback profile if loading completely fails
       const fallbackProfile: UserProfile = {
         id: 'temp-id',
         user_id: 'temp-user-id',
-        reg: `TEMP${Date.now()}`,
+        reg: `TEMP_${Date.now()}`,
         balance: 0,
         balance2: 0,
         grow: 0,
@@ -257,57 +205,37 @@ export const useProfile = () => {
       };
       
       setProfile(fallbackProfile);
-      console.log('Using fallback profile due to loading error');
-      
-      // Show error toast only for critical errors
-      if (error instanceof Error && !error.message.includes('captcha') && !error.message.includes('network')) {
-        toast({
-          title: "Информация",
-          description: "Работаем в автономном режиме. Некоторые функции могут быть недоступны.",
-          variant: "default",
-        });
-      }
     } finally {
       setLoading(false);
     }
   }, [getDeviceInfo, toast]);
 
+  // Immediate update with instant save
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
 
     try {
+      // Optimistic update - update UI immediately
+      setProfile(prev => prev ? { ...prev, ...updates } : null);
+      
+      // Save to database immediately
       const { error } = await supabase
         .from('profiles')
         .update(updates)
         .eq('user_id', profile.user_id);
 
-      if (error) {
-        console.error('Error updating profile:', error);
-        throw error;
-      }
-
-      // Update state
-      setProfile(prev => prev ? { ...prev, ...updates } : null);
-      console.log('Profile updated successfully');
+      if (error) throw error;
     } catch (error) {
       console.error('Failed to update profile:', error);
-      toast({
-        title: "Ошибка",
-        description: "Не удалось обновить профиль",
-        variant: "destructive",
-      });
+      // Revert on error
+      await reloadProfile();
     }
-  }, [profile, toast]);
+  }, [profile]);
 
   const fetchWalletBalance = useCallback(async (walletAddress: string) => {
-    if (!walletAddress) {
-      console.error('No wallet address provided');
-      return null;
-    }
+    if (!walletAddress) return null;
 
     try {
-      console.log('Fetching wallet balance for:', walletAddress);
-      
       const { data, error } = await supabase.functions.invoke('tonviewer-api', {
         body: { 
           walletAddress,
@@ -316,7 +244,6 @@ export const useProfile = () => {
       });
 
       if (error) {
-        console.error('Error fetching wallet balance:', error);
         toast({
           title: "Ошибка",
           description: "Не удалось получить баланс кошелька",
@@ -327,7 +254,6 @@ export const useProfile = () => {
 
       const bdogBalance = parseFloat(data.bdogBalance || "0");
       
-      // Update profile with new balance and wallet address
       if (profile) {
         await updateProfile({
           bdog_balance: bdogBalance,
@@ -347,14 +273,11 @@ export const useProfile = () => {
     await loadProfile();
   }, [loadProfile]);
 
-  // Load profile only once on mount to prevent infinite loops
   useEffect(() => {
     let isMounted = true;
     
     const initProfile = async () => {
-      console.log('initProfile called, profile exists:', !!profile, 'loading:', loading);
       if (isMounted && !profile) {
-        console.log('Starting profile load...');
         await loadProfile();
       }
     };
@@ -364,7 +287,7 @@ export const useProfile = () => {
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array to run only once
+  }, []);
 
   return {
     profile,

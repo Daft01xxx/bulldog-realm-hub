@@ -11,7 +11,6 @@ import { toast } from "@/hooks/use-toast";
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
-import { MinerControlSystem } from '@/components/MinerControlSystem';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
@@ -237,14 +236,9 @@ const Miner = () => {
               {getCurrentMinerData().description}
             </p>
             
-            {/* Miner Timer - показываем всегда */}
+            {/* Miner Timer */}
             <div className="mb-4">
               <MinerTimer />
-            </div>
-            
-            {/* Advanced Miner Control System */}
-            <div className="mb-4">
-              <MinerControlSystem />
             </div>
           </div>
 

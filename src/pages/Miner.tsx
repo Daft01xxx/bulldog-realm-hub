@@ -97,14 +97,12 @@ const Miner = () => {
     setIsPurchasing(true);
     try {
       const price = parseFloat(miner.price);
-      const networkFee = 0.1;
-      const totalRequired = price + networkFee;
 
       const availableBalance = parseFloat(walletData?.tonBalance || "0");
-      if (availableBalance < totalRequired) {
+      if (availableBalance < price) {
         toast({
           title: "Недостаточно TON",
-          description: `Нужно ${totalRequired.toFixed(2)} TON (${miner.price} + 0.1 комиссия)`,
+          description: `Нужно ${price.toFixed(2)} TON`,
           variant: "destructive",
         });
         return;
@@ -253,8 +251,8 @@ const Miner = () => {
           </div>
 
           <div className="flex gap-3 mt-6 justify-center flex-wrap">
-            {/* Show Activate button for default miner if not active */}
-            {!(profile as any)?.miner_active && <ActivateMinerButton />}
+            {/* Show Activate button if miner is not active */}
+            {!(profile as any)?.miner_active && currentMiner === 'default' && <ActivateMinerButton />}
             
             {/* Claim rewards only if miner is active */}
             {(profile as any)?.miner_active && <ClaimMinerRewards />}

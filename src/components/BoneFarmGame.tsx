@@ -458,13 +458,11 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                 
                 toast({
                   title: "✅ Косточки успешно зачислены!",
-                  description: `Добавлено ${bonesEarned} косточек. Переход в тапалку...`,
+                  description: `Добавлено ${bonesEarned} косточек`,
                 });
                 
-                // Navigate to game (tap game)
-                setTimeout(() => {
-                  navigate('/game');
-                }, 1000);
+                // Navigate to game (tap game) immediately
+                navigate('/game');
                 
               } catch (error) {
                 console.error('Error claiming bones:', error);
@@ -520,8 +518,8 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-background px-2 py-4 pb-8">
-        <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-background px-2 py-4 pb-8 touch-none overscroll-none">
+        <div className="max-w-md mx-auto touch-none">
           <div className="flex justify-between items-center mb-4">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Косточки</p>
@@ -595,18 +593,19 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                 draggable
                 onDragStart={(e) => handleDragStart(e, block)}
               >
-                <div className={`grid gap-1 mx-auto ${blockSizeClass}`} style={{
+                <div className={`grid mx-auto ${blockSizeClass}`} style={{
                   gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`
+                  gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`,
+                  gap: '2px'
                 }}>
                   {block.shape.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className={`aspect-square rounded-sm transition-all ${
+                        className={`aspect-square rounded-sm ${
                           cell ? `${block.color} shadow-sm` : 'bg-transparent'
                         }`}
-                        style={{ minWidth: '8px', minHeight: '8px' }}
+                        style={{ minWidth: '10px', minHeight: '10px' }}
                       />
                     ))
                   )}

@@ -174,7 +174,7 @@ export const useBdogTonWallet = () => {
   };
 
   const calculateTransactionFee = (amount: string, currency: 'ton' | 'bdog' = 'ton') => {
-    return 0.1; // Fixed fee of 0.1 TON for all transfers
+    return 0; // No commission
   };
 
   const sendTransaction = async (to: string, amount: string, comment?: string, currency: 'ton' | 'bdog' = 'ton') => {
@@ -191,16 +191,13 @@ export const useBdogTonWallet = () => {
       console.log('Sending transaction:', { to, amount, comment, currency });
       
       const sendAmount = parseFloat(amount);
-      const feeAmount = calculateTransactionFee(amount, currency);
       const availableBalance = parseFloat(walletData?.tonBalance || "0");
       
-      // Check if we have enough TON for amount + fee
-      const totalRequired = currency === 'ton' ? sendAmount + feeAmount : feeAmount;
-      
-      if (availableBalance < totalRequired) {
+      // Check if we have enough TON
+      if (availableBalance < sendAmount) {
         toast({
           title: "Недостаточно TON",
-          description: `Нужно ${totalRequired.toFixed(2)} TON (включая комиссию ${feeAmount} TON)`,
+          description: `Нужно ${sendAmount.toFixed(2)} TON`,
           variant: "destructive",
         });
         return null;
@@ -223,7 +220,7 @@ export const useBdogTonWallet = () => {
         payload = hexString;
       }
 
-      // Prepare transaction with fee
+      // Prepare transaction without fee
       const messages = [];
       
       // Main transaction
@@ -235,15 +232,6 @@ export const useBdogTonWallet = () => {
       } else {
         // BDOG transfers are not yet implemented - need jetton contract integration
         throw new Error('Отправка BDOG токенов временно недоступна. Используйте TON.');
-      }
-      
-      // Fee transaction (always in TON)
-      if (feeAmount > 0) {
-        const feeAddress = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7"; // Fee collection address
-        messages.push({
-          address: feeAddress,
-          amount: (feeAmount * 1000000000).toString(),
-        });
       }
 
       const transaction = {
@@ -259,7 +247,7 @@ export const useBdogTonWallet = () => {
       
       toast({
         title: "Транзакция отправлена",
-        description: `Транзакция на ${amount} ${currency.toUpperCase()} отправлена (комиссия: ${feeAmount} TON)`,
+        description: `Транзакция на ${amount} ${currency.toUpperCase()} отправлена`,
       });
 
       // Refresh wallet data after transaction

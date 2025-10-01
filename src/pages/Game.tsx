@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2, Coins, Gift } from "lucide-react";
+import { ArrowLeft, Home, Zap, Info, ClipboardList, ShoppingCart, Gamepad2, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { useDevicePerformance } from "@/hooks/useDevicePerformance";
@@ -13,7 +13,6 @@ import { AudioManager, playTapSound, playLogoClickSound, playButtonClickSound } 
 
 import GameShop from '@/components/GameShop';
 import { BoneFarmGame } from '@/components/BoneFarmGame';
-import { AdvancedPromocodeSystem } from '@/components/AdvancedPromocodeSystem';
 
 const Game = memo(function Game() {
   const navigate = useNavigate();
@@ -628,7 +627,7 @@ const Game = memo(function Game() {
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-card/50 backdrop-blur-sm">
+        <TabsList className="grid w-full grid-cols-3 mb-6 bg-card/50 backdrop-blur-sm">
           <TabsTrigger 
             value="game" 
             className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
@@ -650,18 +649,11 @@ const Game = memo(function Game() {
             <Coins className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
             Фарм
           </TabsTrigger>
-          <TabsTrigger 
-            value="promocode" 
-            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
-          >
-            <Gift className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
-            Промокод
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="game" className="space-y-4 animate-fade-in animate-scale-in transition-all duration-500">
           {/* Game stats */}
-          <div className="grid grid-cols-3 gap-2 mb-4 max-w-sm mx-auto">
+          <div className="grid grid-cols-2 gap-2 mb-4 max-w-sm mx-auto">
             <Card className="card-glow p-2 text-center animate-fade-in-up">
               <p className="text-xs text-muted-foreground">Рост</p>
               <p className="text-sm font-bold text-gold">{grow.toLocaleString()}</p>
@@ -670,11 +662,6 @@ const Game = memo(function Game() {
             <Card className="card-glow p-2 text-center animate-fade-in-up">
               <p className="text-xs text-muted-foreground">Косточки</p>
               <p className="text-sm font-bold text-gold">{bone}</p>
-            </Card>
-            
-            <Card className="card-glow p-2 text-center animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-              <p className="text-xs text-muted-foreground">Сброс через</p>
-              <p className="text-xs font-bold text-gold">{timeLeft}</p>
             </Card>
           </div>
 
@@ -831,10 +818,6 @@ const Game = memo(function Game() {
             onBonesEarned={handleBonesEarned}
             onRecordUpdate={handleRecordUpdate}
           />
-        </TabsContent>
-
-        <TabsContent value="promocode" className="animate-fade-in animate-scale-in transition-all duration-500">
-          <AdvancedPromocodeSystem />
         </TabsContent>
       </Tabs>
 

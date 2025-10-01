@@ -12,6 +12,7 @@ import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
+import ActivateMinerButton from '@/components/ActivateMinerButton';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
 // Import miner images
@@ -52,8 +53,17 @@ const Miner = () => {
 
   useEffect(() => {
     if (profile) {
-      setCurrentMiner((profile as any).current_miner || 'default');
-      setMinerLevel((profile as any).miner_level || 1);
+      const profileMiner = (profile as any).current_miner || 'default';
+      const profileLevel = (profile as any).miner_level || 1;
+      
+      console.log('Profile miner data:', { profileMiner, profileLevel });
+      
+      setCurrentMiner(profileMiner);
+      setMinerLevel(profileLevel);
+      
+      // Also update localStorage
+      localStorage.setItem("bdog-current-miner", profileMiner);
+      localStorage.setItem("bdog-miner-level", profileLevel.toString());
     } else {
       setCurrentMiner(localStorage.getItem("bdog-current-miner") || 'default');
       setMinerLevel(parseInt(localStorage.getItem("bdog-miner-level") || "1"));
@@ -242,7 +252,10 @@ const Miner = () => {
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6 justify-center">
+          <div className="flex gap-3 mt-6 justify-center flex-wrap">
+            {/* Show Activate button for default miner if not active */}
+            {!(profile as any)?.miner_active && <ActivateMinerButton />}
+            
             {/* Claim rewards only if miner is active */}
             {(profile as any)?.miner_active && <ClaimMinerRewards />}
             

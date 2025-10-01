@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Play, Pause, X } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface VideoWatchModalProps {
   isOpen: boolean;
@@ -71,19 +72,29 @@ export const VideoWatchModal = ({ isOpen, onClose, onComplete }: VideoWatchModal
 
   const canClose = videosWatched.every(watched => watched);
 
+  const handleClose = () => {
+    if (!canClose) {
+      // User closed without watching - no reward
+      toast({
+        title: "Просмотр прерван",
+        description: "Для получения награды необходимо досмотреть оба видео до конца",
+        variant: "destructive"
+      });
+    }
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={canClose ? onClose : undefined}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl p-0">
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl font-bold text-gradient">
               Просмотр видео {currentVideo + 1}/2
             </DialogTitle>
-            {canClose && (
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
-            )}
+            <Button variant="ghost" size="sm" onClick={handleClose}>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
         </DialogHeader>
 
@@ -146,7 +157,7 @@ export const VideoWatchModal = ({ isOpen, onClose, onComplete }: VideoWatchModal
             
             {canClose && (
               <Button 
-                onClick={onClose}
+                onClick={handleClose}
                 className="button-gradient-gold"
               >
                 Закрыть

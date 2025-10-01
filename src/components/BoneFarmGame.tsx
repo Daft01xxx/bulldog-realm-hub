@@ -296,6 +296,24 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     onRecordUpdate(bonesEarned);
   };
 
+  const getBlockSize = (block: Block) => {
+    const rows = block.shape.length;
+    const cols = block.shape[0]?.length || 0;
+    
+    // Вертикальные блоки (больше рядов, чем колонок) - маленькие
+    if (rows > cols) {
+      return 'w-12 h-14'; // Маленький размер для вертикальных
+    }
+    
+    // Большие блоки
+    if (rows >= 3 || cols >= 3) {
+      return 'w-16 h-16';
+    }
+    
+    // Средние блоки
+    return 'w-14 h-14';
+  };
+
   const handleDragStart = (e: React.DragEvent, block: Block) => {
     console.log('Drag start:', block);
     setDraggedBlock(block);
@@ -563,35 +581,39 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
         {/* Available Blocks */}
         <div className="grid grid-cols-2 gap-4 mt-4">
-          {currentBlocks.map((block) => (
-            <Card
-              key={block.id}
-              data-block-card
-              className={`card-glow p-4 cursor-move transition-all hover:scale-105 select-none shadow-lg ${
-                isDragging && draggedBlock?.id === block.id ? 'opacity-50 scale-95' : 'hover:shadow-gold/20'
-              }`}
-              onTouchStart={(e) => handleTouchStart(e, block)}
-              draggable
-              onDragStart={(e) => handleDragStart(e, block)}
-            >
-              <div className="grid gap-1 max-w-[80px] mx-auto" style={{
-                gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
-                gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`
-              }}>
-                {block.shape.map((row, rowIndex) =>
-                  row.map((cell, colIndex) => (
-                    <div
-                      key={`${rowIndex}-${colIndex}`}
-                      className={`aspect-square rounded-sm transition-all ${
-                        cell ? `${block.color} shadow-sm` : 'bg-transparent'
-                      }`}
-                      style={{ minWidth: '8px', minHeight: '8px' }}
-                    />
-                  ))
-                )}
-              </div>
-            </Card>
-          ))}
+          {currentBlocks.map((block) => {
+            const blockSizeClass = getBlockSize(block);
+            
+            return (
+              <Card
+                key={block.id}
+                data-block-card
+                className={`card-glow p-4 cursor-move transition-all hover:scale-105 select-none shadow-lg ${
+                  isDragging && draggedBlock?.id === block.id ? 'opacity-50 scale-95' : 'hover:shadow-gold/20'
+                }`}
+                onTouchStart={(e) => handleTouchStart(e, block)}
+                draggable
+                onDragStart={(e) => handleDragStart(e, block)}
+              >
+                <div className={`grid gap-1 mx-auto ${blockSizeClass}`} style={{
+                  gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
+                  gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`
+                }}>
+                  {block.shape.map((row, rowIndex) =>
+                    row.map((cell, colIndex) => (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        className={`aspect-square rounded-sm transition-all ${
+                          cell ? `${block.color} shadow-sm` : 'bg-transparent'
+                        }`}
+                        style={{ minWidth: '8px', minHeight: '8px' }}
+                      />
+                    ))
+                  )}
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </div>
     </div>

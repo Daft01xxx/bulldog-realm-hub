@@ -114,10 +114,11 @@ const Miner = () => {
       const result = await sendTransaction(merchantWallet, miner.price, comment);
       
       if (result) {
+        // When buying new miner: reset level to 1, deactivate current miner
         const updateData = {
           current_miner: miner.id,
-          miner_level: 1,
-          miner_active: false // Miner purchased but not started yet
+          miner_level: 1, // Reset level to 1
+          miner_active: false // Deactivate - user must activate manually
         };
 
         if (profile) {
@@ -132,7 +133,7 @@ const Miner = () => {
 
         toast({
           title: "Майнер успешно куплен!",
-          description: `Майнер ${miner.name} активирован. Теперь запустите его для получения дохода.`,
+          description: `Майнер ${miner.name} куплен. Активируйте его для получения дохода.`,
         });
       }
     } catch (error) {
@@ -157,13 +158,23 @@ const Miner = () => {
       return;
     }
 
-    const upgradeCost = 30000;
-    const currentVBdog = profile?.v_bdog_earned || 0;
-
-    if (currentVBdog < upgradeCost) {
+    if (!isConnected) {
       toast({
-        title: "Недостаточно V-BDOG",
-        description: `Нужно ${upgradeCost.toLocaleString()} V-BDOG для улучшения`,
+        title: "Кошелек не подключен",
+        description: "Подключите кошелек для прокачки майнера",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Cost in TON equals the target level (upgrading to level 2 costs 2 TON, etc.)
+    const upgradeCostTON = minerLevel + 1;
+    const availableBalance = parseFloat(walletData?.tonBalance || "0");
+
+    if (availableBalance < upgradeCostTON) {
+      toast({
+        title: "Недостаточно TON",
+        description: `Нужно ${upgradeCostTON} TON для улучшения`,
         variant: "destructive",
       });
       return;
@@ -171,24 +182,31 @@ const Miner = () => {
 
     setIsUpgrading(true);
     try {
-      const updateData = {
-        v_bdog_earned: currentVBdog - upgradeCost,
-        miner_level: minerLevel + 1
-      };
+      const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
+      const comment = `BDOG: Прокачка майнера до уровня ${minerLevel + 1}`;
+      
+      const result = await sendTransaction(merchantWallet, upgradeCostTON.toString(), comment);
+      
+      if (result) {
+        const updateData = {
+          miner_level: minerLevel + 1
+          // V-BDOG не трогаем!
+        };
 
-      if (profile) {
-        await updateProfile(updateData as any);
-      } else {
-        localStorage.setItem("bdog-miner-level", (minerLevel + 1).toString());
+        if (profile) {
+          await updateProfile(updateData as any);
+        } else {
+          localStorage.setItem("bdog-miner-level", (minerLevel + 1).toString());
+        }
+
+        setMinerLevel(minerLevel + 1);
+        setShowUpgradeDialog(false);
+
+        toast({
+          title: "Майнер улучшен!",
+          description: `Уровень ${minerLevel + 1}. Новый доход: ${getCurrentIncome()} V-BDOG/час`,
+        });
       }
-
-      setMinerLevel(minerLevel + 1);
-      setShowUpgradeDialog(false);
-
-      toast({
-        title: "Майнер улучшен!",
-        description: `Уровень ${minerLevel + 1}. Новый доход: ${getCurrentIncome()} V-BDOG/час`,
-      });
     } catch (error) {
       console.error('Upgrade failed:', error);
       toast({
@@ -252,7 +270,37 @@ const Miner = () => {
 
           <div className="flex gap-3 mt-6 justify-center flex-wrap">
             {/* Show Activate button if miner is not active */}
-            {!(profile as any)?.miner_active && currentMiner === 'default' && <ActivateMinerButton />}
+            {!(profile as any)?.miner_active && (
+              currentMiner === 'default' ? (
+                <ActivateMinerButton />
+              ) : (
+                <Button
+                  onClick={async () => {
+                    if (!profile) return;
+                    try {
+                      await updateProfile({
+                        miner_active: true,
+                        last_miner_reward_at: new Date().toISOString()
+                      } as any);
+                      toast({
+                        title: "Майнер активирован!",
+                        description: "Майнер начал работу",
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Ошибка",
+                        description: "Не удалось активировать майнер",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                  className="button-gradient-gold button-glow"
+                  size="lg"
+                >
+                  Активировать майнер
+                </Button>
+              )
+            )}
             
             {/* Claim rewards only if miner is active */}
             {(profile as any)?.miner_active && <ClaimMinerRewards />}
@@ -282,7 +330,7 @@ const Miner = () => {
                     </p>
                     <div className="p-4 bg-gold/10 rounded-lg border border-gold/20 mb-4">
                       <p className="text-center">
-                        <span className="text-lg font-bold text-gold">30,000 V-BDOG</span>
+                        <span className="text-lg font-bold text-gold">{minerLevel + 1} TON</span>
                       </p>
                       <p className="text-sm text-muted-foreground">Стоимость улучшения</p>
                     </div>
@@ -299,7 +347,7 @@ const Miner = () => {
                     <Button
                       className="flex-1 button-gradient-gold"
                       onClick={handleUpgradeMiner}
-                      disabled={isUpgrading || (profile?.v_bdog_earned || 0) < 30000}
+                      disabled={isUpgrading || !isConnected || parseFloat(walletData?.tonBalance || "0") < (minerLevel + 1)}
                     >
                       {isUpgrading ? "Улучшение..." : "Улучшить"}
                     </Button>

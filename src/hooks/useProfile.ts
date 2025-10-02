@@ -67,12 +67,23 @@ export const useProfile = () => {
 
     try {
       const deviceInfo = await getDeviceInfo();
+      
+      // First, try to get unique user ID from localStorage
+      let uniqueUserId = localStorage.getItem('bdog-unique-user-id');
+      
+      // If no unique ID exists, generate one
+      if (!uniqueUserId) {
+        uniqueUserId = crypto.randomUUID();
+        localStorage.setItem('bdog-unique-user-id', uniqueUserId);
+      }
+      
       localStorage.setItem('device-fingerprint', deviceInfo.device_fingerprint);
 
+      // Search for profile by unique user ID first (most reliable)
       let { data: existingProfiles, error: fetchError } = await supabase
         .from('profiles')
         .select('*')
-        .or(`device_fingerprint.eq.${deviceInfo.device_fingerprint},ip_address.eq.${deviceInfo.ip_address}`)
+        .eq('user_id', uniqueUserId)
         .limit(1);
 
       if (fetchError) throw fetchError;
@@ -110,7 +121,7 @@ export const useProfile = () => {
         const regId = `BDOG_${Date.now()}_${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
 
         const newProfileData = {
-          user_id: crypto.randomUUID(),
+          user_id: uniqueUserId, // Use the unique localStorage ID
           reg: regId,
           device_fingerprint: deviceInfo.device_fingerprint,
           ip_address: deviceInfo.ip_address,

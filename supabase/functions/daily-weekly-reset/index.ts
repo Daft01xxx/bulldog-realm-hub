@@ -31,23 +31,24 @@ Deno.serve(async (req) => {
     console.log(`Starting ${resetType} reset at ${new Date().toISOString()} (Moscow: ${moscowTime})`)
 
     if (resetType === 'daily') {
-      // Daily reset: set all bone values to 1000
-      const { error: dailyError } = await supabaseClient
+      // Daily reset: set all bone values to 1000 for ALL users
+      const { error: dailyError, count } = await supabaseClient
         .from('profiles')
         .update({ bone: 1000 })
-        .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
+        .gte('id', '00000000-0000-0000-0000-000000000000') // Update ALL records
 
       if (dailyError) {
         console.error('Daily reset error:', dailyError)
         throw dailyError
       }
 
-      console.log('Daily reset completed: All bones reset to 1000')
+      console.log(`Daily reset completed: ${count || 0} profiles updated with bone = 1000`)
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'Daily reset completed: All bones reset to 1000',
+          message: `Daily reset completed: ${count || 0} profiles updated with bone = 1000`,
+          profilesUpdated: count || 0,
           timestamp: new Date().toISOString()
         }),
         { 

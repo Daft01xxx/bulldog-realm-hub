@@ -80,6 +80,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
   const [ghostGridPosition, setGhostGridPosition] = useState<{ row: number; col: number } | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [claimed, setClaimed] = useState(false);
   const gameGridRef = useRef<HTMLDivElement>(null);
 
   const calculateGridPosition = (clientX: number, clientY: number): { row: number; col: number } | null => {
@@ -437,55 +438,43 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <Trophy className="w-16 h-16 mx-auto mb-4 text-gold" />
           <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
           <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
-          <Button 
-            onClick={async () => {
-              if (bonesEarned <= 0) return;
-              
-              try {
-                const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
+          {!claimed && (
+            <Button 
+              onClick={async () => {
+                if (bonesEarned <= 0) return;
                 
-                if (error) {
-                  console.error('Error adding bones:', error);
+                try {
+                  const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
+                  
+                  if (error) {
+                    console.error('Error adding bones:', error);
+                    return;
+                  }
+                  
+                  onBonesEarned(bonesEarned);
+                  setClaimed(true);
+                  
                   toast({
-                    title: "Ошибка",
-                    description: "Не удалось сохранить косточки",
-                    variant: "destructive"
+                    title: "✅ Косточки успешно зачислены!",
+                    description: `Добавлено ${bonesEarned} косточек`,
                   });
-                  return;
+                  
+                } catch (error) {
+                  console.error('Error claiming bones:', error);
                 }
-                
-                onBonesEarned(bonesEarned);
-                
-                toast({
-                  title: "✅ Косточки успешно зачислены!",
-                  description: `Добавлено ${bonesEarned} косточек`,
-                });
-                
-                // Navigate to game (tap game) immediately
-                navigate('/game');
-                
-              } catch (error) {
-                console.error('Error claiming bones:', error);
-                toast({
-                  title: "Ошибка",
-                  description: "Произошла ошибка при получении косточек",
-                  variant: "destructive"
-                });
-              }
-            }}
-            className="button-gold w-full mb-4"
-            disabled={bonesEarned <= 0}
-          >
-            Забрать косточки ({bonesEarned})
+              }}
+              className="button-gold w-full mb-4"
+              disabled={bonesEarned <= 0}
+            >
+              Забрать косточки ({bonesEarned})
+            </Button>
+          )}
+          {claimed && (
+            <p className="text-green-500 mb-4 font-semibold">✅ Косточки зачислены!</p>
+          )}
+          <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold w-full">
+            Меню
           </Button>
-          <div className="flex gap-2">
-            <Button onClick={() => navigate('/game')} variant="outline" className="button-outline-gold flex-1">
-              Тапалка
-            </Button>
-            <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold flex-1">
-              Меню
-            </Button>
-          </div>
         </Card>
       </div>
     );

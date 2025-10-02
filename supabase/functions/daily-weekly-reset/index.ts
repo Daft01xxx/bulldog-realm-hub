@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
       )
 
     } else if (resetType === 'weekly') {
-      // Weekly reset: reward top 5 players and reset grow to 0
+      // Weekly reset: reward top 5 players only (NO grow reset!)
       // This should run every Sunday at 10:00 AM Moscow time
       
       // 1. Get top 5 players by grow
@@ -93,18 +93,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // 3. Reset all grow values to 0
-      const { error: resetGrowError } = await supabaseClient
-        .from('profiles')
-        .update({ grow: 0 })
-        .neq('id', '00000000-0000-0000-0000-000000000000') // Update all records
-
-      if (resetGrowError) {
-        console.error('Weekly grow reset error:', resetGrowError)
-        throw resetGrowError
-      }
-
-      // 4. Also reset any expired boosters during weekly reset
+      // 3. Reset any expired boosters during weekly reset
       const { data: boosterResetCount, error: boosterError } = await supabaseClient
         .rpc('reset_expired_boosters')
 
@@ -114,12 +103,12 @@ Deno.serve(async (req) => {
         console.log(`Reset ${boosterResetCount} expired boosters during weekly reset`)
       }
 
-      console.log('Weekly reset completed: All grow reset to 0, top 5 players rewarded, boosters checked')
+      console.log('Weekly reset completed: Top 5 players rewarded, boosters checked (grow NOT reset)')
 
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: 'Weekly reset completed: All grow reset to 0, top 5 players rewarded',
+          message: 'Weekly reset completed: Top 5 players rewarded (grow NOT reset)',
           topPlayers: topPlayers?.map(p => ({ name: p.reg || 'Anonymous', grow: p.grow })),
           boosterResetCount: boosterResetCount || 0,
           timestamp: new Date().toISOString(),

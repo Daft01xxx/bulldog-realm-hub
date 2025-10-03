@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useProfileContext } from '@/components/ProfileProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/components/ui/use-toast';
 
 const MinerTimer: React.FC = () => {
-  const { profile, loading } = useProfileContext();
+  const { profile, loading, refreshProfile } = useProfileContext();
   const [timeLeft, setTimeLeft] = useState<string>('');
+  const [isClaimingReward, setIsClaimingReward] = useState(false);
 
   useEffect(() => {
-    const calculateTimeLeft = () => {
+    const calculateTimeLeft = async () => {
       console.log('MinerTimer update - loading:', loading, 'profile:', !!profile, 'miner_active:', profile?.miner_active);
       
       // Show loading only for first 5 seconds
       if (loading && !profile) {
         const startTime = Date.now();
-        if (startTime < 5000) { // Only show loading for 5 seconds max
+        if (startTime < 5000) {
           setTimeLeft('Загрузка...');
           return;
         }
@@ -38,8 +41,31 @@ const MinerTimer: React.FC = () => {
       const currentTime = new Date();
       const timeDiff = nextRewardTime.getTime() - currentTime.getTime();
 
-      if (timeDiff <= 0) {
-        setTimeLeft('Награда готова!');
+      if (timeDiff <= 0 && !isClaimingReward) {
+        // Auto-claim reward
+        setIsClaimingReward(true);
+        
+        try {
+          const { data, error } = await supabase.functions.invoke('claim-miner-reward');
+          
+          if (error) throw error;
+          
+          if (data.success) {
+            toast({
+              title: "✅ Награда получена!",
+              description: `+${data.reward.toLocaleString()} V-BDOG`,
+            });
+            
+            // Refresh profile to get updated data
+            await refreshProfile();
+          }
+        } catch (error) {
+          console.error('Error claiming reward:', error);
+        } finally {
+          setIsClaimingReward(false);
+        }
+        
+        setTimeLeft('00:00:00');
         return;
       }
 
@@ -57,7 +83,7 @@ const MinerTimer: React.FC = () => {
     const interval = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(interval);
-  }, [profile?.last_miner_reward_at, profile?.miner_active, loading]);
+  }, [profile?.last_miner_reward_at, profile?.miner_active, loading, isClaimingReward, refreshProfile]);
 
   const getCurrentMinerIncome = () => {
     const minerType = profile?.current_miner || 'default';

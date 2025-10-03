@@ -107,12 +107,12 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     return { row, col };
   };
 
-  const generateRandomBlocks = useCallback(() => {
+  const generateRandomBlocks = useCallback((count: number = 2) => {
     const blocks = [];
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < count; i++) {
       const randomShape = BLOCK_SHAPES[Math.floor(Math.random() * BLOCK_SHAPES.length)];
       blocks.push({
-        id: i,
+        id: Date.now() + i, // Unique ID using timestamp
         shape: randomShape.shape,
         color: randomShape.color,
       });
@@ -125,8 +125,9 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     setGameActive(true);
     setGameOver(false);
     setBonesEarnedLocal(0);
+    setClaimed(false);
     setGrid(Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null).map(() => ({ filled: false, color: '' }))));
-    generateRandomBlocks();
+    generateRandomBlocks(5); // Start with 5 random blocks
   };
 
   const canPlaceBlock = (grid: GridCell[][], block: Block, row: number, col: number): boolean => {
@@ -438,40 +439,45 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <Trophy className="w-16 h-16 mx-auto mb-4 text-gold" />
           <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
           <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
-          {!claimed && (
-            <Button 
-              onClick={async () => {
-                if (bonesEarned <= 0) return;
+          <Button 
+            onClick={async () => {
+              if (bonesEarned <= 0 || claimed) return;
+              
+              try {
+                const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
                 
-                try {
-                  const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
-                  
-                  if (error) {
-                    console.error('Error adding bones:', error);
-                    return;
-                  }
-                  
-                  onBonesEarned(bonesEarned);
-                  setClaimed(true);
-                  
+                if (error) {
+                  console.error('Error adding bones:', error);
                   toast({
-                    title: "✅ Косточки успешно зачислены!",
-                    description: `Добавлено ${bonesEarned} косточек`,
+                    title: "Ошибка",
+                    description: "Не удалось зачислить косточки",
+                    variant: "destructive"
                   });
-                  
-                } catch (error) {
-                  console.error('Error claiming bones:', error);
+                  return;
                 }
-              }}
-              className="button-gold w-full mb-4"
-              disabled={bonesEarned <= 0}
-            >
-              Забрать косточки ({bonesEarned})
-            </Button>
-          )}
-          {claimed && (
-            <p className="text-green-500 mb-4 font-semibold">✅ Косточки зачислены!</p>
-          )}
+                
+                onBonesEarned(bonesEarned);
+                setClaimed(true);
+                
+                toast({
+                  title: "✅ Косточки успешно зачислены!",
+                  description: `Добавлено ${bonesEarned} косточек`,
+                });
+                
+              } catch (error) {
+                console.error('Error claiming bones:', error);
+                toast({
+                  title: "Ошибка",
+                  description: "Не удалось зачислить косточки",
+                  variant: "destructive"
+                });
+              }
+            }}
+            className="button-gold w-full mb-4"
+            disabled={bonesEarned <= 0 || claimed}
+          >
+            {claimed ? '✅ Косточки зачислены!' : `Забрать косточки (${bonesEarned})`}
+          </Button>
           <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold w-full">
             Меню
           </Button>
@@ -525,8 +531,8 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           </div>
 
         {/* Game Grid */}
-        <Card className="card-glow p-3 mb-6">
-          <div ref={gameGridRef} className="grid grid-cols-9 gap-1 mx-auto" style={{ maxWidth: '320px' }}>
+        <Card className="card-glow p-2 mb-6">
+          <div ref={gameGridRef} className="grid grid-cols-9 gap-0.5 mx-auto" style={{ maxWidth: '320px' }}>
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака

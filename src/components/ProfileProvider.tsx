@@ -7,6 +7,7 @@ interface ProfileContextType {
   updateProfile: (updates: any) => Promise<void>;
   reloadProfile: () => Promise<void>;
   fetchWalletBalance: (address: string) => Promise<any>;
+  refreshProfile: () => Promise<void>;
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -20,8 +21,13 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
   
   console.log('ProfileProvider render - profile:', !!profileData.profile, 'loading:', profileData.loading);
 
+  const contextValue = {
+    ...profileData,
+    refreshProfile: profileData.reloadProfile, // Add alias for backwards compatibility
+  };
+
   return (
-    <ProfileContext.Provider value={profileData}>
+    <ProfileContext.Provider value={contextValue}>
       {children}
     </ProfileContext.Provider>
   );

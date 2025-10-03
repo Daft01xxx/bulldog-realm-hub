@@ -11,6 +11,7 @@ import { AudioManager, playLogoClickSound } from '@/components/AudioManager';
 import FallingCoins2D from '@/components/FallingCoins2D';
 import FloatingCosmicCoins from '@/components/FloatingCosmicCoins';
 import TopNavigation from '@/components/TopNavigation';
+import BoneResetTimer from '@/components/BoneResetTimer';
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogLogo from "@/assets/bdog-logo.jpeg";
@@ -396,8 +397,10 @@ const Menu = () => {
         </div>
       </div>
 
-      {/* Menu grid */}
       <div className="mx-auto relative z-10">
+        {/* Bone Reset Timer */}
+        <BoneResetTimer />
+        
         <div className="grid grid-cols-1 gap-3 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;

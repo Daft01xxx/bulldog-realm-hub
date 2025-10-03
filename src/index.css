@@ -161,14 +161,40 @@ All colors MUST be HSL.
     position: fixed;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 200%;
+    height: 200%;
     background: 
-      radial-gradient(circle at 20% 50%, hsl(45 100% 55% / 0.05), transparent 50%),
-      radial-gradient(circle at 80% 80%, hsl(45 100% 55% / 0.03), transparent 50%),
-      hsl(var(--background));
+      radial-gradient(ellipse at 20% 30%, hsl(var(--gold) / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, hsl(var(--gold) / 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, hsl(var(--gold) / 0.04) 0%, transparent 50%);
+    animation: goldWaves 20s ease-in-out infinite;
     pointer-events: none;
     z-index: 0;
+  }
+  
+  @keyframes goldWaves {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.6;
+    }
+    25% {
+      transform: translate(-5%, 5%) scale(1.05);
+      opacity: 0.8;
+    }
+    50% {
+      transform: translate(-10%, -5%) scale(1);
+      opacity: 0.6;
+    }
+    75% {
+      transform: translate(-5%, -10%) scale(1.05);
+      opacity: 0.8;
+    }
+  }
+  
+  /* Ensure content is above the waves */
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   /* Custom Animations */

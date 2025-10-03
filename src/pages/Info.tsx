@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Home, ExternalLink } from "lucide-react";
+import { ArrowLeft, Home, ExternalLink, Send, Music, MessageCircle } from "lucide-react";
 import { AudioManager } from '@/components/AudioManager';
 
 const Info = () => {
@@ -10,19 +10,19 @@ const Info = () => {
   const socialLinks = [
     {
       name: "Telegram",
-      icon: "📱",
+      icon: Send,
       url: "https://t.me/smarty_crypto",
       color: "from-blue-500 to-blue-600"
     },
     {
       name: "TikTok", 
-      icon: "🎵",
+      icon: Music,
       url: "https://www.tiktok.com/@bulldogcommunity?_t=ZS-8zmIijAcJj6&_r=1",
       color: "from-pink-500 to-red-500"
     },
     {
       name: "Поддержка",
-      icon: "💬", 
+      icon: MessageCircle, 
       url: "https://t.me/Deff0xq",
       color: "from-green-500 to-emerald-500"
     }
@@ -59,25 +59,26 @@ const Info = () => {
           Наши социальные сети
         </h2>
         
-        <div className="grid grid-cols-1 gap-2">
-          {socialLinks.map((link, index) => (
-            <Card 
-              key={link.name}
-              className="card-glow p-2 hover-lift cursor-pointer animate-slide-in-right"
-              style={{animationDelay: `${index * 0.1}s`}}
-              onClick={() => window.open(link.url, "_blank")}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className="text-sm">{link.icon}</div>
-                  <span className="text-xs font-semibold text-foreground">
+        <div className="grid grid-cols-1 gap-3">
+          {socialLinks.map((link, index) => {
+            const IconComponent = link.icon;
+            return (
+              <Button
+                key={link.name}
+                onClick={() => window.open(link.url, "_blank")}
+                className="button-gold w-full justify-between py-6 animate-slide-in-right hover-lift"
+                style={{animationDelay: `${index * 0.1}s`}}
+              >
+                <div className="flex items-center gap-3">
+                  <IconComponent className="w-5 h-5" />
+                  <span className="text-base font-semibold">
                     {link.name}
                   </span>
                 </div>
-                <ExternalLink className="w-3 h-3 text-gold" />
-              </div>
-            </Card>
-          ))}
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            );
+          })}
         </div>
       </div>
 

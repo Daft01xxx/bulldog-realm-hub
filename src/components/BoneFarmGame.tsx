@@ -13,7 +13,7 @@ interface BoneFarmGameProps {
   onRecordUpdate: (record: number) => void;
 }
 
-const GRID_SIZE = 9;
+const GRID_SIZE = 5;
 
 interface Block {
   id: number;
@@ -126,8 +126,51 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     setGameOver(false);
     setBonesEarnedLocal(0);
     setClaimed(false);
-    setGrid(Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null).map(() => ({ filled: false, color: '' }))));
-    generateRandomBlocks(5); // Start with 5 random blocks
+    
+    // Create fresh grid
+    const newGrid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null).map(() => ({ filled: false, color: '' })));
+    
+    // Place 5 random blocks on the grid
+    for (let i = 0; i < 5; i++) {
+      const randomShape = BLOCK_SHAPES[Math.floor(Math.random() * BLOCK_SHAPES.length)];
+      let placed = false;
+      let attempts = 0;
+      
+      // Try to place block randomly, max 20 attempts per block
+      while (!placed && attempts < 20) {
+        const randomRow = Math.floor(Math.random() * (GRID_SIZE - randomShape.shape.length + 1));
+        const randomCol = Math.floor(Math.random() * (GRID_SIZE - randomShape.shape[0].length + 1));
+        
+        // Check if block can be placed
+        let canPlace = true;
+        for (let r = 0; r < randomShape.shape.length; r++) {
+          for (let c = 0; c < randomShape.shape[r].length; c++) {
+            if (randomShape.shape[r][c] && newGrid[randomRow + r][randomCol + c].filled) {
+              canPlace = false;
+              break;
+            }
+          }
+          if (!canPlace) break;
+        }
+        
+        // Place block if possible
+        if (canPlace) {
+          for (let r = 0; r < randomShape.shape.length; r++) {
+            for (let c = 0; c < randomShape.shape[r].length; c++) {
+              if (randomShape.shape[r][c]) {
+                newGrid[randomRow + r][randomCol + c] = { filled: true, color: randomShape.color };
+              }
+            }
+          }
+          placed = true;
+        }
+        
+        attempts++;
+      }
+    }
+    
+    setGrid(newGrid);
+    generateRandomBlocks(2); // Give player 2 blocks to work with
   };
 
   const canPlaceBlock = (grid: GridCell[][], block: Block, row: number, col: number): boolean => {
@@ -439,45 +482,37 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <Trophy className="w-16 h-16 mx-auto mb-4 text-gold" />
           <h2 className="text-2xl font-bold mb-4 text-gold">Игра окончена!</h2>
           <p className="text-lg mb-2">Заработано косточек: <span className="font-bold text-gold">{bonesEarned}</span></p>
-          <Button 
-            onClick={async () => {
-              if (bonesEarned <= 0 || claimed) return;
-              
-              try {
-                const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
+          {!claimed && (
+            <Button 
+              onClick={async () => {
+                if (bonesEarned <= 0) return;
                 
-                if (error) {
-                  console.error('Error adding bones:', error);
+                try {
+                  const { error } = await supabase.rpc('add_bones', { amount: bonesEarned });
+                  
+                  if (error) {
+                    console.error('Error adding bones:', error);
+                    return;
+                  }
+                  
+                  onBonesEarned(bonesEarned);
+                  setClaimed(true);
+                  
                   toast({
-                    title: "Ошибка",
-                    description: "Не удалось зачислить косточки",
-                    variant: "destructive"
+                    title: "✅ Косточки зачислены!",
+                    description: `Добавлено ${bonesEarned} косточек`,
                   });
-                  return;
+                  
+                } catch (error) {
+                  console.error('Error claiming bones:', error);
                 }
-                
-                onBonesEarned(bonesEarned);
-                setClaimed(true);
-                
-                toast({
-                  title: "✅ Косточки успешно зачислены!",
-                  description: `Добавлено ${bonesEarned} косточек`,
-                });
-                
-              } catch (error) {
-                console.error('Error claiming bones:', error);
-                toast({
-                  title: "Ошибка",
-                  description: "Не удалось зачислить косточки",
-                  variant: "destructive"
-                });
-              }
-            }}
-            className="button-gold w-full mb-4"
-            disabled={bonesEarned <= 0 || claimed}
-          >
-            {claimed ? '✅ Косточки зачислены!' : `Забрать косточки (${bonesEarned})`}
-          </Button>
+              }}
+              className="button-gold w-full mb-4"
+              disabled={bonesEarned <= 0}
+            >
+              Забрать косточки ({bonesEarned})
+            </Button>
+          )}
           <Button onClick={() => navigate('/menu')} variant="outline" className="button-outline-gold w-full">
             Меню
           </Button>
@@ -532,7 +567,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
         {/* Game Grid */}
         <Card className="card-glow p-2 mb-6">
-          <div ref={gameGridRef} className="grid grid-cols-9 gap-0.5 mx-auto" style={{ maxWidth: '320px' }}>
+          <div ref={gameGridRef} className="grid gap-0.5 mx-auto" style={{ maxWidth: '320px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака

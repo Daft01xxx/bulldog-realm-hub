@@ -347,16 +347,16 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     
     // Вертикальные блоки (больше рядов, чем колонок) - маленькие
     if (rows > cols) {
-      return 'w-12 h-14'; // Маленький размер для вертикальных
+      return 'w-16 h-20'; // Увеличенный размер для вертикальных
     }
     
     // Большие блоки
     if (rows >= 3 || cols >= 3) {
-      return 'w-16 h-16';
+      return 'w-20 h-20';
     }
     
     // Средние блоки
-    return 'w-14 h-14';
+    return 'w-16 h-16';
   };
 
   const handleDragStart = (e: React.DragEvent, block: Block) => {
@@ -627,16 +627,16 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                 <div className={`grid mx-auto ${blockSizeClass}`} style={{
                   gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
                   gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`,
-                  gap: '1px'
+                  gap: '0px'
                 }}>
                   {block.shape.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className={`aspect-square rounded-sm ${
-                          cell ? `${block.color} shadow-sm` : 'bg-transparent'
+                        className={`aspect-square ${
+                          cell ? `${block.color}` : 'bg-transparent'
                         }`}
-                        style={{ minWidth: '10px', minHeight: '10px' }}
+                        style={{ minWidth: '12px', minHeight: '12px' }}
                       />
                     ))
                   )}

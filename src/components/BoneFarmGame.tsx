@@ -13,7 +13,7 @@ interface BoneFarmGameProps {
   onRecordUpdate: (record: number) => void;
 }
 
-const GRID_SIZE = 5;
+const GRID_SIZE = 9;
 
 interface Block {
   id: number;
@@ -567,7 +567,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
         {/* Game Grid */}
         <Card className="card-glow p-2 mb-6">
-          <div ref={gameGridRef} className="grid gap-0.5 mx-auto" style={{ maxWidth: '320px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
+          <div ref={gameGridRef} className="grid gap-0 mx-auto" style={{ maxWidth: '360px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака
@@ -591,13 +591,14 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                     key={`${rowIndex}-${colIndex}`}
                     data-row={rowIndex}
                     data-col={colIndex}
-                    className={`aspect-square border border-muted-foreground/30 rounded-sm w-8 h-8 transition-all duration-200 ${
+                    className={`aspect-square border border-muted-foreground/30 rounded-sm transition-all duration-200 ${
                       cell.filled 
                         ? `${cell.color} shadow-lg` 
                         : isGhostCell 
                           ? 'bg-gold/40 border-gold border-2 shadow-gold/50 shadow-md animate-pulse' 
                           : 'bg-muted/10 hover:bg-muted/20'
                     }`}
+                    style={{ width: '38px', height: '38px' }}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
                   />
@@ -626,7 +627,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                 <div className={`grid mx-auto ${blockSizeClass}`} style={{
                   gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
                   gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`,
-                  gap: '2px'
+                  gap: '1px'
                 }}>
                   {block.shape.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (

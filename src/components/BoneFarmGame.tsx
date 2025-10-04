@@ -567,7 +567,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
         {/* Game Grid */}
         <Card className="card-glow p-2 mb-6">
-          <div ref={gameGridRef} className="grid gap-0 mx-auto" style={{ maxWidth: '360px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
+          <div ref={gameGridRef} className="grid gap-0 mx-auto" style={{ maxWidth: '300px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака
@@ -598,7 +598,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                           ? 'bg-gold/40 border-gold border-2 shadow-gold/50 shadow-md animate-pulse' 
                           : 'bg-muted/10 hover:bg-muted/20'
                     }`}
-                    style={{ width: '38px', height: '38px' }}
+                    style={{ width: '32px', height: '32px' }}
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDrop(e, rowIndex, colIndex)}
                   />

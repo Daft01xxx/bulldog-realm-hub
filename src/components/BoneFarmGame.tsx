@@ -271,13 +271,17 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
     if (linesCleared > 0) {
       const bonesEarned = linesCleared * 3; // 3x больше косточек
-      setBonesEarnedLocal(prev => prev + bonesEarned);
-      setGrid(newGrid);
       
-      toast({
-        title: `+${bonesEarned} косточек!`,
-        description: `Очищено линий: ${linesCleared}`,
-      });
+      // Анимация очистки линий
+      setTimeout(() => {
+        setBonesEarnedLocal(prev => prev + bonesEarned);
+        setGrid(newGrid);
+        
+        toast({
+          title: `✨ +${bonesEarned} косточек!`,
+          description: `🔥 Очищено линий: ${linesCleared}`,
+        });
+      }, 200);
     }
   };
 
@@ -550,24 +554,24 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
   return (
     <div className="min-h-screen bg-background px-2 py-4 pb-8 touch-none overscroll-none">
         <div className="max-w-md mx-auto touch-none">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-4 animate-fade-in">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Косточки</p>
-              <p className="font-bold text-gold">{bonesEarned}</p>
+              <p className="font-bold text-gold text-2xl transition-all duration-300 animate-pulse">{bonesEarned}</p>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={forceEndGame}
-              className="button-outline-gold"
+              className="button-outline-gold hover:scale-105 transition-transform"
             >
               Завершить
             </Button>
           </div>
 
         {/* Game Grid */}
-        <Card className="card-glow p-2 mb-6">
-          <div ref={gameGridRef} className="grid gap-0 mx-auto" style={{ maxWidth: '300px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
+        <Card className="card-glow p-1 mb-6">
+          <div ref={gameGridRef} className="grid gap-0 mx-auto bg-muted/5 p-1 rounded-lg" style={{ maxWidth: '306px', gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))` }}>
             {grid.map((row, rowIndex) =>
               row.map((cell, colIndex) => {
                 // Проверяем, должна ли эта клетка быть частью призрака
@@ -591,9 +595,10 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                     key={`${rowIndex}-${colIndex}`}
                     data-row={rowIndex}
                     data-col={colIndex}
-                    className={`aspect-square border border-muted-foreground/30 rounded-sm transition-all duration-200 ${
+                    data-filled={cell.filled ? 'true' : 'false'}
+                    className={`aspect-square border-[0.5px] border-muted-foreground/20 transition-all duration-300 ${
                       cell.filled 
-                        ? `${cell.color} shadow-lg` 
+                        ? `${cell.color} shadow-lg animate-scale-in` 
                         : isGhostCell 
                           ? 'bg-gold/40 border-gold border-2 shadow-gold/50 shadow-md animate-pulse' 
                           : 'bg-muted/10 hover:bg-muted/20'
@@ -610,21 +615,22 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
 
         {/* Available Blocks */}
         <div className="grid grid-cols-2 gap-4 mt-4">
-          {currentBlocks.map((block) => {
+          {currentBlocks.map((block, index) => {
             const blockSizeClass = getBlockSize(block);
             
             return (
               <Card
                 key={block.id}
                 data-block-card
-                className={`card-glow p-4 cursor-move transition-all hover:scale-105 select-none shadow-lg ${
-                  isDragging && draggedBlock?.id === block.id ? 'opacity-50 scale-95' : 'hover:shadow-gold/20'
+                className={`card-glow p-4 cursor-move transition-all duration-300 hover:scale-110 select-none shadow-lg animate-fade-in ${
+                  isDragging && draggedBlock?.id === block.id ? 'opacity-30 scale-90' : 'hover:shadow-gold/30 hover:rotate-2'
                 }`}
+                style={{ animationDelay: `${index * 100}ms` }}
                 onTouchStart={(e) => handleTouchStart(e, block)}
                 draggable
                 onDragStart={(e) => handleDragStart(e, block)}
               >
-                <div className={`grid mx-auto ${blockSizeClass}`} style={{
+                <div className={`grid mx-auto ${blockSizeClass} bg-muted/5 p-0.5 rounded`} style={{
                   gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
                   gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`,
                   gap: '0px'
@@ -633,8 +639,8 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                     row.map((cell, colIndex) => (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className={`aspect-square ${
-                          cell ? `${block.color}` : 'bg-transparent'
+                        className={`aspect-square border-[0.5px] transition-all duration-200 ${
+                          cell ? `${block.color} border-black/20` : 'bg-transparent border-transparent'
                         }`}
                         style={{ minWidth: '12px', minHeight: '12px' }}
                       />

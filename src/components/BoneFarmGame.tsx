@@ -35,7 +35,6 @@ const BLOCK_SHAPES = [
   // Средние блоки
   { shape: [[true, true, true]], color: 'bg-red-500' },
   { shape: [[true], [true], [true]], color: 'bg-purple-500' },
-  { shape: [[true, true], [true, true]], color: 'bg-orange-500' },
   
   // Крупные блоки
   { shape: [[true, true, true, true]], color: 'bg-pink-500' },
@@ -557,7 +556,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
           <div className="flex justify-between items-center mb-4 animate-fade-in">
             <div className="text-center">
               <p className="text-sm text-muted-foreground">Косточки</p>
-              <p className="font-bold text-gold text-2xl transition-all duration-300 animate-pulse">{bonesEarned}</p>
+              <p className="font-bold text-gold text-2xl transition-all duration-300">{bonesEarned}</p>
             </div>
             <Button
               variant="outline"

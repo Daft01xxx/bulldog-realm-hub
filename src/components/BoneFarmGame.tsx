@@ -629,19 +629,19 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
                 draggable
                 onDragStart={(e) => handleDragStart(e, block)}
               >
-                <div className={`grid mx-auto ${blockSizeClass} bg-muted/5 p-0.5 rounded`} style={{
+                <div className={`grid mx-auto ${blockSizeClass} bg-muted/5 p-0 rounded overflow-hidden`} style={{
                   gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
                   gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`,
-                  gap: '0px'
+                  gap: '1px'
                 }}>
                   {block.shape.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className={`aspect-square border-[0.5px] transition-all duration-200 ${
-                          cell ? `${block.color} border-black/20` : 'bg-transparent border-transparent'
+                        className={`aspect-square transition-all duration-200 ${
+                          cell ? `${block.color}` : 'bg-transparent'
                         }`}
-                        style={{ minWidth: '12px', minHeight: '12px' }}
+                        style={{ minWidth: '14px', minHeight: '14px' }}
                       />
                     ))
                   )}

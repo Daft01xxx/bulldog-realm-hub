@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -221,26 +221,39 @@ export const useProfile = () => {
     }
   }, [getDeviceInfo, toast]);
 
-  // Immediate update with instant save
+  // Debounced update with batching
+  const updateProfileRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingUpdatesRef = useRef<Partial<UserProfile>>({});
+
   const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
     if (!profile) return;
 
-    try {
-      // Optimistic update - update UI immediately
-      setProfile(prev => prev ? { ...prev, ...updates } : null);
-      
-      // Save to database immediately
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('user_id', profile.user_id);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      // Revert on error
-      await reloadProfile();
+    // Optimistic update - update UI immediately
+    setProfile(prev => prev ? { ...prev, ...updates } : null);
+    
+    // Batch updates
+    pendingUpdatesRef.current = { ...pendingUpdatesRef.current, ...updates };
+    
+    // Clear existing timeout
+    if (updateProfileRef.current) {
+      clearTimeout(updateProfileRef.current);
     }
+    
+    // Debounce database save by 500ms
+    updateProfileRef.current = setTimeout(async () => {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update(pendingUpdatesRef.current)
+          .eq('user_id', profile.user_id);
+
+        if (error) throw error;
+        pendingUpdatesRef.current = {};
+      } catch (error) {
+        console.error('Failed to update profile:', error);
+        await reloadProfile();
+      }
+    }, 500);
   }, [profile]);
 
   const fetchWalletBalance = useCallback(async (walletAddress: string) => {

@@ -60,7 +60,7 @@ const BLOCK_SHAPES = [
   { shape: [[true, true, true], [true, true, true], [true, true, true]], color: 'bg-stone-500' },
 ];
 
-export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
+export const BoneFarmGame: React.FC<BoneFarmGameProps> = React.memo(({
   keys,
   onKeysUpdate,
   onBonesEarned,
@@ -172,43 +172,33 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     generateRandomBlocks(2); // Give player 2 blocks to work with
   };
 
-  const canPlaceBlock = (grid: GridCell[][], block: Block, row: number, col: number): boolean => {
+  const canPlaceBlock = useCallback((grid: GridCell[][], block: Block, row: number, col: number): boolean => {
     const { shape } = block;
-    console.log('Checking if can place block at:', row, col, 'Shape:', shape);
     
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (shape[r][c]) {
           const newRow = row + r;
           const newCol = col + c;
-          console.log('Checking cell:', newRow, newCol);
           
           if (newRow >= GRID_SIZE || newCol >= GRID_SIZE) {
-            console.log('Out of bounds:', newRow, newCol);
             return false;
           }
           
           if (grid[newRow][newCol].filled) {
-            console.log('Cell already filled:', newRow, newCol);
             return false;
           }
         }
       }
     }
-    console.log('Block can be placed');
     return true;
-  };
+  }, []);
 
-  const placeBlock = (row: number, col: number, block: Block) => {
-    console.log('Attempting to place block at:', row, col, 'Block shape:', block.shape);
-    console.log('Can place block:', canPlaceBlock(grid, block, row, col));
-    
+  const placeBlock = useCallback((row: number, col: number, block: Block) => {
     if (!canPlaceBlock(grid, block, row, col)) {
-      console.log('Cannot place block - invalid position');
       return;
     }
 
-    console.log('Placing block successfully');
     const newGrid = grid.map(row => row.map(cell => ({ ...cell })));
     const { shape, color } = block;
     
@@ -223,22 +213,16 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     setGrid(newGrid);
     setDraggedBlock(null);
 
-    // Update blocks state and handle game logic
     setCurrentBlocks(prevBlocks => {
       const remainingBlocks = prevBlocks.filter(b => b.id !== block.id);
-      console.log('Remaining blocks after placement:', remainingBlocks.length);
       
-      // Check for completed lines first
       checkAndClearLines(newGrid);
       
-      // If no blocks remain, generate new ones after a delay
       if (remainingBlocks.length === 0) {
-        console.log('No blocks remaining, generating new ones...');
         setTimeout(() => {
           generateRandomBlocks();
         }, 300);
       } else {
-        // Check game over with remaining blocks
         setTimeout(() => {
           checkGameOverWithBlocks(newGrid, remainingBlocks);
         }, 100);
@@ -246,7 +230,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
       
       return remainingBlocks;
     });
-  };
+  }, [grid, canPlaceBlock, generateRandomBlocks]);
 
   const checkAndClearLines = (currentGrid: GridCell[][]) => {
     let newGrid = currentGrid.map(row => row.map(cell => ({ ...cell })));
@@ -362,24 +346,22 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
     return 'w-16 h-16';
   };
 
-  const handleDragStart = (e: React.DragEvent, block: Block) => {
-    console.log('Drag start:', block);
+  const handleDragStart = useCallback((e: React.DragEvent, block: Block) => {
     setDraggedBlock(block);
     e.dataTransfer.effectAllowed = 'move';
-  };
+  }, []);
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent, row: number, col: number) => {
+  const handleDrop = useCallback((e: React.DragEvent, row: number, col: number) => {
     e.preventDefault();
-    console.log('Drop at:', row, col, 'Block:', draggedBlock);
     if (draggedBlock) {
       placeBlock(row, col, draggedBlock);
     }
-  };
+  }, [draggedBlock, placeBlock]);
 
   const handleTouchStart = (e: React.TouchEvent, block: Block) => {
     e.preventDefault();
@@ -653,4 +635,4 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = ({
       </div>
     </div>
   );
-};
+});

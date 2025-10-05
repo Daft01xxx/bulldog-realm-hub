@@ -18,13 +18,11 @@ interface ProfileProviderProps {
 
 export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const profileData = useProfile();
-  
-  console.log('ProfileProvider render - profile:', !!profileData.profile, 'loading:', profileData.loading);
 
-  const contextValue = {
+  const contextValue = React.useMemo(() => ({
     ...profileData,
-    refreshProfile: profileData.reloadProfile, // Add alias for backwards compatibility
-  };
+    refreshProfile: profileData.reloadProfile,
+  }), [profileData]);
 
   return (
     <ProfileContext.Provider value={contextValue}>
@@ -35,7 +33,6 @@ export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) =>
 
 export const useProfileContext = () => {
   const context = useContext(ProfileContext);
-  console.log('useProfileContext called - context:', !!context, 'profile:', !!context?.profile, 'loading:', context?.loading);
   
   if (context === undefined) {
     throw new Error('useProfileContext must be used within a ProfileProvider');

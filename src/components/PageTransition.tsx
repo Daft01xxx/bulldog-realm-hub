@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export default function PageTransition({ children }: { children: React.ReactNode }) {
+const PageTransition = memo(({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [displayLocation, setDisplayLocation] = useState(location);
@@ -10,11 +10,10 @@ export default function PageTransition({ children }: { children: React.ReactNode
     if (location !== displayLocation) {
       setIsTransitioning(true);
       
-      // Start fade out
       const timer = setTimeout(() => {
         setDisplayLocation(location);
         setIsTransitioning(false);
-      }, 200);
+      }, 150);
 
       return () => clearTimeout(timer);
     }
@@ -22,13 +21,17 @@ export default function PageTransition({ children }: { children: React.ReactNode
 
   return (
     <div 
-      className={`transition-all duration-300 ${
+      className={`transition-opacity duration-200 ${
         isTransitioning 
-          ? 'opacity-0 scale-105 blur-sm' 
-          : 'opacity-100 scale-100 blur-none animate-page-transition-in'
+          ? 'opacity-0' 
+          : 'opacity-100'
       }`}
     >
       {children}
     </div>
   );
-}
+});
+
+PageTransition.displayName = 'PageTransition';
+
+export default PageTransition;

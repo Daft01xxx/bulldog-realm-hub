@@ -18,10 +18,20 @@ const Welcome = () => {
         description: `Код: ${referralCode}`
       });
     }
-  }, [toast]);
-  const handleContinue = () => {
-    navigate("/language-select");
-  };
+    
+    // Check if user has "remember me" enabled
+    const timer = setTimeout(() => {
+      const rememberMe = localStorage.getItem('bdog-remember-me');
+      
+      if (rememberMe === 'true') {
+        navigate('/menu');
+      } else {
+        navigate('/language-select');
+      }
+    }, 2000);
+    
+    return () => clearTimeout(timer);
+  }, [toast, navigate]);
   return <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-dark"></div>
@@ -105,11 +115,6 @@ const Welcome = () => {
           <h1 className="text-4xl font-bold text-gradient animate-glow-text mb-6">
             BDOG APP
           </h1>
-          <div className="mb-4 h-[36px] flex items-center justify-center">
-            <Button className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-6 py-2 rounded-full shadow-gold animate-pulse-gold min-w-[140px] text-sm" onClick={handleContinue}>
-              Продолжить
-            </Button>
-          </div>
           <p className="text-lg text-white-glow animate-fade-in-up opacity-80">
             Добро пожаловать в экосистему Bulldog
           </p>

@@ -19,6 +19,8 @@ const FloatingParticles = lazy(() => import("./components/FloatingParticles"));
 const FloatingCosmicCoins = lazy(() => import("./components/FloatingCosmicCoins"));
 import Index from "./pages/Index";
 import Welcome from "./pages/Welcome";
+import LanguageSelect from "./pages/LanguageSelect";
+import BdogId from "./pages/BdogId";
 import Menu from "./pages/Menu";
 import Wallet from "./pages/Wallet";
 import ConnectedWallet from "./pages/ConnectedWallet";
@@ -33,6 +35,7 @@ import Admin from "./pages/Admin";
 import Ban from "./pages/Ban";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const queryClient = new QueryClient();
 
@@ -100,7 +103,10 @@ function AppContent() {
       )}
       <PageTransition>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Welcome />} />
+          <Route path="/language-select" element={<LanguageSelect />} />
+          <Route path="/bdog-id" element={<BdogId />} />
+          <Route path="/index" element={<Index />} />
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/wallet" element={<Wallet />} />
@@ -129,13 +135,15 @@ const App = () => (
     >
       <TooltipProvider>
         <ThemeProvider>
-          <AuthProvider>
-            <ProfileProvider>
-              <BrowserRouter>
-                <AppContent />
-              </BrowserRouter>
-            </ProfileProvider>
-          </AuthProvider>
+          <LanguageProvider>
+            <AuthProvider>
+              <ProfileProvider>
+                <BrowserRouter>
+                  <AppContent />
+                </BrowserRouter>
+              </ProfileProvider>
+            </AuthProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </TooltipProvider>
     </TonConnectUIProvider>

@@ -611,19 +611,21 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = React.memo(({
                 draggable
                 onDragStart={(e) => handleDragStart(e, block)}
               >
-                <div className={`grid mx-auto ${blockSizeClass} bg-muted/5 p-0 rounded overflow-hidden`} style={{
-                  gridTemplateColumns: `repeat(${block.shape[0].length}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${block.shape.length}, minmax(0, 1fr))`,
+                <div className={`grid mx-auto ${blockSizeClass} bg-transparent p-0 rounded overflow-visible`} style={{
+                  gridTemplateColumns: `repeat(${block.shape[0].length}, 32px)`,
+                  gridTemplateRows: `repeat(${block.shape.length}, 32px)`,
                   gap: '1px'
                 }}>
                   {block.shape.map((row, rowIndex) =>
                     row.map((cell, colIndex) => (
                       <div
                         key={`${rowIndex}-${colIndex}`}
-                        className={`aspect-square transition-all duration-200 ${
+                        className={`w-8 h-8 rounded-sm transition-all duration-200 ${
                           cell ? `${block.color}` : 'bg-transparent'
                         }`}
-                        style={{ minWidth: '14px', minHeight: '14px' }}
+                        style={cell ? {
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)'
+                        } : {}}
                       />
                     ))
                   )}

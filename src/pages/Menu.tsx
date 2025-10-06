@@ -13,7 +13,7 @@ import FloatingCosmicCoins from '@/components/FloatingCosmicCoins';
 import TopNavigation from '@/components/TopNavigation';
 
 import bdogBackground from "@/assets/bdog-background.png";
-import bdogLogo from "@/assets/bdog-logo.jpeg";
+import bdogGoldCoin from "@/assets/bulldog-gold-coin.png";
 import bdogMainLogo from "@/assets/bdog-main-logo.jpeg";
 
 const Menu = () => {
@@ -418,7 +418,7 @@ const Menu = () => {
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogLogo} alt="BDOG" className="w-6 h-6 rounded-full object-cover filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                      <img src={bdogGoldCoin} alt="BDOG" className="w-8 h-8 object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
                     ) : item.icon === "support" ? (
                       <HeadphonesIcon className="w-6 h-6 icon-gold" />
                     ) : item.icon === "miner" ? (

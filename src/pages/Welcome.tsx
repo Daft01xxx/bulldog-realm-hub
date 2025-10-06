@@ -19,18 +19,8 @@ const Welcome = () => {
       });
     }
   }, [toast]);
-  const handleLogin = async () => {
-    try {
-      // Always redirect to menu
-      navigate("/menu");
-    } catch (error) {
-      console.error('Login error:', error);
-      toast({
-        title: "Ошибка",
-        description: "Произошла ошибка при входе",
-        variant: "destructive"
-      });
-    }
+  const handleContinue = () => {
+    navigate("/language-select");
   };
   return <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
       {/* Animated background */}
@@ -116,8 +106,8 @@ const Welcome = () => {
             BDOG APP
           </h1>
           <div className="mb-4 h-[36px] flex items-center justify-center">
-            <Button className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-6 py-2 rounded-full shadow-gold animate-pulse-gold min-w-[140px] text-sm" onClick={handleLogin}>
-              Вход в аккаунт
+            <Button className="bg-gradient-gold text-black hover:bg-gold-light font-bold px-6 py-2 rounded-full shadow-gold animate-pulse-gold min-w-[140px] text-sm" onClick={handleContinue}>
+              Продолжить
             </Button>
           </div>
           <p className="text-lg text-white-glow animate-fade-in-up opacity-80">

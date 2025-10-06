@@ -3,12 +3,10 @@ import { useEffect, useState } from 'react';
 // Import critical images
 import bdogMainLogo from "@/assets/bdog-main-logo.jpeg";
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
-import bulldogCoin from "@/assets/bulldog-coin.png";
 
 const CRITICAL_ASSETS = [
   bdogMainLogo,
-  bdogLogoTransparent,
-  bulldogCoin
+  bdogLogoTransparent
 ];
 
 interface GlobalPreloaderProps {

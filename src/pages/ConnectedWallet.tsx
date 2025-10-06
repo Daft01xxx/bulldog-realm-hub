@@ -21,7 +21,7 @@ import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import TonLogoNoBackground from "@/components/TonLogoNoBackground";
-import bdogLogo from "@/assets/bdog-logo.jpeg";
+import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();
@@ -171,7 +171,15 @@ const ConnectedWallet = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center overflow-hidden">
-                      <img src={bdogLogo} alt="V-BDOG" className="w-6 h-6 object-cover rounded-full" />
+                      <img 
+                        src={bdogLogoTransparent} 
+                        alt="V-BDOG" 
+                        width="24"
+                        height="24"
+                        className="w-6 h-6 object-contain"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                     <div>
                       <h4 className="font-medium text-foreground">V-BDOG</h4>

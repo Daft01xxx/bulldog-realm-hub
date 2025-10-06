@@ -12,8 +12,7 @@ import FallingCoins2D from '@/components/FallingCoins2D';
 import FloatingCosmicCoins from '@/components/FloatingCosmicCoins';
 import TopNavigation from '@/components/TopNavigation';
 
-import bdogBackground from "@/assets/bdog-background.png";
-import bdogGoldCoin from "@/assets/bulldog-gold-coin.png";
+import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 import bdogMainLogo from "@/assets/bdog-main-logo.jpeg";
 
 const Menu = () => {
@@ -263,8 +262,8 @@ const Menu = () => {
       <TopNavigation />
       {showCoins && <FallingCoins2D count={8} />}
       
-      {/* Header with title */}
-      <div className="text-center mb-6 pt-4 relative z-10">
+      {/* Header with title - add padding for fixed nav */}
+      <div className="text-center mb-6 pt-16 relative z-10">
         <h1 
           className={`text-5xl font-bold text-gradient animate-glow-text mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
@@ -284,7 +283,11 @@ const Menu = () => {
           <img 
             src={bdogMainLogo} 
             alt="BDOG" 
+            width="128"
+            height="128"
             className="w-32 h-32 mx-auto rounded-full shadow-2xl hover:scale-105 transition-transform duration-300"
+            loading="eager"
+            decoding="async"
             style={{
               filter: 'drop-shadow(0 0 20px hsl(var(--gold) / 0.5))'
             }}
@@ -352,31 +355,6 @@ const Menu = () => {
           </div>
         </Card>
 
-        {/* Theme Toggle Button */}
-        <div className="text-center mb-4">
-          <Button
-            onClick={toggleTheme}
-            variant="outline"
-            size="sm"
-            className={`button-glow px-3 py-2 text-sm font-semibold ${
-              animate ? 'animate-bounce-in' : 'opacity-0'
-            } hover-lift border-gold/30 bg-surface/50 hover:bg-gold/20`}
-            style={{ animationDelay: '0.45s' }}
-          >
-            {theme === 'dark' ? (
-              <>
-                <Moon className="w-4 h-4 mr-2 text-gold" />
-                Ночной режим
-              </>
-            ) : (
-              <>
-                <Sun className="w-4 h-4 mr-2 text-gold" />
-                Дневной режим
-              </>
-            )}
-          </Button>
-        </div>
-
         {/* Daily Gift Button */}
         <div className="text-center mb-4">
             <Button
@@ -418,7 +396,16 @@ const Menu = () => {
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogGoldCoin} alt="BDOG" className="w-8 h-8 object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
+                      <img 
+                        src={bdogLogoTransparent} 
+                        alt="BDOG" 
+                        width="32"
+                        height="32"
+                        className="w-8 h-8 object-contain filter drop-shadow-md" 
+                        loading="lazy"
+                        decoding="async"
+                        style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} 
+                      />
                     ) : item.icon === "support" ? (
                       <HeadphonesIcon className="w-6 h-6 icon-gold" />
                     ) : item.icon === "miner" ? (

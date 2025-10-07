@@ -20,8 +20,8 @@ interface ProfileProviderProps {
 export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const profileData = useProfile();
   
-  // Enable session check to prevent multiple devices from using same account
-  useSessionCheck(profileData.profile?.user_id);
+  // Enable session check only after profile is loaded to prevent multiple devices
+  useSessionCheck(profileData.profile?.user_id, !profileData.loading && !!profileData.profile);
 
   const contextValue = React.useMemo(() => ({
     ...profileData,

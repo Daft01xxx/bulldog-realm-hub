@@ -3,13 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-export function useSessionCheck(userId: string | undefined) {
+export function useSessionCheck(userId: string | undefined, enabled: boolean = true) {
   const navigate = useNavigate();
   const sessionIdRef = useRef<string>('');
   const checkIntervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !enabled) return;
 
     // Generate unique session ID
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;

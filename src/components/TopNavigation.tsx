@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon } from 'lucide-react';
+import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon, Moon, Sun, Languages } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTrigger as SheetTriggerPrimitive } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useNavigate } from 'react-router-dom';
-import bdogLogo from "@/assets/bdog-logo.jpeg";
+import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/contexts/LanguageContext';
+import bdogLogo from "@/assets/bulldog-logo-transparent.png";
 
 export default function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const { language, setLanguage } = useLanguage();
 
   const navigationItems = [
     {
@@ -65,16 +69,42 @@ export default function TopNavigation() {
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
+    <>
+      {/* Top Bar Controls */}
+      <div className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
         <Button 
           variant="outline" 
           size="sm"
-          className="button-outline-gold fixed top-4 left-4 z-50"
+          className="button-outline-gold"
+          onClick={() => setIsOpen(true)}
         >
           <Menu className="w-4 h-4" />
         </Button>
-      </SheetTrigger>
+        
+        <div className="flex items-center gap-2">
+          {/* Theme Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleTheme}
+            className="button-outline-gold"
+          >
+            {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+          </Button>
+          
+          {/* Language Toggle */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLanguage(language === 'ru' ? 'en' : 'ru')}
+            className="button-outline-gold"
+          >
+            <Languages className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetContent side="left" className="w-80 bg-card border-border">
         <div className="mb-6 pt-4">
           <h2 className="text-lg font-bold text-gradient">BDOG APP</h2>
@@ -93,7 +123,7 @@ export default function TopNavigation() {
                 <div className="flex items-center space-x-3">
                   <div className="p-1.5 rounded-md bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "bdog-silver" ? (
-                      <img src={bdogLogo} alt="BDOG" className="w-4 h-4 rounded-full object-cover" />
+                      <img src={bdogLogo} alt="BDOG" className="w-4 h-4 object-contain" />
                     ) : item.icon === "support" ? (
                       <HeadphonesIcon className="w-4 h-4 icon-gold" />
                     ) : (
@@ -115,5 +145,6 @@ export default function TopNavigation() {
         </div>
       </SheetContent>
     </Sheet>
+    </>
   );
 }

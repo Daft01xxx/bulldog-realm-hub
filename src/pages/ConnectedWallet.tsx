@@ -21,7 +21,7 @@ import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import TonLogoNoBackground from "@/components/TonLogoNoBackground";
-import bdogLogo from "@/assets/bdog-logo.jpeg";
+import bdogLogo from "@/assets/bulldog-logo-transparent.png";
 
 const ConnectedWallet = () => {
   const navigate = useNavigate();

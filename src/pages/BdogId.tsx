@@ -103,7 +103,7 @@ const BdogId = () => {
           {canLogin && (
             <div className="pt-4 animate-fade-in">
               <Button 
-                className="w-full bg-gradient-gold text-black hover:bg-gold-light font-bold py-6 rounded-full shadow-gold text-lg disabled:opacity-50"
+                className="w-full bg-gold text-black hover:bg-gold/90 font-bold py-6 rounded-full shadow-lg shadow-gold/50 text-lg disabled:opacity-50 border-2 border-gold"
                 onClick={handleLogin}
                 disabled={isLoading}
               >

@@ -235,8 +235,11 @@ const ConnectedWallet = () => {
                         {nft.image ? (
                           <img 
                             src={nft.image} 
-                            alt={nft.name} 
+                            alt={nft.name}
+                            width="64"
+                            height="64"
                             className="w-full h-full object-cover rounded-lg"
+                            loading="lazy"
                           />
                         ) : (
                           <ImageIcon className="w-6 h-6 text-muted-foreground" />
@@ -341,8 +344,11 @@ const ConnectedWallet = () => {
                         {nft.image ? (
                           <img 
                             src={nft.image} 
-                            alt={nft.name} 
+                            alt={nft.name}
+                            width="200"
+                            height="200"
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

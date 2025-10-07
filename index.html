@@ -27,43 +27,38 @@
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="/src/assets/bulldog-gold-coin.jpeg">
     
-    <!-- Preload fonts -->
+    <!-- Preconnect to critical origins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+    <link rel="preconnect" href="https://rsmgzhcniugipmektztq.supabase.co">
+    <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
     
-    <!-- DNS prefetch for external resources -->
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <!-- Preload critical font with reduced weight count -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
     
-    <!-- Preload critical resources -->
-    <link rel="modulepreload" href="/src/main.tsx" crossorigin />
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="/src/assets/bdog-main-logo.jpeg" fetchpriority="high">
     
-    <!-- Inline critical CSS for above-the-fold content to prevent render blocking -->
+    <!-- Inline critical CSS - minified -->
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { 
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #ffffff;
-        min-height: 100vh;
-        overflow-x: hidden;
-      }
-      #root { min-height: 100vh; }
-      .min-h-screen { min-height: 100vh; }
-      .flex { display: flex; }
-      .items-center { align-items: center; }
-      .justify-center { justify-content: center; }
-      .text-center { text-align: center; }
-      .relative { position: relative; }
-      .absolute { position: absolute; }
-      .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-      /* Loading animation */
-      @keyframes spin { to { transform: rotate(360deg); } }
-      .animate-spin { animation: spin 1s linear infinite; }
-      /* Prevent FOUC */
-      .opacity-0 { opacity: 0; }
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;min-height:100vh;overflow-x:hidden}
+      #root{min-height:100vh}
+      .min-h-screen{min-height:100vh}
+      .flex{display:flex}
+      .items-center{align-items:center}
+      .justify-center{justify-content:center}
+      .text-center{text-align:center}
+      .relative{position:relative}
+      .absolute{position:absolute}
+      .inset-0{top:0;right:0;bottom:0;left:0}
+      @keyframes spin{to{transform:rotate(360deg)}}
+      .animate-spin{animation:spin 1s linear infinite}
+      .opacity-0{opacity:0}
+      .hidden{display:none}
+      img{max-width:100%;height:auto;display:block}
+      .card-glow{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-radius:12px;border:1px solid rgba(255,255,255,0.1)}
     </style>
     
     <!-- Font display swap for better performance -->
@@ -78,5 +73,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Defer non-critical scripts -->
+    <script>
+      // Service Worker registration for better caching
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

@@ -246,7 +246,7 @@ const Miner = () => {
           <div className="text-center">
             <div className="relative w-24 h-24 mx-auto mb-4">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30 overflow-hidden">
-                <img src={getCurrentMinerData().image} alt={getCurrentMinerData().name} className="w-20 h-20 object-cover rounded-full" />
+                <img src={getCurrentMinerData().image} alt={getCurrentMinerData().name} width="80" height="80" className="w-20 h-20 object-cover rounded-full" />
               </div>
               <div className="absolute -top-2 -right-2 bg-gold text-black text-xs font-bold px-2 py-1 rounded-full">
                 LVL {minerLevel}
@@ -370,7 +370,7 @@ const Miner = () => {
                 <div className="flex items-center gap-4">
                   <div className="relative w-16 h-16">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30 overflow-hidden">
-                      <img src={miner.image} alt={miner.name} className="w-14 h-14 object-cover rounded-full" />
+                      <img src={miner.image} alt={miner.name} width="56" height="56" className="w-14 h-14 object-cover rounded-full" />
                     </div>
                   </div>
                   <div>

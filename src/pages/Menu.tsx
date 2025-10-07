@@ -127,6 +127,7 @@ const Menu = () => {
         title: t('toast.daily.already'),
         description: t('toast.daily.already.desc'),
         variant: "destructive",
+        duration: 1000,
       });
       return;
     }
@@ -179,12 +180,14 @@ const Menu = () => {
       toast({
         title: t('toast.daily.claimed'),
         description: `${t('toast.daily.congrats')} ${reward}`,
+        duration: 1000,
       });
     } catch (error) {
       toast({
         title: t('toast.error'),
         description: t('toast.daily.fail'),
         variant: "destructive",
+        duration: 1000,
       });
     }
   };
@@ -316,12 +319,14 @@ const Menu = () => {
                       toast({
                         title: t('toast.copied'),
                         description: t('toast.copied.desc'),
+                        duration: 1000,
                       });
                     } catch {
                       toast({
                         title: t('toast.error'),
                         description: t('toast.copy.error'),
                         variant: "destructive",
+                        duration: 1000,
                       });
                     }
                   }}

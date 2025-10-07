@@ -139,11 +139,11 @@ const App = () => (
         <ThemeProvider>
           <LanguageProvider>
             <AuthProvider>
-              <ProfileProvider>
-                <BrowserRouter>
+              <BrowserRouter>
+                <ProfileProvider>
                   <AppContent />
-                </BrowserRouter>
-              </ProfileProvider>
+                </ProfileProvider>
+              </BrowserRouter>
             </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -387,6 +387,32 @@ const translations: Translations = {
     uk: 'Зв\'язатися з підтримкою',
     sv: 'Kontakta support'
   },
+  'menu.data.transfer': {
+    ru: 'Перенос данных',
+    en: 'Data Transfer',
+    zh: '数据传输',
+    es: 'Transferencia de datos',
+    de: 'Datenübertragung',
+    fr: 'Transfert de données',
+    it: 'Trasferimento dati',
+    ja: 'データ転送',
+    ko: '데이터 전송',
+    uk: 'Перенесення даних',
+    sv: 'Dataöverföring'
+  },
+  'menu.data.transfer.desc': {
+    ru: 'Экспорт и импорт ваших данных',
+    en: 'Export and import your data',
+    zh: '导出和导入您的数据',
+    es: 'Exporta e importa tus datos',
+    de: 'Exportieren und importieren Sie Ihre Daten',
+    fr: 'Exportez et importez vos données',
+    it: 'Esporta e importa i tuoi dati',
+    ja: 'データのエクスポートとインポート',
+    ko: '데이터 내보내기 및 가져오기',
+    uk: 'Експорт та імпорт ваших даних',
+    sv: 'Exportera och importera dina data'
+  },
   'menu.admin': {
     ru: 'Админ панель',
     en: 'Admin Panel',

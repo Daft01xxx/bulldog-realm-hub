@@ -34,6 +34,7 @@ import Promotion from "./pages/Promotion";
 import Admin from "./pages/Admin";
 import Ban from "./pages/Ban";
 import Auth from "./pages/Auth";
+import DataTransfer from "./pages/DataTransfer";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -118,6 +119,7 @@ function AppContent() {
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/bdogpay" element={<BdogPay />} />
           <Route path="/promotion" element={<Promotion />} />
+          <Route path="/data-transfer" element={<DataTransfer />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/ban" element={<Ban />} />
           <Route path="/auth" element={<Auth />} />

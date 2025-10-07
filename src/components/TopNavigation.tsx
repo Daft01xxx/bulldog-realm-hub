@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon, Moon, Sun, Pickaxe, Copy, Gamepad2 } from 'lucide-react';
+import { Menu, X, Home, Copy, Database, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,47 +25,10 @@ export default function TopNavigation() {
       description: t('nav.main.desc')
     },
     {
-      title: t('menu.wallet'),
-      icon: Wallet,
-      path: "/wallet",
-      description: t('menu.wallet.desc')
-    },
-    {
-      title: t('menu.game'),
-      icon: Gamepad2,
-      path: "/game",
-      description: t('menu.game.desc')
-    },
-    {
-      title: t('menu.miner'),
-      icon: "miner",
-      path: "/miner",
-      description: t('menu.miner.desc')
-    },
-    {
-      title: t('menu.info'),
-      icon: Info,
-      path: "/info",
-      description: t('menu.info.desc')
-    },
-    {
-      title: t('menu.referral'),
-      icon: Users,
-      path: "/referral",
-      description: t('menu.referral.desc')
-    },
-    {
-      title: t('menu.promotion'),
-      icon: Megaphone,
-      path: "/promotion",
-      description: t('menu.promotion.desc')
-    },
-    {
-      title: t('menu.support'),
-      icon: "support",
-      path: "https://t.me/Deff0xq",
-      description: t('menu.support.desc'),
-      external: true
+      title: t('menu.data.transfer'),
+      icon: Database,
+      path: "/data-transfer",
+      description: t('menu.data.transfer.desc')
     }
   ];
 
@@ -181,7 +144,7 @@ export default function TopNavigation() {
             {/* Navigation Items */}
             <div className="space-y-2">
               {navigationItems.map((item, index) => {
-                const IconComponent = typeof item.icon !== "string" ? item.icon : null;
+                const IconComponent = item.icon;
                 return (
                   <Button
                     key={index}
@@ -191,13 +154,7 @@ export default function TopNavigation() {
                   >
                     <div className="flex items-center space-x-3">
                       <div className="p-1.5 rounded-md bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
-                        {item.icon === "support" ? (
-                          <HeadphonesIcon className="w-4 h-4 icon-gold" />
-                        ) : item.icon === "miner" ? (
-                          <Pickaxe className="w-4 h-4 icon-gold" />
-                        ) : IconComponent ? (
-                          <IconComponent className="w-4 h-4 icon-gold" />
-                        ) : null}
+                        <IconComponent className="w-4 h-4 icon-gold" />
                       </div>
                       <div className="flex-1">
                         <h3 className="text-sm font-semibold text-foreground group-hover:text-gold transition-colors">

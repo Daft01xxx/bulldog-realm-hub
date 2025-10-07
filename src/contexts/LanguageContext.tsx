@@ -647,6 +647,85 @@ const translations: Translations = {
     ko: '일일 선물 받기 실패. 다시 시도하세요.',
     uk: 'Не вдалося отримати щоденний подарунок. Спробуйте ще раз.',
     sv: 'Kunde inte hämta daglig present. Försök igen.'
+  },
+  // Login page
+  'bdog.id': {
+    ru: 'bdog.id',
+    en: 'bdog.id',
+    zh: 'bdog.id',
+    es: 'bdog.id',
+    de: 'bdog.id',
+    fr: 'bdog.id',
+    it: 'bdog.id',
+    ja: 'bdog.id',
+    ko: 'bdog.id',
+    uk: 'bdog.id',
+    sv: 'bdog.id'
+  },
+  'agree.terms': {
+    ru: 'Я согласен с условиями использования',
+    en: 'I agree to the terms of service',
+    zh: '我同意服务条款',
+    es: 'Acepto los términos de servicio',
+    de: 'Ich stimme den Nutzungsbedingungen zu',
+    fr: "J'accepte les conditions d'utilisation",
+    it: 'Accetto i termini di servizio',
+    ja: '利用規約に同意します',
+    ko: '서비스 약관에 동의합니다',
+    uk: 'Я погоджуюсь з умовами використання',
+    sv: 'Jag godkänner användarvillkoren'
+  },
+  'agree.privacy': {
+    ru: 'Я согласен с политикой конфиденциальности',
+    en: 'I agree to the privacy policy',
+    zh: '我同意隐私政策',
+    es: 'Acepto la política de privacidad',
+    de: 'Ich stimme der Datenschutzrichtlinie zu',
+    fr: 'J\'accepte la politique de confidentialité',
+    it: 'Accetto la politica sulla privacy',
+    ja: 'プライバシーポリシーに同意します',
+    ko: '개인정보 보호정책에 동의합니다',
+    uk: 'Я погоджуюсь з політикою конфіденційності',
+    sv: 'Jag godkänner integritetspolicyn'
+  },
+  'remember.me': {
+    ru: 'Запомнить меня',
+    en: 'Remember me',
+    zh: '记住我',
+    es: 'Recordarme',
+    de: 'Angemeldet bleiben',
+    fr: 'Se souvenir de moi',
+    it: 'Ricordami',
+    ja: 'ログイン状態を保持',
+    ko: '로그인 상태 유지',
+    uk: 'Запам\'ятати мене',
+    sv: 'Kom ihåg mig'
+  },
+  'login': {
+    ru: 'Войти',
+    en: 'Login',
+    zh: '登录',
+    es: 'Iniciar sesión',
+    de: 'Anmelden',
+    fr: 'Connexion',
+    it: 'Accedi',
+    ja: 'ログイン',
+    ko: '로그인',
+    uk: 'Увійти',
+    sv: 'Logga in'
+  },
+  'loading': {
+    ru: 'Загрузка...',
+    en: 'Loading...',
+    zh: '加载中...',
+    es: 'Cargando...',
+    de: 'Laden...',
+    fr: 'Chargement...',
+    it: 'Caricamento...',
+    ja: '読み込み中...',
+    ko: '로딩 중...',
+    uk: 'Завантаження...',
+    sv: 'Laddar...'
   }
 };
 

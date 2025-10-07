@@ -7,9 +7,7 @@ const Ban = () => {
         <div className="mb-8">
           <img 
             src={banImage} 
-            alt="BAN"
-            width="192"
-            height="192"
+            alt="BAN" 
             className="w-48 h-48 mx-auto object-contain"
           />
         </div>

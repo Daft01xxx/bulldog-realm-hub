@@ -8,8 +8,6 @@ interface OptimizedImageProps {
   style?: React.CSSProperties;
   onClick?: () => void;
   loading?: 'lazy' | 'eager';
-  width?: number | string;
-  height?: number | string;
 }
 
 const OptimizedImage = memo(function OptimizedImage({ 
@@ -18,9 +16,7 @@ const OptimizedImage = memo(function OptimizedImage({
   className = '', 
   style = {}, 
   onClick,
-  loading = 'lazy',
-  width,
-  height
+  loading = 'lazy'
 }: OptimizedImageProps) {
   const { isMobile } = useDevicePerformance();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -53,19 +49,18 @@ const OptimizedImage = memo(function OptimizedImage({
       <img
         src={src}
         alt={alt}
-        width={width}
-        height={height}
         className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
         style={{
           ...style,
+          // Disable expensive filters on mobile for better performance
           filter: isMobile ? 'none' : style.filter,
         }}
         loading={loading}
         onLoad={handleLoad}
         onError={handleError}
         onClick={onClick}
+        // Optimize for mobile
         decoding="async"
-        fetchPriority={loading === 'eager' ? 'high' : 'auto'}
       />
     </div>
   );

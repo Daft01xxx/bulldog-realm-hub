@@ -2,12 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    
-    <!-- Telegram Mini App Theme -->
-    <meta name="theme-color" content="#0f0f1a" />
-    <meta name="color-scheme" content="dark" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BDOG APP - Bulldog Multichain Ecosystem | Играй, Зарабатывай, Инвестируй</title>
     <meta name="description" content="BDOG APP - официальное приложение экосистемы Bulldog. Играйте в тапалку, зарабатывайте V-BDOG токены, управляйте TON кошельком и участвуйте в реферальной программе.">
     <meta name="keywords" content="BDOG, Bulldog, криптовалюта, TON, игра, тапалка, блокчейн, NFT, кошелек, токены">
@@ -32,39 +27,43 @@
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="/src/assets/bulldog-gold-coin.jpeg">
     
-    <!-- Preconnect to critical origins -->
+    <!-- Preload fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://rsmgzhcniugipmektztq.supabase.co">
-    <link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
     
-    <!-- Preload critical font with reduced weight count -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"></noscript>
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     
-    <!-- Preload critical images -->
-    <link rel="preload" as="image" href="/src/assets/bdog-main-logo.jpeg" fetchpriority="high">
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.tsx" crossorigin />
     
-    <!-- Inline critical CSS - minified -->
+    <!-- Inline critical CSS for above-the-fold content to prevent render blocking -->
     <style>
-      *{margin:0;padding:0;box-sizing:border-box}
-      html{background:#0f0f1a;min-height:100vh}
-      body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f1a;color:#fafafa;min-height:100vh;overflow-x:hidden}
-      #root{min-height:100vh;background:#0f0f1a}
-      .min-h-screen{min-height:100vh}
-      .flex{display:flex}
-      .items-center{align-items:center}
-      .justify-center{justify-content:center}
-      .text-center{text-align:center}
-      .relative{position:relative}
-      .absolute{position:absolute}
-      .inset-0{top:0;right:0;bottom:0;left:0}
-      @keyframes spin{to{transform:rotate(360deg)}}
-      .animate-spin{animation:spin 1s linear infinite}
-      .opacity-0{opacity:0}
-      .hidden{display:none}
-      img{max-width:100%;height:auto;display:block}
-      .card-glow{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-radius:12px;border:1px solid rgba(255,255,255,0.1)}
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { 
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      #root { min-height: 100vh; }
+      .min-h-screen { min-height: 100vh; }
+      .flex { display: flex; }
+      .items-center { align-items: center; }
+      .justify-center { justify-content: center; }
+      .text-center { text-align: center; }
+      .relative { position: relative; }
+      .absolute { position: absolute; }
+      .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+      /* Loading animation */
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .animate-spin { animation: spin 1s linear infinite; }
+      /* Prevent FOUC */
+      .opacity-0 { opacity: 0; }
     </style>
     
     <!-- Font display swap for better performance -->
@@ -79,7 +78,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Service Worker disabled temporarily to prevent blocking -->
   </body>
 </html>

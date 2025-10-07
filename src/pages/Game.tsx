@@ -677,10 +677,8 @@ const Game = memo(function Game() {
                 <img 
                   src={bulldogLogoTransparent}
                   alt="BDOG"
-                  width="160"
-                  height="160"
               className={`w-40 h-40 mx-auto rounded-full object-contain transition-all duration-150 ease-out ${
-                isClicked
+                isClicked 
                   ? 'scale-105 brightness-105' 
                   : 'scale-100 hover:scale-102'
               }`}

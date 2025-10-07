@@ -16,23 +16,15 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    // Enable CSS code splitting for better performance
     cssCodeSplit: true,
+    // Optimize chunk size
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'vendor-react';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'vendor-ui';
-            }
-            if (id.includes('three') || id.includes('@react-three')) {
-              return 'vendor-3d';
-            }
-            return 'vendor';
-          }
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
         },
+        // Optimize asset file names
         assetFileNames: (assetInfo) => {
           if (!assetInfo.name) return 'assets/[name]-[hash][extname]';
           const info = assetInfo.name.split('.');
@@ -44,9 +36,15 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
+    // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    minify: 'esbuild',
-    target: 'es2015',
-    reportCompressedSize: false,
+    // Minify and optimize
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
 }));

@@ -9,20 +9,16 @@ interface PerformantImageProps {
   onClick?: () => void;
   loading?: 'lazy' | 'eager';
   priority?: boolean;
-  width?: number | string;
-  height?: number | string;
 }
 
-const PerformantImage = memo(function PerformantImage({
-  src,
-  alt,
-  className = '',
-  style = {},
+const PerformantImage = memo(function PerformantImage({ 
+  src, 
+  alt, 
+  className = '', 
+  style = {}, 
   onClick,
   loading = 'lazy',
-  priority = false,
-  width,
-  height
+  priority = false
 }: PerformantImageProps) {
   const { isMobile, isVeryLowEnd, connectionSpeed } = useDevicePerformance();
   const [isLoaded, setIsLoaded] = useState(false);
@@ -95,18 +91,19 @@ const PerformantImage = memo(function PerformantImage({
         <img
           src={src}
           alt={alt}
-          width={width}
-          height={height}
           className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           style={{
             ...style,
+            // Disable all filters on very low-end devices
             filter: isVeryLowEnd ? 'none' : isMobile ? 'none' : style.filter,
           }}
           loading={loading}
           onLoad={handleLoad}
           onError={handleError}
           onClick={onClick}
+          // Optimize for mobile and low-end devices
           decoding="async"
+          // Use lower quality on very low-end devices if supported
           fetchPriority={priority ? 'high' : isVeryLowEnd ? 'low' : 'auto'}
         />
       )}

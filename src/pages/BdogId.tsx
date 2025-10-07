@@ -41,8 +41,8 @@ const BdogId = () => {
         <div className="animate-bounce-in space-y-8">
           {/* Login Icon */}
           <div className="flex justify-center mb-4">
-            <div className="w-24 h-24 rounded-full bg-gradient-gold flex items-center justify-center shadow-gold">
-              <LogIn className="w-12 h-12 text-black" />
+            <div className="w-24 h-24 rounded-full bg-black/20 border-2 border-gold flex items-center justify-center shadow-gold">
+              <LogIn className="w-12 h-12 text-gold" />
             </div>
           </div>
           
@@ -58,7 +58,7 @@ const BdogId = () => {
                 id="terms" 
                 checked={agreedToTerms}
                 onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                className="mt-1 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold"
+                className="mt-1 border-2 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold data-[state=checked]:text-black"
               />
               <label 
                 htmlFor="terms" 
@@ -73,7 +73,7 @@ const BdogId = () => {
                 id="privacy" 
                 checked={agreedToPrivacy}
                 onCheckedChange={(checked) => setAgreedToPrivacy(checked as boolean)}
-                className="mt-1 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold"
+                className="mt-1 border-2 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold data-[state=checked]:text-black"
               />
               <label 
                 htmlFor="privacy" 
@@ -88,7 +88,7 @@ const BdogId = () => {
                 id="remember" 
                 checked={rememberMe}
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                className="mt-1 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold"
+                className="mt-1 border-2 border-gold data-[state=checked]:bg-gold data-[state=checked]:border-gold data-[state=checked]:text-black"
               />
               <label 
                 htmlFor="remember" 

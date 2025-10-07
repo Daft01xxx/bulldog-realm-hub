@@ -68,7 +68,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '3.0',
       currency: 'TON' as const,
       vBdog: 500000,
-      icon: <img src={vBdogLogo} alt="V-BDOG" width="24" height="24" className="w-6 h-6 rounded-full" loading="lazy" decoding="async" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: 'Пачка V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -78,7 +78,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '5.0',
       currency: 'TON' as const,
       vBdog: 1000000,
-      icon: <img src={vBdogLogo} alt="V-BDOG" width="24" height="24" className="w-6 h-6 rounded-full" loading="lazy" decoding="async" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: 'Миллион V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -88,7 +88,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '9.0',
       currency: 'TON' as const,
       vBdog: 2000000,
-      icon: <img src={vBdogLogo} alt="V-BDOG" width="24" height="24" className="w-6 h-6 rounded-full" loading="lazy" decoding="async" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: '2 миллиона V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -98,7 +98,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '16.0',
       currency: 'TON' as const,
       vBdog: 4000000,
-      icon: <img src={vBdogLogo} alt="V-BDOG" width="24" height="24" className="w-6 h-6 rounded-full" loading="lazy" decoding="async" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: '4 миллиона V-BDOG токенов',
       type: 'vbdog' as const
     },
@@ -108,7 +108,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
       price: '30.0',
       currency: 'TON' as const,
       vBdog: 8000000,
-      icon: <img src={vBdogLogo} alt="V-BDOG" width="24" height="24" className="w-6 h-6 rounded-full" loading="lazy" decoding="async" />,
+      icon: <img src={vBdogLogo} alt="V-BDOG" className="w-6 h-6 rounded-full" />,
       description: '8 миллионов V-BDOG токенов',
       type: 'vbdog' as const
     }
@@ -343,15 +343,7 @@ export default function GameShop({ bone, setBone, profile }: GameShopProps) {
         <div className="space-y-3">
           <div className="text-center mb-4">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <img 
-                src={vBdogLogo} 
-                alt="V-BDOG" 
-                width="40"
-                height="40"
-                className="w-10 h-10 rounded-full"
-                loading="lazy"
-                decoding="async"
-              />
+              <img src={vBdogLogo} alt="V-BDOG" className="w-10 h-10 rounded-full" />
             </div>
             <h3 className="text-lg font-bold text-foreground">Купить V-BDOG</h3>
           </div>

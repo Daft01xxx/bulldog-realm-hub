@@ -23,14 +23,6 @@ const translations: Translations = {
     ru: 'Продолжить на английском',
     en: 'Continue in English'
   },
-  'switch.language': {
-    ru: 'Сменить язык',
-    en: 'Switch Language'
-  },
-  'switch.theme': {
-    ru: 'Сменить тему',
-    en: 'Switch Theme'
-  },
   // BDOG ID Page
   'bdog.id': {
     ru: 'BDOG ID',

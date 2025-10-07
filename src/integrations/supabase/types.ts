@@ -48,6 +48,12 @@ export type Database = {
           updated_at: string
           user_id: string
           v_bdog_earned: number | null
+          verification_code: string | null
+          verification_code_expires: string | null
+          verification_completed_at: string | null
+          verification_email: string | null
+          verification_phone: string | null
+          verified: boolean | null
           wallet_address: string | null
         }
         Insert: {
@@ -83,6 +89,12 @@ export type Database = {
           updated_at?: string
           user_id: string
           v_bdog_earned?: number | null
+          verification_code?: string | null
+          verification_code_expires?: string | null
+          verification_completed_at?: string | null
+          verification_email?: string | null
+          verification_phone?: string | null
+          verified?: boolean | null
           wallet_address?: string | null
         }
         Update: {
@@ -118,6 +130,12 @@ export type Database = {
           updated_at?: string
           user_id?: string
           v_bdog_earned?: number | null
+          verification_code?: string | null
+          verification_code_expires?: string | null
+          verification_completed_at?: string | null
+          verification_email?: string | null
+          verification_phone?: string | null
+          verified?: boolean | null
           wallet_address?: string | null
         }
         Relationships: [

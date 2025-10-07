@@ -35,6 +35,12 @@ interface UserProfile {
   bone_farm_record?: number;
   active_session_id?: string;
   last_activity?: string;
+  verified?: boolean;
+  verification_phone?: string;
+  verification_email?: string;
+  verification_code?: string;
+  verification_code_expires?: string;
+  verification_completed_at?: string;
 }
 
 interface DeviceInfo {
@@ -193,6 +199,26 @@ export const useProfile = () => {
       }
 
       setProfile(userProfile as UserProfile);
+      
+      // Auto-activate miner if not active
+      if (userProfile && !userProfile.miner_active) {
+        const minerIncome = userProfile.current_miner === 'default' ? 100 : 0;
+        
+        await supabase
+          .from('profiles')
+          .update({
+            miner_active: true,
+            v_bdog_earned: (userProfile.v_bdog_earned || 0) + minerIncome,
+            last_miner_reward_at: new Date().toISOString()
+          })
+          .eq('user_id', userProfile.user_id);
+        
+        setProfile(prev => prev ? {
+          ...prev,
+          miner_active: true,
+          v_bdog_earned: (prev.v_bdog_earned || 0) + minerIncome
+        } : null);
+      }
     } catch (error) {
       console.error('Error in loadProfile:', error);
       

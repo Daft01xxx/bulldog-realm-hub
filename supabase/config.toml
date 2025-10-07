@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.activate-default-miner]
 verify_jwt = false
+
+[functions.send-verification-code]
+verify_jwt = false

@@ -12,7 +12,6 @@ import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
-import ActivateMinerButton from '@/components/ActivateMinerButton';
 import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
 // Import miner images
@@ -269,39 +268,6 @@ const Miner = () => {
           </div>
 
           <div className="flex gap-3 mt-6 justify-center flex-wrap">
-            {/* Show Activate button if miner is not active */}
-            {!(profile as any)?.miner_active && (
-              currentMiner === 'default' ? (
-                <ActivateMinerButton />
-              ) : (
-                <Button
-                  onClick={async () => {
-                    if (!profile) return;
-                    try {
-                      await updateProfile({
-                        miner_active: true,
-                        last_miner_reward_at: new Date().toISOString()
-                      } as any);
-                      toast({
-                        title: "Майнер активирован!",
-                        description: "Майнер начал работу",
-                      });
-                    } catch (error) {
-                      toast({
-                        title: "Ошибка",
-                        description: "Не удалось активировать майнер",
-                        variant: "destructive",
-                      });
-                    }
-                  }}
-                  className="button-gradient-gold button-glow"
-                  size="lg"
-                >
-                  Активировать майнер
-                </Button>
-              )
-            )}
-            
             {/* Claim rewards only if miner is active */}
             {(profile as any)?.miner_active && <ClaimMinerRewards />}
             

@@ -35,6 +35,7 @@ import Admin from "./pages/Admin";
 import Ban from "./pages/Ban";
 import Auth from "./pages/Auth";
 import DataTransfer from "./pages/DataTransfer";
+import Verification from "./pages/Verification";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -123,6 +124,7 @@ function AppContent() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/ban" element={<Ban />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/verification" element={<Verification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </PageTransition>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Home, Copy, Database, Moon, Sun, LogOut } from 'lucide-react';
+import { Menu, X, Home, Copy, Database, Moon, Sun, LogOut, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,10 +8,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage, languageNames } from '@/contexts/LanguageContext';
 import { useProfile } from '@/hooks/useProfile';
 import { toast } from '@/hooks/use-toast';
+import UserProfileModal from '@/components/UserProfileModal';
 import bdogLogo from "@/assets/bulldog-logo-transparent.png";
 
 export default function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
@@ -87,6 +89,16 @@ export default function TopNavigation() {
         </Sheet>
         
         <div className="flex items-center gap-2">
+          {/* Profile Icon */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsProfileOpen(true)}
+            className="hover:bg-transparent"
+          >
+            <UserIcon className="w-4 h-4 text-gold" />
+          </Button>
+
           {/* Theme Toggle */}
           <Button
             variant="ghost"
@@ -197,6 +209,8 @@ export default function TopNavigation() {
           </div>
         </SheetContent>
       </Sheet>
+
+      <UserProfileModal open={isProfileOpen} onOpenChange={setIsProfileOpen} />
     </>
   );
 }

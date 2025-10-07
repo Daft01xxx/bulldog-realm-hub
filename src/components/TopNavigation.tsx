@@ -73,33 +73,33 @@ export default function TopNavigation() {
       {/* Top Bar Controls */}
       <div className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
         <Button 
-          variant="outline" 
+          variant="ghost" 
           size="sm"
-          className="button-outline-gold"
+          className="hover:bg-transparent"
           onClick={() => setIsOpen(true)}
         >
-          <Menu className="w-4 h-4" />
+          <Menu className="w-4 h-4 text-gold" />
         </Button>
         
         <div className="flex items-center gap-2">
           {/* Theme Toggle */}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={toggleTheme}
-            className="button-outline-gold"
+            className="hover:bg-transparent"
           >
-            {theme === 'dark' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            {theme === 'dark' ? <Moon className="w-4 h-4 text-gold" /> : <Sun className="w-4 h-4 text-gold" />}
           </Button>
           
           {/* Language Toggle */}
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={() => setLanguage(language === 'ru' ? 'en' : 'ru')}
-            className="button-outline-gold"
+            className="hover:bg-transparent"
           >
-            <Languages className="w-4 h-4" />
+            <Languages className="w-4 h-4 text-gold" />
           </Button>
         </div>
       </div>

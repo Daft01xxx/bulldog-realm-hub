@@ -267,7 +267,7 @@ const Menu = () => {
       {/* Header with title */}
       <div className="text-center mb-6 pt-4 relative z-10">
         <h1 
-          className={`text-5xl font-bold text-gradient animate-glow-text mb-4 ${
+          className={`text-5xl font-bold text-gradient mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
@@ -294,7 +294,7 @@ const Menu = () => {
         
         {/* User info */}
         <Card 
-          className={`card-glow mx-auto p-6 mb-4 ${
+          className={`mx-auto p-6 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
@@ -358,7 +358,7 @@ const Menu = () => {
             <Button
             onClick={claimDailyGift}
             disabled={!canClaimDaily}
-            className={`button-gradient-gold button-glow px-4 py-2 text-sm font-semibold ${
+            className={`button-gradient-gold px-4 py-2 text-sm font-semibold ${
               animate ? 'animate-bounce-in' : 'opacity-0'
             } ${!canClaimDaily ? 'opacity-50 cursor-not-allowed' : 'hover-lift'}`}
             style={{ animationDelay: '0.5s' }}
@@ -379,7 +379,7 @@ const Menu = () => {
             return (
               <Card
                 key={item.title}
-                className={`card-glow p-4 cursor-pointer hover-lift group ${
+                className={`p-4 cursor-pointer hover-lift group ${
                   animate ? 'animate-slide-in-right' : 'opacity-0'
                 }`}
                 style={{ animationDelay: item.delay }}
@@ -419,7 +419,7 @@ const Menu = () => {
 
         {/* Advertising space */}
         <Card 
-          className={`card-glow p-6 text-center relative z-10 ${
+          className={`p-6 text-center relative z-10 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.6s' }}

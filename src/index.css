@@ -236,15 +236,6 @@ All colors MUST be HSL.
     }
   }
 
-  @keyframes glow-text {
-    0%, 100% {
-      text-shadow: 0 0 20px hsl(50 100% 65% / 0.8), 0 0 40px hsl(55 100% 75% / 0.6), 0 0 60px hsl(60 100% 85% / 0.4);
-    }
-    50% {
-      text-shadow: 0 0 30px hsl(50 100% 65% / 1), 0 0 60px hsl(55 100% 75% / 0.8), 0 0 90px hsl(60 100% 85% / 0.6), 0 0 120px hsl(50 100% 90% / 0.3);
-    }
-  }
-
   @keyframes bounce-in {
     0% {
       opacity: 0;
@@ -344,10 +335,6 @@ All colors MUST be HSL.
 
   .animate-slide-in-right {
     animation: slide-in-right 0.3s ease-out forwards;
-  }
-
-  .animate-glow-text {
-    animation: glow-text 3s ease-in-out infinite;
   }
 
   .animate-bounce-in {
@@ -482,16 +469,6 @@ All colors MUST be HSL.
   .icon-gold:hover {
     filter: drop-shadow(0 0 8px hsl(var(--gold) / 0.7)) drop-shadow(0 0 16px hsl(var(--gold) / 0.3));
     transform: scale(1.05);
-  }
-
-  .button-glow {
-    box-shadow: 0 0 10px hsl(var(--gold) / 0.3), inset 0 1px 0 hsl(var(--gold) / 0.1);
-    transition: all 0.3s ease;
-  }
-
-  .button-glow:hover {
-    box-shadow: 0 0 20px hsl(var(--gold) / 0.5), 0 0 40px hsl(var(--gold) / 0.2), inset 0 1px 0 hsl(var(--gold) / 0.2);
-    transform: translateY(-2px) scale(1.02);
   }
 
   .shadow-glow {

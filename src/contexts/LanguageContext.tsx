@@ -644,6 +644,47 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('bdog-language', lang);
   };
 
+  // Auto-detect language based on IP on first visit
+  useEffect(() => {
+    const saved = localStorage.getItem('bdog-language');
+    if (!saved) {
+      // Only detect language if no language is saved
+      fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+          const countryCode = data.country_code?.toLowerCase();
+          const languageMap: Record<string, Language> = {
+            'cn': 'zh',
+            'us': 'en',
+            'gb': 'en',
+            'au': 'en',
+            'ca': 'en',
+            'ru': 'ru',
+            'es': 'es',
+            'mx': 'es',
+            'ar': 'es',
+            'de': 'de',
+            'at': 'de',
+            'ch': 'de',
+            'fr': 'fr',
+            'be': 'fr',
+            'it': 'it',
+            'jp': 'ja',
+            'kr': 'ko',
+            'ua': 'uk',
+            'se': 'sv'
+          };
+          
+          const detectedLang = languageMap[countryCode] || 'en';
+          setLanguage(detectedLang);
+        })
+        .catch(() => {
+          // If detection fails, keep default language
+          console.log('Failed to detect language from IP');
+        });
+    }
+  }, []);
+
   const t = (key: string): string => {
     return translations[key]?.[language] || key;
   };

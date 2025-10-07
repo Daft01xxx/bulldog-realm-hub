@@ -13,11 +13,13 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { ProfileProvider } from "./components/ProfileProvider";
 import AutoMinerRewards from "./components/AutoMinerRewards";
 
-// Lazy load ALL page components for better code splitting and performance
+// Import critical first pages directly (no lazy loading for instant display)
+import Welcome from "./pages/Welcome";
+import LanguageSelect from "./pages/LanguageSelect";
+import BdogId from "./pages/BdogId";
+
+// Lazy load other pages for better code splitting
 const Index = lazy(() => import("./pages/Index"));
-const Welcome = lazy(() => import("./pages/Welcome"));
-const LanguageSelect = lazy(() => import("./pages/LanguageSelect"));
-const BdogId = lazy(() => import("./pages/BdogId"));
 const Menu = lazy(() => import("./pages/Menu"));
 const Wallet = lazy(() => import("./pages/Wallet"));
 const ConnectedWallet = lazy(() => import("./pages/ConnectedWallet"));

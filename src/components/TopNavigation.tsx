@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Home, Copy, Database, Moon, Sun } from 'lucide-react';
+import { Menu, X, Home, Copy, Database, Moon, Sun, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -168,6 +168,31 @@ export default function TopNavigation() {
                   </Button>
                 );
               })}
+              
+              {/* Logout Button */}
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-surface-elevated group"
+                onClick={() => {
+                  localStorage.clear();
+                  navigate('/bdog-id');
+                  setIsOpen(false);
+                }}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="p-1.5 rounded-md bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
+                    <LogOut className="w-4 h-4 icon-gold" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-foreground group-hover:text-gold transition-colors">
+                      {t('logout')}
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      {t('logout.desc')}
+                    </p>
+                  </div>
+                </div>
+              </Button>
             </div>
           </div>
         </SheetContent>

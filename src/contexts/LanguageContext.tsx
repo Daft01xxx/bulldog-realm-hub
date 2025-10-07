@@ -60,6 +60,32 @@ const translations: Translations = {
     uk: 'ID користувача',
     sv: 'Användar-ID'
   },
+  'logout': {
+    ru: 'Выход',
+    en: 'Logout',
+    zh: '登出',
+    es: 'Cerrar sesión',
+    de: 'Abmelden',
+    fr: 'Déconnexion',
+    it: 'Esci',
+    ja: 'ログアウト',
+    ko: '로그아웃',
+    uk: 'Вихід',
+    sv: 'Logga ut'
+  },
+  'logout.desc': {
+    ru: 'Выйти из аккаунта',
+    en: 'Sign out of account',
+    zh: '退出账户',
+    es: 'Cerrar sesión de la cuenta',
+    de: 'Vom Konto abmelden',
+    fr: 'Se déconnecter du compte',
+    it: 'Esci dall\'account',
+    ja: 'アカウントからログアウト',
+    ko: '계정에서 로그아웃',
+    uk: 'Вийти з облікового запису',
+    sv: 'Logga ut från kontot'
+  },
   // Navigation
   'nav.main': {
     ru: 'Главное меню',

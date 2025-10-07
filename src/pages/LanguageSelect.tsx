@@ -14,10 +14,10 @@ const LanguageSelect = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
       {/* Animated background */}
-      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, hsl(240 10% 5%), hsl(240 10% 8%))' }}></div>
+      <div className="absolute inset-0 z-0" style={{ background: 'linear-gradient(135deg, hsl(240 10% 5%), hsl(240 10% 8%))' }}></div>
       
       {/* Floating particles effect */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none z-0">
         {[...Array(20)].map((_, i) => {
           const positions = [
             { left: '10%', top: '20%' }, { left: '80%', top: '15%' },
@@ -47,9 +47,14 @@ const LanguageSelect = () => {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 text-center px-4 w-full max-w-md">
+      <div className="relative z-20 text-center px-4 w-full max-w-md">
         <div className="animate-bounce-in">
-          <h1 className="text-3xl md:text-4xl font-bold text-gradient animate-glow-text mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold mb-12" style={{ 
+            background: 'linear-gradient(135deg, hsl(45 100% 55%), hsl(50 100% 65%))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
             BDOG APP
           </h1>
           

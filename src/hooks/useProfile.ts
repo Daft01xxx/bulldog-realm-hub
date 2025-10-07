@@ -33,6 +33,8 @@ interface UserProfile {
   completed_tasks?: string;
   keys?: number;
   bone_farm_record?: number;
+  active_session_id?: string;
+  last_activity?: string;
 }
 
 interface DeviceInfo {

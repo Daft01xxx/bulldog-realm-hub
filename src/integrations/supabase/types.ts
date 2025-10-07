@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       profiles: {
         Row: {
+          active_session_id: string | null
           balance: number | null
           balance2: number | null
           ban: number | null
@@ -33,6 +34,7 @@ export type Database = {
           ip_address: unknown | null
           is_vpn_user: boolean | null
           keys: number | null
+          last_activity: string | null
           last_key_reset: string | null
           last_miner_reward_at: string | null
           last_referral_code: string | null
@@ -49,6 +51,7 @@ export type Database = {
           wallet_address: string | null
         }
         Insert: {
+          active_session_id?: string | null
           balance?: number | null
           balance2?: number | null
           ban?: number | null
@@ -66,6 +69,7 @@ export type Database = {
           ip_address?: unknown | null
           is_vpn_user?: boolean | null
           keys?: number | null
+          last_activity?: string | null
           last_key_reset?: string | null
           last_miner_reward_at?: string | null
           last_referral_code?: string | null
@@ -82,6 +86,7 @@ export type Database = {
           wallet_address?: string | null
         }
         Update: {
+          active_session_id?: string | null
           balance?: number | null
           balance2?: number | null
           ban?: number | null
@@ -99,6 +104,7 @@ export type Database = {
           ip_address?: unknown | null
           is_vpn_user?: boolean | null
           keys?: number | null
+          last_activity?: string | null
           last_key_reset?: string | null
           last_miner_reward_at?: string | null
           last_referral_code?: string | null

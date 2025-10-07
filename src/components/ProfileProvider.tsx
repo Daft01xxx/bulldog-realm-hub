@@ -1,5 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useProfile } from '@/hooks/useProfile';
+import { useSessionCheck } from '@/hooks/useSessionCheck';
 
 interface ProfileContextType {
   profile: any;
@@ -18,6 +19,9 @@ interface ProfileProviderProps {
 
 export const ProfileProvider: React.FC<ProfileProviderProps> = ({ children }) => {
   const profileData = useProfile();
+  
+  // Enable session check to prevent multiple devices from using same account
+  useSessionCheck(profileData.profile?.user_id);
 
   const contextValue = React.useMemo(() => ({
     ...profileData,

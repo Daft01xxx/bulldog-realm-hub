@@ -55,14 +55,14 @@ const LanguageSelect = () => {
           
           <div className="space-y-4">
             <Button 
-              className="w-full bg-gradient-gold text-black hover:bg-gold-light font-bold py-6 rounded-full shadow-gold text-lg"
+              className="w-full button-gold font-bold py-6 rounded-full text-lg"
               onClick={() => handleLanguageSelect('ru')}
             >
               {t('continue.russian')}
             </Button>
             
             <Button 
-              className="w-full bg-gradient-gold text-black hover:bg-gold-light font-bold py-6 rounded-full shadow-gold text-lg"
+              className="w-full button-gold font-bold py-6 rounded-full text-lg"
               onClick={() => handleLanguageSelect('en')}
             >
               {t('continue.english')}

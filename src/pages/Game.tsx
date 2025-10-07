@@ -817,6 +817,7 @@ const Game = memo(function Game() {
             onKeysUpdate={handleKeysUpdate}
             onBonesEarned={handleBonesEarned}
             onRecordUpdate={handleRecordUpdate}
+            onSwitchToTapTab={() => setActiveTab("game")}
           />
         </TabsContent>
       </Tabs>

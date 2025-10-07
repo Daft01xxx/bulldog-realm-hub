@@ -11,6 +11,7 @@ interface BoneFarmGameProps {
   onKeysUpdate: (newKeys: number) => void;
   onBonesEarned: (bones: number) => void;
   onRecordUpdate: (record: number) => void;
+  onSwitchToTapTab?: () => void;
 }
 
 const GRID_SIZE = 9;
@@ -65,6 +66,7 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = React.memo(({
   onKeysUpdate,
   onBonesEarned,
   onRecordUpdate,
+  onSwitchToTapTab,
 }) => {
   const navigate = useNavigate();
   const [grid, setGrid] = useState<GridCell[][]>(() => 
@@ -487,6 +489,13 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = React.memo(({
                     title: "✅ Косточки зачислены!",
                     description: `Добавлено ${bonesEarned} косточек`,
                   });
+                  
+                  // Switch to tap tab after claiming
+                  if (onSwitchToTapTab) {
+                    setTimeout(() => {
+                      onSwitchToTapTab();
+                    }, 1000);
+                  }
                   
                 } catch (error) {
                   console.error('Error claiming bones:', error);

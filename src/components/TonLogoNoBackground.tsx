@@ -28,9 +28,9 @@ export default function TonLogoNoBackground({ className, size = "md" }: TonLogoN
         />
         <defs>
           <linearGradient id="tonGradientNoBackground" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#0098EA" />
-            <stop offset="50%" stopColor="#0088D1" />
-            <stop offset="100%" stopColor="#0066AA" />
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="50%" stopColor="#E0F2FE" />
+            <stop offset="100%" stopColor="#0EA5E9" />
           </linearGradient>
         </defs>
       </svg>

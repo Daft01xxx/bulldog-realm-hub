@@ -14,7 +14,7 @@ const LanguageSelect = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
       {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-dark"></div>
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, hsl(240 10% 5%), hsl(240 10% 8%))' }}></div>
       
       {/* Floating particles effect */}
       <div className="absolute inset-0 pointer-events-none">

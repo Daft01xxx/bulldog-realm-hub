@@ -7,6 +7,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
 import { useTheme } from "@/hooks/useTheme";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { AudioManager, playLogoClickSound } from '@/components/AudioManager';
 import FallingCoins2D from '@/components/FallingCoins2D';
 import FloatingCosmicCoins from '@/components/FloatingCosmicCoins';
@@ -22,6 +23,7 @@ const Menu = () => {
   const { profile, updateProfile } = useProfile();
   const { isConnected, walletData } = useBdogTonWallet();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const [reg, setReg] = useState("");
   const [bdogBalance, setBdogBalance] = useState("0");
   const [vBdogBalance, setVBdogBalance] = useState("0");
@@ -122,8 +124,8 @@ const Menu = () => {
   const claimDailyGift = async () => {
     if (!canClaimDaily) {
       toast({
-        title: "Ежедневный подарок",
-        description: "Подарок уже получен сегодня! Попробуйте завтра.",
+        title: t('toast.daily.already'),
+        description: t('toast.daily.already.desc'),
         variant: "destructive",
       });
       return;
@@ -175,13 +177,13 @@ const Menu = () => {
       setTimeUntilNextGift(`${hours}ч ${minutes}м`);
 
       toast({
-        title: "Ежедневный подарок получен! 🎉",
-        description: `Поздравляем! Вы получили: ${reward}`,
+        title: t('toast.daily.claimed'),
+        description: `${t('toast.daily.congrats')} ${reward}`,
       });
     } catch (error) {
       toast({
-        title: "Ошибка",
-        description: "Не удалось получить ежедневный подарок. Попробуйте еще раз.",
+        title: t('toast.error'),
+        description: t('toast.daily.fail'),
         variant: "destructive",
       });
     }
@@ -195,52 +197,52 @@ const Menu = () => {
 
   const menuItems = [
     {
-      title: "Кошелёк BDOG",
+      title: t('menu.wallet'),
       icon: Wallet,
       path: isConnected ? "/connected-wallet" : "/wallet",
-      description: "Управляйте своими токенами",
+      description: t('menu.wallet.desc'),
       delay: "0.1s"
     },
     {
-      title: "BDOG GAME",
+      title: t('menu.game'),
       icon: "bdog-silver",
       path: "/game",
-      description: "Играйте и зарабатывайте",
+      description: t('menu.game.desc'),
       delay: "0.2s"
     },
     {
-      title: "Майнер",
+      title: t('menu.miner'),
       icon: "miner",
       path: "/miner",
-      description: "Пассивный доход V-BDOG",
+      description: t('menu.miner.desc'),
       delay: "0.25s"
     },
     {
-      title: "Информация о BDOG",
+      title: t('menu.info'),
       icon: Info,
       path: "/info",
-      description: "Узнайте больше о проекте",
+      description: t('menu.info.desc'),
       delay: "0.3s"
     },
     {
-      title: "Реферальная программа",
+      title: t('menu.referral'),
       icon: Users,
       path: "/referral",
-      description: "Приглашайте друзей",
+      description: t('menu.referral.desc'),
       delay: "0.4s"
     },
     {
-      title: "Реклама проекта за вознаграждение",
+      title: t('menu.promotion'),
       icon: Megaphone,
       path: "/promotion",
-      description: "Продвигайте и получайте награды",
+      description: t('menu.promotion.desc'),
       delay: "0.5s"
     },
     {
-      title: "Поддержка",
+      title: t('menu.support'),
       icon: "support",
       path: "https://t.me/Deff0xq",
-      description: "Связаться с поддержкой",
+      description: t('menu.support.desc'),
       delay: "0.6s",
       external: true
     }
@@ -249,10 +251,10 @@ const Menu = () => {
   // Add admin panel button if user has admin IP
   if (showAdminButton) {
     menuItems.splice(-1, 0, {
-      title: "Админ панель",
+      title: t('menu.admin'),
       icon: Shield,
       path: "/admin",
-      description: "Управление системой",
+      description: t('menu.admin.desc'),
       delay: "0.55s"
     });
   }
@@ -265,13 +267,13 @@ const Menu = () => {
       {showCoins && <FallingCoins2D count={8} />}
       
       {/* Header with title */}
-      <div className="text-center mb-6 pt-4 relative z-10">
+      <div className="text-center mb-6 pt-16 relative z-10">
         <h1 
           className={`text-5xl font-bold text-gradient mb-4 ${
             animate ? 'animate-bounce-in' : 'opacity-0'
           }`}
         >
-          BDOG APP
+          {t('bdog.app')}
         </h1>
 
         {/* BDOG Logo */}
@@ -312,13 +314,13 @@ const Menu = () => {
                     try {
                       await navigator.clipboard.writeText(reg);
                       toast({
-                        title: "Скопировано!",
-                        description: "ID пользователя скопирован в буфер обмена",
+                        title: t('toast.copied'),
+                        description: t('toast.copied.desc'),
                       });
                     } catch {
                       toast({
-                        title: "Ошибка",
-                        description: "Не удалось скопировать ID",
+                        title: t('toast.error'),
+                        description: t('toast.copy.error'),
                         variant: "destructive",
                       });
                     }
@@ -343,7 +345,7 @@ const Menu = () => {
                   </div>
                   {profile?.referrals && profile.referrals > 0 && (
                     <div className="flex justify-between items-center pt-1 border-t border-border/20">
-                      <span className="text-xs text-gold">Рефералов:</span>
+                      <span className="text-xs text-gold">{t('menu.referrals')}</span>
                       <span className="text-xs text-gold font-semibold">{profile.referrals}</span>
                     </div>
                   )}
@@ -364,10 +366,10 @@ const Menu = () => {
             style={{ animationDelay: '0.5s' }}
           >
             <Gift className="w-3 h-3 mr-2 icon-gold" />
-            {canClaimDaily ? "Получить ежедневный подарок" : `Следующий подарок через ${timeUntilNextGift}`}
+            {canClaimDaily ? t('menu.daily.gift') : `${t('menu.daily.next')} ${timeUntilNextGift}`}
           </Button>
           <p className="text-xs text-muted-foreground mt-1 opacity-70">
-            {canClaimDaily ? "Получи свой ежедневный бонус!" : "Подарок обновляется каждые 24 часа"}
+            {canClaimDaily ? t('menu.daily.text') : t('menu.daily.cooldown')}
           </p>
         </div>
       </div>
@@ -424,14 +426,14 @@ const Menu = () => {
           }`}
           style={{ animationDelay: '0.6s' }}
         >
-          <p className="text-gray-subtle mb-2">Твоя реклама тут,</p>
+          <p className="text-gray-subtle mb-2">{t('menu.ad.text')}</p>
           <a 
             href="https://t.me/Deff0xq" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-gold hover:text-gold-light transition-colors underline font-semibold"
           >
-            пиши нам
+            {t('menu.ad.link')}
           </a>
         </Card>
       </div>

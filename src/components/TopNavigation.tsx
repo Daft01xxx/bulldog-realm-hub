@@ -11,50 +11,50 @@ export default function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   const navigationItems = [
     {
-      title: "Главное меню",
+      title: t('nav.main'),
       icon: Home,
       path: "/menu",
-      description: "Вернуться в главное меню"
+      description: t('nav.main.desc')
     },
     {
-      title: "Кошелёк BDOG",
+      title: t('menu.wallet'),
       icon: Wallet,
       path: "/wallet",
-      description: "Управление токенами"
+      description: t('menu.wallet.desc')
     },
     {
-      title: "BDOG GAME",
+      title: t('menu.game'),
       icon: "bdog-silver",
       path: "/game",
-      description: "Играть и зарабатывать"
+      description: t('menu.game.desc')
     },
     {
-      title: "Информация о BDOG",
+      title: t('menu.info'),
       icon: Info,
       path: "/info",
-      description: "О проекте"
+      description: t('menu.info.desc')
     },
     {
-      title: "Реферальная программа",
+      title: t('menu.referral'),
       icon: Users,
       path: "/referral",
-      description: "Приглашать друзей"
+      description: t('menu.referral.desc')
     },
     {
-      title: "Реклама проекта",
+      title: t('menu.promotion'),
       icon: Megaphone,
       path: "/promotion",
-      description: "Получать награды"
+      description: t('menu.promotion.desc')
     },
     {
-      title: "Поддержка",
+      title: t('menu.support'),
       icon: "support",
       path: "https://t.me/Deff0xq",
-      description: "Связаться с поддержкой",
+      description: t('menu.support.desc'),
       external: true
     }
   ];

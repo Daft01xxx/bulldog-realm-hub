@@ -140,26 +140,6 @@ const Index = memo(function Index() {
           {(profile as any)?.miner_active && <ClaimMinerRewards />}
         </div>
 
-        {/* Debug: Profile Status */}
-        <div className="text-center mb-4">
-          <div className="text-sm">
-            Профиль: {profile ? '✅ Загружен' : '⏳ Загружается...'}
-            {profile && (
-              <div className="text-xs mt-1">
-                ID: {profile.user_id?.substring(0, 8)}...
-              </div>
-            )}
-          </div>
-          <Button
-            onClick={() => reloadProfile()}
-            size="sm"
-            variant="outline"
-            className="text-xs mt-2"
-          >
-            <RefreshCw className="w-4 h-4 mr-1" />
-            Обновить профиль
-          </Button>
-        </div>
 
         {/* Game Launch Section */}
         <div className="text-center mb-8">

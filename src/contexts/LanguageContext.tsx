@@ -232,17 +232,17 @@ const translations: Translations = {
     sv: 'Hantera dina tokens'
   },
   'menu.game': {
-    ru: 'Тапалка',
-    en: 'Tap Game',
-    zh: '点击游戏',
-    es: 'Juego de Toque',
-    de: 'Tipp-Spiel',
-    fr: 'Jeu de Tap',
-    it: 'Gioco Tap',
-    ja: 'タップゲーム',
-    ko: '탭 게임',
-    uk: 'Тапалка',
-    sv: 'Tap-spel'
+    ru: 'BDOG GAME',
+    en: 'BDOG GAME',
+    zh: 'BDOG GAME',
+    es: 'BDOG GAME',
+    de: 'BDOG GAME',
+    fr: 'BDOG GAME',
+    it: 'BDOG GAME',
+    ja: 'BDOG GAME',
+    ko: 'BDOG GAME',
+    uk: 'BDOG GAME',
+    sv: 'BDOG GAME'
   },
   'menu.game.desc': {
     ru: 'Играйте и зарабатывайте',

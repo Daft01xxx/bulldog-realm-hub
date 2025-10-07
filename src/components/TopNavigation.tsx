@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon, Moon, Sun, Pickaxe, Copy, Hand } from 'lucide-react';
+import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon, Moon, Sun, Pickaxe, Copy, Gamepad2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,8 +31,8 @@ export default function TopNavigation() {
       description: t('menu.wallet.desc')
     },
     {
-      title: <Hand className="w-5 h-5 inline-block" />,
-      icon: Hand,
+      title: t('menu.game'),
+      icon: Gamepad2,
       path: "/game",
       description: t('menu.game.desc')
     },

@@ -2,7 +2,7 @@ import { useEffect, useState, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pickaxe, TrendingUp, Hand, Play, RefreshCw } from "lucide-react";
+import { Pickaxe, TrendingUp, Hand, Play, RefreshCw, Gamepad2 } from "lucide-react";
 import { useProfileContext } from '@/components/ProfileProvider';
 import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -176,10 +176,8 @@ const Index = memo(function Index() {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 gap-4 mx-auto">
           <Card className="card-glow p-4 text-center">
-            <Hand className="w-8 h-8 text-gold mx-auto mb-2" />
-            <h3 className="font-semibold text-foreground mb-1">
-              <Hand className="w-6 h-6 inline-block" />
-            </h3>
+            <Gamepad2 className="w-8 h-8 text-gold mx-auto mb-2" />
+            <h3 className="font-semibold text-foreground mb-1">{t('menu.game')}</h3>
             <p className="text-sm text-muted-foreground">{t('menu.game.desc')}</p>
           </Card>
           

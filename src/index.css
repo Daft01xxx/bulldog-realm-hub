@@ -37,7 +37,7 @@ All colors MUST be HSL.
     --input: 240 5% 18%;
     --ring: 45 100% 55%;
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
     /* Gold Colors */
     --gold: 45 100% 55%;
@@ -205,12 +205,10 @@ All colors MUST be HSL.
 
   @keyframes pulse-gold {
     0%, 100% { 
-      box-shadow: 0 0 30px hsl(50 100% 65% / 0.5), 0 0 60px hsl(55 100% 75% / 0.3);
       transform: scale(1);
     }
     50% { 
-      box-shadow: 0 0 50px hsl(50 100% 65% / 0.9), 0 0 100px hsl(55 100% 75% / 0.6), 0 0 150px hsl(60 100% 85% / 0.3);
-      transform: scale(1.04);
+      transform: scale(1.02);
     }
   }
 
@@ -378,6 +376,7 @@ All colors MUST be HSL.
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200% 200%;
+    filter: none;
   }
 
   .gray-subtle {
@@ -418,13 +417,13 @@ All colors MUST be HSL.
     border: none;
     color: hsl(var(--background));
     font-weight: 600;
-    box-shadow: var(--shadow-gold);
+    box-shadow: none;
     transition: var(--transition-smooth);
   }
   
   .button-gradient-gold:hover {
     transform: translateY(-1px);
-    box-shadow: var(--shadow-gold), var(--shadow-elevated);
+    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.15);
   }
   
   .button-outline-gold {
@@ -441,7 +440,7 @@ All colors MUST be HSL.
     border-color: hsl(var(--gold) / 0.5);
     color: hsl(var(--gold-light));
     transform: translateY(-1px);
-    box-shadow: var(--shadow-subtle);
+    box-shadow: none;
   }
 
   .button-gold {
@@ -449,41 +448,41 @@ All colors MUST be HSL.
     border: none;
     color: hsl(var(--background));
     font-weight: 600;
-    box-shadow: var(--shadow-gold);
+    box-shadow: none;
     transition: var(--transition-smooth);
   }
   
   .button-gold:hover {
     transform: translateY(-1px);
-    box-shadow: var(--shadow-gold), var(--shadow-elevated);
+    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.15);
     filter: brightness(1.1);
   }
 
-  /* Golden glow effects for all icons and buttons */
+  /* Golden effects for all icons and buttons */
   .icon-gold {
     color: hsl(var(--gold));
-    filter: drop-shadow(0 0 4px hsl(var(--gold) / 0.4));
+    filter: none;
     transition: all 0.3s ease;
   }
 
   .icon-gold:hover {
-    filter: drop-shadow(0 0 8px hsl(var(--gold) / 0.7)) drop-shadow(0 0 16px hsl(var(--gold) / 0.3));
+    filter: none;
     transform: scale(1.05);
   }
 
   .shadow-glow {
-    box-shadow: var(--shadow-gold);
+    box-shadow: none;
   }
 
   /* Glass Card Styles */
   .card-glow, .glass-card {
-    @apply border border-border/30;
+    @apply border border-border/30 rounded-2xl;
     background: linear-gradient(135deg, hsl(var(--card) / 0.4), hsl(var(--surface-elevated) / 0.3));
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 
       0 0 0 1px hsl(255 255 255 / 0.05),
-      var(--shadow-glass);
+      0 4px 16px hsl(0 0% 0% / 0.2);
   }
 
   .card-glow:hover, .glass-card:hover {
@@ -491,7 +490,7 @@ All colors MUST be HSL.
     background: linear-gradient(135deg, hsl(var(--card) / 0.5), hsl(var(--surface-elevated) / 0.4));
     box-shadow: 
       0 0 0 1px hsl(255 255 255 / 0.1),
-      var(--shadow-elevated),
+      0 6px 20px hsl(0 0% 0% / 0.25),
       inset 0 1px 0 hsl(255 255 255 / 0.1);
   }
 }

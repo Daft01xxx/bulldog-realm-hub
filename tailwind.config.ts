@@ -66,6 +66,8 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 8px)",
       },
       keyframes: {
         "accordion-down": {
@@ -90,12 +92,10 @@ export default {
         },
         "pulse-gold": {
           "0%, 100%": { 
-            boxShadow: "0 0 30px hsl(42 100% 50% / 0.5), 0 0 60px hsl(44 100% 65% / 0.3)",
             transform: "scale(1)"
           },
           "50%": { 
-            boxShadow: "0 0 50px hsl(42 100% 50% / 0.9), 0 0 100px hsl(44 100% 65% / 0.6), 0 0 150px hsl(46 100% 80% / 0.3)",
-            transform: "scale(1.04)"
+            transform: "scale(1.02)"
           },
         },
         "fade-in-up": {
@@ -116,14 +116,6 @@ export default {
           to: {
             opacity: "1",
             transform: "translateX(0)",
-          },
-        },
-        "glow-text": {
-          "0%, 100%": {
-            textShadow: "0 0 20px hsl(42 100% 50% / 0.8), 0 0 40px hsl(44 100% 65% / 0.6), 0 0 60px hsl(46 100% 80% / 0.4)",
-          },
-          "50%": {
-            textShadow: "0 0 30px hsl(42 100% 50% / 1), 0 0 60px hsl(44 100% 65% / 0.8), 0 0 90px hsl(46 100% 80% / 0.6), 0 0 120px hsl(45 100% 90% / 0.3)",
           },
         },
         "bounce-in": {
@@ -169,7 +161,6 @@ export default {
         "pulse-gold": "pulse-gold 2s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.4s ease-out forwards",
         "slide-in-right": "slide-in-right 0.3s ease-out forwards",
-        "glow-text": "glow-text 3s ease-in-out infinite",
         "bounce-in": "bounce-in 0.3s ease-out forwards",
         "fall-coin": "fall-coin linear infinite",
         "slow-spin": "slow-spin 8s linear infinite",

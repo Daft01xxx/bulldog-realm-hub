@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon, Moon, Sun, Pickaxe, Copy } from 'lucide-react';
+import { Menu, X, Home, Wallet, Info, Users, Megaphone, HeadphonesIcon, Moon, Sun, Pickaxe, Copy, Hand } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,8 +31,8 @@ export default function TopNavigation() {
       description: t('menu.wallet.desc')
     },
     {
-      title: t('menu.game'),
-      icon: "bdog-silver",
+      title: <Hand className="w-5 h-5 inline-block" />,
+      icon: Hand,
       path: "/game",
       description: t('menu.game.desc')
     },
@@ -180,20 +180,18 @@ export default function TopNavigation() {
 
             {/* Navigation Items */}
             <div className="space-y-2">
-              {navigationItems.map((item) => {
-                const IconComponent = item.icon !== "bdog-silver" && item.icon !== "miner" && item.icon !== "support" ? item.icon : null;
+              {navigationItems.map((item, index) => {
+                const IconComponent = typeof item.icon !== "string" ? item.icon : null;
                 return (
                   <Button
-                    key={item.title}
+                    key={index}
                     variant="ghost"
                     className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-surface-elevated group"
                     onClick={() => handleNavigate(item)}
                   >
                     <div className="flex items-center space-x-3">
                       <div className="p-1.5 rounded-md bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
-                        {item.icon === "bdog-silver" ? (
-                          <img src={bdogLogo} alt="BDOG" className="w-4 h-4 object-contain" />
-                        ) : item.icon === "support" ? (
+                        {item.icon === "support" ? (
                           <HeadphonesIcon className="w-4 h-4 icon-gold" />
                         ) : item.icon === "miner" ? (
                           <Pickaxe className="w-4 h-4 icon-gold" />

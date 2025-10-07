@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Pickaxe, TrendingUp, Hand, Play, RefreshCw } from "lucide-react";
 import { useProfileContext } from '@/components/ProfileProvider';
 import { useDevicePerformance } from '@/hooks/useDevicePerformance';
+import { useLanguage } from '@/contexts/LanguageContext';
 import MinerTimer from '@/components/MinerTimer';
 import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
@@ -28,6 +29,7 @@ const Index = memo(function Index() {
   const navigate = useNavigate();
   const { profile, reloadProfile } = useProfileContext();
   const { reduceAnimations, isMobile } = useDevicePerformance();
+  const { t } = useLanguage();
   const [currentMiner, setCurrentMiner] = useState('default');
   const [minerLevel, setMinerLevel] = useState(1);
   const [vBdogEarned, setVBdogEarned] = useState(0);
@@ -178,7 +180,7 @@ const Index = memo(function Index() {
             <h3 className="font-semibold text-foreground mb-1">
               <Hand className="w-6 h-6 inline-block" />
             </h3>
-            <p className="text-sm text-muted-foreground">Кликайте и зарабатывайте</p>
+            <p className="text-sm text-muted-foreground">{t('menu.game.desc')}</p>
           </Card>
           
           <Card className="card-glow p-4 text-center">

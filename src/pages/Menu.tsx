@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy, Moon, Sun, Shield } from "lucide-react";
+import { Wallet, Info, Users, Megaphone, Gift, HeadphonesIcon, Pickaxe, Copy, Moon, Sun, Shield, Hand } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
@@ -207,8 +207,8 @@ const Menu = () => {
       delay: "0.1s"
     },
     {
-      title: t('menu.game'),
-      icon: "bdog-silver",
+      title: <Hand className="w-5 h-5 inline-block" />,
+      icon: Hand,
       path: "/game",
       description: t('menu.game.desc'),
       delay: "0.2s"
@@ -382,10 +382,10 @@ const Menu = () => {
       <div className="mx-auto relative z-10">
         <div className="grid grid-cols-1 gap-3 mb-4">
           {menuItems.map((item, index) => {
-            const IconComponent = item.icon !== "bdog-silver" ? item.icon : null;
+            const IconComponent = typeof item.icon !== "string" ? item.icon : null;
             return (
               <Card
-                key={item.title}
+                key={index}
                 className={`p-4 cursor-pointer hover-lift group ${
                   animate ? 'animate-slide-in-right' : 'opacity-0'
                 }`}
@@ -400,15 +400,13 @@ const Menu = () => {
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
-                    {item.icon === "bdog-silver" ? (
-                      <img src={bdogTransparentLogo} alt="BDOG" className="w-8 h-8 object-contain filter drop-shadow-md" style={{filter: 'drop-shadow(0 0 8px hsl(45 96% 53% / 0.6))'}} />
-                    ) : item.icon === "support" ? (
+                    {item.icon === "support" ? (
                       <HeadphonesIcon className="w-6 h-6 icon-gold" />
                     ) : item.icon === "miner" ? (
                       <Pickaxe className="w-6 h-6 icon-gold" />
-                    ) : (
+                    ) : IconComponent ? (
                       <IconComponent className="w-6 h-6 icon-gold" />
-                    )}
+                    ) : null}
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors">

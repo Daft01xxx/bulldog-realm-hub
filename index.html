@@ -74,14 +74,6 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     
-    <!-- Defer non-critical scripts -->
-    <script>
-      // Service Worker registration for better caching
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch(() => {});
-        });
-      }
-    </script>
+    <!-- Service Worker disabled temporarily to prevent blocking -->
   </body>
 </html>

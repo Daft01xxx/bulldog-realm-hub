@@ -106,7 +106,7 @@ const BdogId = () => {
               <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm text-yellow-200">
-                  /!\ При входе в аккаунт пожалуйста отключите VPN, во избежание последствий.{' '}
+                  При входе в аккаунт пожалуйста отключите VPN, во избежание последствий.{' '}
                   <button
                     onClick={() => setShowVpnDetails(!showVpnDetails)}
                     className="text-yellow-400 hover:text-yellow-300 underline inline-flex items-center gap-1"

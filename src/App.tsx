@@ -59,8 +59,17 @@ function AppContent() {
     const currentVersion = localStorage.getItem('bdog-app-version');
     
     if (currentVersion !== APP_VERSION) {
+      // Save user_id before clearing if exists
+      const savedUserId = localStorage.getItem('bdog-user-id');
+      
       // Clear all localStorage data
       localStorage.clear();
+      
+      // Restore user_id if it existed
+      if (savedUserId) {
+        localStorage.setItem('bdog-user-id', savedUserId);
+      }
+      
       // Set new version
       localStorage.setItem('bdog-app-version', APP_VERSION);
       // Redirect to welcome page
@@ -68,7 +77,7 @@ function AppContent() {
         navigate('/', { replace: true });
       }
     }
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
   // Scroll to top on route change
   useEffect(() => {

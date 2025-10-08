@@ -80,6 +80,9 @@ const BdogIdLogin = () => {
       // Get device info
       const { data: deviceData } = await supabase.functions.invoke('get-device-info');
       
+      // Save user_id to localStorage for persistence
+      localStorage.setItem('bdog-user-id', targetProfile.user_id);
+      
       // Transfer all data from target profile to current profile
       await updateProfile({
         balance: targetProfile.balance,

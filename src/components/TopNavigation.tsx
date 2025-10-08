@@ -21,7 +21,6 @@ export default function TopNavigation() {
   const location = useLocation();
 
   const navigationItems = [
-    { icon: Home, label: t('nav.menu'), path: '/menu' },
     { icon: Gamepad2, label: t('nav.game'), path: '/game' },
     { icon: Pickaxe, label: t('nav.miner'), path: '/miner' },
     { icon: Wallet, label: t('nav.wallet'), path: '/wallet' },

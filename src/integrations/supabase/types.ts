@@ -17,6 +17,7 @@ export type Database = {
       profiles: {
         Row: {
           active_session_id: string | null
+          active_sessions: Json | null
           balance: number | null
           balance2: number | null
           ban: number | null
@@ -41,11 +42,13 @@ export type Database = {
           miner_active: boolean | null
           miner_level: number | null
           nickname: string | null
+          recovery_phrase: string | null
           referral_code_used: boolean | null
           referral_notifications: Json | null
           referrals: number | null
           referred_by: string | null
           reg: string | null
+          second_ip_address: unknown | null
           updated_at: string
           user_id: string
           v_bdog_earned: number | null
@@ -59,6 +62,7 @@ export type Database = {
         }
         Insert: {
           active_session_id?: string | null
+          active_sessions?: Json | null
           balance?: number | null
           balance2?: number | null
           ban?: number | null
@@ -83,11 +87,13 @@ export type Database = {
           miner_active?: boolean | null
           miner_level?: number | null
           nickname?: string | null
+          recovery_phrase?: string | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
+          second_ip_address?: unknown | null
           updated_at?: string
           user_id: string
           v_bdog_earned?: number | null
@@ -101,6 +107,7 @@ export type Database = {
         }
         Update: {
           active_session_id?: string | null
+          active_sessions?: Json | null
           balance?: number | null
           balance2?: number | null
           ban?: number | null
@@ -125,11 +132,13 @@ export type Database = {
           miner_active?: boolean | null
           miner_level?: number | null
           nickname?: string | null
+          recovery_phrase?: string | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
+          second_ip_address?: unknown | null
           updated_at?: string
           user_id?: string
           v_bdog_earned?: number | null
@@ -265,6 +274,10 @@ export type Database = {
           user_id: string
           v_bdog_earned: number
         }[]
+      }
+      generate_recovery_phrase: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       get_miner_hourly_income: {
         Args: { miner_level: number; miner_type: string }

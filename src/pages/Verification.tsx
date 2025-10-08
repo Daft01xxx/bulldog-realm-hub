@@ -107,12 +107,25 @@ const Verification: React.FC = () => {
   const handleCompleteCaptcha = async () => {
     setLoading(true);
     try {
+      // Generate recovery phrase using database function
+      const { data: phraseData, error: phraseError } = await supabase.rpc('generate_recovery_phrase');
+      
+      if (phraseError) {
+        console.error('Error generating recovery phrase:', phraseError);
+        toast.error('Ошибка генерации фразы восстановления');
+        setLoading(false);
+        return;
+      }
+
+      // Update profile with verification and recovery phrase
       await updateProfile({
         verified: true,
-        verification_completed_at: new Date().toISOString()
+        verification_completed_at: new Date().toISOString(),
+        recovery_phrase: phraseData
       });
 
       toast.success('Верификация успешно завершена!');
+      toast.success('Фраза восстановления создана');
       
       setTimeout(() => {
         navigate('/menu');

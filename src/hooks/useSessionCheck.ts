@@ -15,12 +15,44 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
     const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
     sessionIdRef.current = sessionId;
 
-    // Set this session as active in database
+    // Set this session as active in database (max 2 devices)
     const setActiveSession = async () => {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('active_sessions')
+        .eq('user_id', userId)
+        .single();
+
+      let activeSessions: Array<{id: string, lastActivity: number}> = 
+        Array.isArray(profile?.active_sessions) ? profile.active_sessions as any[] : [];
+      
+      // Remove sessions older than 5 minutes (inactive)
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+      activeSessions = activeSessions.filter((s) => s.lastActivity > fiveMinutesAgo);
+      
+      // Check if this session already exists
+      const existingSessionIndex = activeSessions.findIndex((s: any) => s.id === sessionId);
+      
+      if (existingSessionIndex >= 0) {
+        // Update existing session
+        activeSessions[existingSessionIndex].lastActivity = Date.now();
+      } else {
+        // Add new session
+        if (activeSessions.length >= 2) {
+          // Remove oldest session
+          activeSessions.sort((a: any, b: any) => a.lastActivity - b.lastActivity);
+          activeSessions.shift();
+        }
+        activeSessions.push({
+          id: sessionId,
+          lastActivity: Date.now()
+        });
+      }
+
       const { error } = await supabase
         .from('profiles')
         .update({ 
-          active_session_id: sessionId,
+          active_sessions: activeSessions,
           last_activity: new Date().toISOString()
         })
         .eq('user_id', userId);
@@ -34,7 +66,7 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
     const checkSession = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('active_session_id')
+        .select('active_sessions')
         .eq('user_id', userId)
         .single();
 
@@ -43,10 +75,14 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
         return;
       }
 
-      if (data?.active_session_id !== sessionIdRef.current) {
-        // Another device has taken over
+      const activeSessions: Array<{id: string, lastActivity: number}> = 
+        Array.isArray(data?.active_sessions) ? data.active_sessions as any[] : [];
+      const currentSession = activeSessions.find((s) => s.id === sessionIdRef.current);
+
+      if (!currentSession) {
+        // Session was removed (3rd device logged in)
         toast.error('Ваш аккаунт был открыт на другом устройстве', {
-          description: 'Вы были отключены с этого устройства',
+          description: 'Достигнут лимит в 2 устройства',
           duration: 5000
         });
         
@@ -69,14 +105,7 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
 
     // Update last activity every 30 seconds
     const activityInterval = setInterval(() => {
-      supabase
-        .from('profiles')
-        .update({ last_activity: new Date().toISOString() })
-        .eq('user_id', userId)
-        .eq('active_session_id', sessionIdRef.current)
-        .then(({ error }) => {
-          if (error) console.error('Failed to update activity:', error);
-        });
+      setActiveSession();
     }, 30000);
 
     return () => {

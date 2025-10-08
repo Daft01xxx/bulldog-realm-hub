@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { useProfileContext } from '@/components/ProfileProvider';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Wallet, User, CheckCircle, XCircle } from 'lucide-react';
+import { User, Wallet, Copy, CheckCircle2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface UserProfileModalProps {
   open: boolean;
@@ -25,67 +26,113 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-gold/20">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gradient flex items-center gap-2">
-            <User className="w-6 h-6 text-gold" />
+          <DialogTitle className="text-2xl font-bold text-gradient">
             Профиль пользователя
           </DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4 py-4">
+
+        <div className="space-y-4">
           {/* Verification Status */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-background/50 border border-border/20">
+          <div className="flex items-center justify-between p-4 bg-background/50 rounded-lg border border-border/50">
             <div className="flex items-center gap-3">
               {profile.verified ? (
-                <CheckCircle className="w-5 h-5 text-green-500" />
+                <CheckCircle2 className="w-6 h-6 text-green-500" />
               ) : (
-                <XCircle className="w-5 h-5 text-red-500" />
+                <AlertCircle className="w-6 h-6 text-yellow-500" />
               )}
               <div>
-                <p className="font-medium">Статус верификации</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="font-semibold">
                   {profile.verified ? 'Верифицирован' : 'Не верифицирован'}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {profile.verified 
+                    ? 'Ваш аккаунт подтвержден' 
+                    : 'Требуется верификация'}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* User ID */}
-          <div className="p-4 rounded-lg bg-background/50 border border-border/20">
-            <div className="flex items-center gap-3 mb-2">
-              <User className="w-5 h-5 text-gold" />
-              <p className="font-medium">ID пользователя</p>
+          {/* Nickname */}
+          {profile.nickname && (
+            <div className="space-y-2">
+              <label className="text-sm text-muted-foreground">
+                Никнейм
+              </label>
+              <div className="flex items-center gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
+                <User className="w-4 h-4 text-muted-foreground" />
+                <span className="flex-1 text-sm font-medium">
+                  {profile.nickname}
+                </span>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground break-all pl-8">
-              {profile.user_id}
-            </p>
+          )}
+
+          {/* User ID (BDOG format) */}
+          <div className="space-y-2">
+            <label className="text-sm text-muted-foreground">
+              ID пользователя
+            </label>
+            <div className="flex items-center gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
+              <User className="w-4 h-4 text-muted-foreground" />
+              <code className="flex-1 text-sm font-mono">
+                {profile.user_id ? `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 13).toUpperCase()}` : 'Не указан'}
+              </code>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => {
+                  if (profile.user_id) {
+                    const bdogId = `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 13).toUpperCase()}`;
+                    navigator.clipboard.writeText(bdogId);
+                    toast.success('ID скопирован');
+                  }
+                }}
+              >
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Wallet Address */}
-          <div className="p-4 rounded-lg bg-background/50 border border-border/20">
-            <div className="flex items-center gap-3 mb-2">
-              <Wallet className="w-5 h-5 text-gold" />
-              <p className="font-medium">Подключенный кошелек</p>
+          {profile.wallet_address && (
+            <div className="space-y-2">
+              <label className="text-sm text-muted-foreground">
+                Адрес кошелька
+              </label>
+              <div className="flex items-center gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
+                <Wallet className="w-4 h-4 text-muted-foreground" />
+                <code className="flex-1 text-sm font-mono truncate">
+                  {profile.wallet_address}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    navigator.clipboard.writeText(profile.wallet_address);
+                    toast.success('Адрес скопирован');
+                  }}
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
-            <p className="text-sm text-muted-foreground break-all pl-8">
-              {profile.wallet_address || 'Кошелек не подключен'}
-            </p>
-          </div>
+          )}
 
           {/* Verification Button */}
           {!profile.verified && (
-            <Button
-              onClick={handleVerification}
-              className="w-full bg-gold hover:bg-gold/90 text-black font-semibold flex items-center gap-2"
-              size="lg"
-            >
-              <Shield className="w-5 h-5" />
-              Верификация личности
-            </Button>
-          )}
-
-          {!profile.verified && (
-            <div className="text-center text-sm text-muted-foreground p-3 bg-background/30 rounded-lg border border-border/10">
-              Пройдите верификацию личности и получите доступ ко всем функциям приложения
+            <div className="pt-4">
+              <p className="text-sm text-muted-foreground mb-3">
+                Пройдите верификацию для доступа ко всем функциям
+              </p>
+              <Button
+                onClick={handleVerification}
+                className="w-full bg-gold hover:bg-gold/90 text-black font-semibold"
+              >
+                Верификация личности
+              </Button>
             </div>
           )}
         </div>

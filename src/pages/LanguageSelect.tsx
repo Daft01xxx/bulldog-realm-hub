@@ -58,14 +58,14 @@ const LanguageSelect = () => {
               className="w-full button-gold font-bold py-6 rounded-full text-lg"
               onClick={() => handleLanguageSelect('ru')}
             >
-              {t('continue.russian')}
+              Продолжить на русском
             </Button>
             
             <Button 
               className="w-full button-gold font-bold py-6 rounded-full text-lg"
               onClick={() => handleLanguageSelect('en')}
             >
-              {t('continue.english')}
+              Continue in English
             </Button>
           </div>
         </div>

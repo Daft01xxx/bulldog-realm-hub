@@ -75,7 +75,7 @@ export default function TopNavigation() {
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="mb-6">
-                <h2 className="text-xl font-bold text-gradient">{t('bdog.app')}</h2>
+                <h2 className="text-xl font-bold text-gradient">{t('nav.main')}</h2>
               </div>
 
               {/* User Info */}

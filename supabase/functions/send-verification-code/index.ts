@@ -31,29 +31,17 @@ serve(async (req) => {
       // TODO: Integrate with email service (Resend, SendGrid, etc.)
       console.log(`Email verification code for ${contactValue}: ${code}`);
       
-      // Example Resend integration (commented out - needs RESEND_API_KEY secret):
-      /*
-      const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-      await resend.emails.send({
-        from: "BDOG App <noreply@yourdomain.com>",
-        to: [contactValue],
-        subject: "Код верификации BDOG",
-        html: `
-          <h1>Код верификации BDOG</h1>
-          <p>Ваш код верификации: <strong>${code}</strong></p>
-          <p>Код действителен в течение 10 минут.</p>
-        `,
-      });
-      */
+      // Email integration can be added later with Resend
     } else if (contactType === 'phone') {
-      // TODO: Integrate with SMS service (Twilio, etc.)
       console.log(`SMS verification code for ${contactValue}: ${code}`);
       
-      // Example Twilio integration (commented out - needs TWILIO credentials):
-      /*
       const accountSid = Deno.env.get("TWILIO_ACCOUNT_SID");
       const authToken = Deno.env.get("TWILIO_AUTH_TOKEN");
       const twilioPhone = Deno.env.get("TWILIO_PHONE_NUMBER");
+      
+      if (!accountSid || !authToken || !twilioPhone) {
+        throw new Error('Twilio credentials not configured');
+      }
       
       const response = await fetch(
         `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`,
@@ -70,7 +58,13 @@ serve(async (req) => {
           }),
         }
       );
-      */
+      
+      const result = await response.json();
+      console.log('Twilio response:', result);
+      
+      if (!response.ok) {
+        throw new Error(`Twilio error: ${result.message || 'Unknown error'}`);
+      }
     }
 
     return new Response(

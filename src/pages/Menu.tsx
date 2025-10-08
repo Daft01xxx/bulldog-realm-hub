@@ -344,6 +344,10 @@ const Menu = () => {
                     <span className="text-sm text-muted-foreground">BDOG:</span>
                     <span className="text-gradient font-bold text-lg">{parseFloat(bdogBalance).toLocaleString()}</span>
                   </div>
+                  <div className="flex justify-between items-center pt-1 border-t border-border/20">
+                    <span className="text-sm text-muted-foreground">V-BDOG:</span>
+                    <span className="text-gradient font-bold text-lg">{parseFloat(vBdogBalance).toLocaleString()}</span>
+                  </div>
                   {profile?.referrals && profile.referrals > 0 && (
                     <div className="flex justify-between items-center pt-1 border-t border-border/20">
                       <span className="text-xs text-gold">{t('menu.referrals')}</span>

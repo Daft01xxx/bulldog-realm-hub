@@ -259,25 +259,38 @@ const Verification: React.FC = () => {
                 <Shield className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h2 className="text-xl font-bold mb-2">Почти готово!</h2>
                 <p className="text-sm text-muted-foreground">
-                  Пройдите капчу для завершения верификации
+                  Подтвердите, что вы не робот
                 </p>
               </div>
 
-              {/* Captcha Placeholder */}
-              <div className="bg-background/50 border-2 border-dashed border-gold/30 rounded-lg p-8 text-center">
-                <p className="text-muted-foreground mb-4">
-                  Здесь будет интеграция капчи
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  (reCAPTCHA / hCaptcha)
-                </p>
+              {/* Simple Captcha */}
+              <div className="bg-background/50 border-2 border-gold/30 rounded-lg p-6">
+                <div className="flex items-center justify-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="captcha-check"
+                      className="w-6 h-6 cursor-pointer accent-green-500"
+                      onChange={(e) => {
+                        // Simple checkbox validation
+                        const btn = document.getElementById('verify-btn') as HTMLButtonElement;
+                        if (btn) btn.disabled = !e.target.checked;
+                      }}
+                    />
+                    <label htmlFor="captcha-check" className="text-sm cursor-pointer">
+                      Я не робот
+                    </label>
+                  </div>
+                  <Shield className="w-8 h-8 text-green-500" />
+                </div>
               </div>
 
               {/* Complete Button */}
               <Button
+                id="verify-btn"
                 onClick={handleCompleteCaptcha}
-                disabled={loading}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
+                disabled={true}
+                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold disabled:opacity-50"
                 size="lg"
               >
                 {loading ? 'Завершение...' : 'Завершить верификацию'}

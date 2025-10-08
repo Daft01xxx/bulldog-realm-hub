@@ -487,15 +487,15 @@ export const BoneFarmGame: React.FC<BoneFarmGameProps> = React.memo(({
                   
                   toast({
                     title: "✅ Косточки зачислены!",
-                    description: `Добавлено ${bonesEarned} косточек`,
+                    description: `Добавлено ${bonesEarned} косточек. Возвращаемся к игре...`,
                   });
                   
                   // Switch to tap tab after claiming
-                  if (onSwitchToTapTab) {
-                    setTimeout(() => {
+                  setTimeout(() => {
+                    if (onSwitchToTapTab) {
                       onSwitchToTapTab();
-                    }, 1000);
-                  }
+                    }
+                  }, 1500);
                   
                 } catch (error) {
                   console.error('Error claiming bones:', error);

@@ -27,8 +27,29 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
       <DialogContent className="w-[95vw] max-w-md bg-background/95 backdrop-blur-xl border-gold/20">
         <DialogHeader>
           <DialogTitle className="text-xl sm:text-2xl font-bold text-gradient break-words">
-            Профиль пользователя
+            {profile.nickname || 'Пользователь'}
           </DialogTitle>
+          {/* User ID with Copy */}
+          {profile.user_id && (
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <code className="text-xs sm:text-sm font-mono text-muted-foreground">
+                {`BDOG_${profile.user_id.replace(/-/g, '').substring(0, 4)}...${profile.user_id.replace(/-/g, '').slice(-4)}`.toUpperCase()}
+              </code>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() => {
+                  const cleanId = profile.user_id.replace(/-/g, '');
+                  const bdogId = `BDOG_${cleanId.substring(0, 4).toUpperCase()}...${cleanId.slice(-4).toUpperCase()}`;
+                  navigator.clipboard.writeText(bdogId);
+                  toast.success('ID скопирован');
+                }}
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
         </DialogHeader>
 
         <div className="space-y-4">

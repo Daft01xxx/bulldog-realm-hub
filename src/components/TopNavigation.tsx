@@ -74,15 +74,8 @@ export default function TopNavigation() {
           <SheetContent side="left" className="w-80 bg-background/95 backdrop-blur-xl border-gold/20">
             <div className="flex flex-col h-full">
               {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gradient">{t('nav.title')}</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-gradient">{t('bdog.app')}</h2>
               </div>
 
               {/* User Info */}

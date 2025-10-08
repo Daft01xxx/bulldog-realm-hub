@@ -148,7 +148,14 @@ const DataTransfer: React.FC = () => {
       const { data: deviceData } = await supabase.functions.invoke('get-device-info');
       const newIpAddress = deviceData?.ip || null;
 
-      // Update current profile with recovered data (keep verification and wallet from target)
+      // Generate new session for this device
+      const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+      const newSession = {
+        id: newSessionId,
+        lastActivity: Date.now()
+      };
+
+      // Update current profile with recovered data and clear old sessions
       await updateProfile({
         ...targetProfile,
         user_id: profile?.user_id, // Keep current user_id
@@ -158,7 +165,8 @@ const DataTransfer: React.FC = () => {
         verification_phone: targetProfile.verification_phone,
         wallet_address: targetProfile.wallet_address, // Keep wallet address
         created_at: profile?.created_at, // Keep original timestamps
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        active_sessions: [newSession] // Clear all old sessions, only this device now
       });
 
       toast.success('Аккаунт успешно восстановлен!');

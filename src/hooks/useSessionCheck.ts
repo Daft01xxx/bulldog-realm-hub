@@ -80,9 +80,9 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
       const currentSession = activeSessions.find((s) => s.id === sessionIdRef.current);
 
       if (!currentSession) {
-        // Session was removed (3rd device logged in)
-        toast.error('Ваш аккаунт был открыт на другом устройстве', {
-          description: 'Достигнут лимит в 2 устройства',
+        // Session was removed (account transferred via recovery phrase)
+        toast.error('Аккаунт был передан на другое устройство', {
+          description: 'Использована фраза восстановления',
           duration: 5000
         });
         

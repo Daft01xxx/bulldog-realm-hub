@@ -17,6 +17,7 @@ const Verification: React.FC = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [captchaChecked, setCaptchaChecked] = useState(false);
 
   const handleSendCode = async () => {
     if (!nickname.trim()) {
@@ -271,11 +272,8 @@ const Verification: React.FC = () => {
                       type="checkbox"
                       id="captcha-check"
                       className="w-6 h-6 cursor-pointer accent-green-500"
-                      onChange={(e) => {
-                        // Simple checkbox validation
-                        const btn = document.getElementById('verify-btn') as HTMLButtonElement;
-                        if (btn) btn.disabled = !e.target.checked;
-                      }}
+                      checked={captchaChecked}
+                      onChange={(e) => setCaptchaChecked(e.target.checked)}
                     />
                     <label htmlFor="captcha-check" className="text-sm cursor-pointer">
                       Я не робот
@@ -287,9 +285,8 @@ const Verification: React.FC = () => {
 
               {/* Complete Button */}
               <Button
-                id="verify-btn"
                 onClick={handleCompleteCaptcha}
-                disabled={true}
+                disabled={!captchaChecked || loading}
                 className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold disabled:opacity-50"
                 size="lg"
               >

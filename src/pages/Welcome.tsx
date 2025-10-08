@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import bdogLogo from "@/assets/bulldog-logo-transparent.png";
 const Welcome = () => {
   const navigate = useNavigate();
   const {
@@ -111,7 +112,12 @@ const Welcome = () => {
 
       {/* Main content */}
       <div className="relative z-10 text-center px-4">
-        <div className="animate-bounce-in min-h-[300px] flex flex-col justify-center">
+        <div className="animate-bounce-in min-h-[300px] flex flex-col items-center justify-center">
+          <img 
+            src={bdogLogo} 
+            alt="BDOG Logo" 
+            className="w-32 h-32 mb-6 animate-glow rounded-full"
+          />
           <h1 className="text-4xl font-bold text-gradient animate-glow-text mb-6">
             BDOG APP
           </h1>

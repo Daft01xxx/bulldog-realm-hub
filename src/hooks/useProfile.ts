@@ -43,6 +43,8 @@ interface UserProfile {
   verification_code_expires?: string;
   verification_completed_at?: string;
   recovery_phrase?: string;
+  bdog_id?: string;
+  bdog_password?: string;
 }
 
 interface DeviceInfo {
@@ -129,10 +131,20 @@ export const useProfile = () => {
 
       if (!userProfile) {
         const regId = `BDOG_${Date.now()}_${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+        
+        // Generate BDOG ID using database function
+        const { data: bdogIdData } = await supabase.rpc('generate_bdog_id');
+        const bdogId = bdogIdData || `BDOG${Date.now()}`;
+        
+        // Generate initial password
+        const { data: passwordData } = await supabase.rpc('generate_random_password');
+        const initialPassword = passwordData || 'Password1!';
 
         const newProfileData = {
           user_id: uniqueUserId, // Use the unique localStorage ID
           reg: regId,
+          bdog_id: bdogId,
+          bdog_password: initialPassword,
           device_fingerprint: deviceInfo.device_fingerprint,
           ip_address: deviceInfo.ip_address,
           balance: 0,

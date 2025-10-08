@@ -36,6 +36,8 @@ import Ban from "./pages/Ban";
 import Auth from "./pages/Auth";
 import DataTransfer from "./pages/DataTransfer";
 import Verification from "./pages/Verification";
+import BdogIdManagement from "./pages/BdogIdManagement";
+import BdogIdLogin from "./pages/BdogIdLogin";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -121,6 +123,8 @@ function AppContent() {
           <Route path="/bdogpay" element={<BdogPay />} />
           <Route path="/promotion" element={<Promotion />} />
           <Route path="/data-transfer" element={<DataTransfer />} />
+          <Route path="/bdog-id-management" element={<BdogIdManagement />} />
+          <Route path="/bdog-id-login" element={<BdogIdLogin />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/ban" element={<Ban />} />
           <Route path="/auth" element={<Auth />} />

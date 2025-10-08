@@ -22,6 +22,8 @@ export type Database = {
           balance2: number | null
           ban: number | null
           bdog_balance: number | null
+          bdog_id: string | null
+          bdog_password: string | null
           bone: number | null
           bone_farm_record: number | null
           booster_expires_at: string | null
@@ -67,6 +69,8 @@ export type Database = {
           balance2?: number | null
           ban?: number | null
           bdog_balance?: number | null
+          bdog_id?: string | null
+          bdog_password?: string | null
           bone?: number | null
           bone_farm_record?: number | null
           booster_expires_at?: string | null
@@ -112,6 +116,8 @@ export type Database = {
           balance2?: number | null
           ban?: number | null
           bdog_balance?: number | null
+          bdog_id?: string | null
+          bdog_password?: string | null
           bone?: number | null
           bone_farm_record?: number | null
           booster_expires_at?: string | null
@@ -274,6 +280,14 @@ export type Database = {
           user_id: string
           v_bdog_earned: number
         }[]
+      }
+      generate_bdog_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      generate_random_password: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       generate_recovery_phrase: {
         Args: Record<PropertyKey, never>

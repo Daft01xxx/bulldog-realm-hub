@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { LogIn } from "lucide-react";
+import { LogIn, AlertTriangle, ChevronDown } from "lucide-react";
 
 const BdogId = () => {
   const navigate = useNavigate();
@@ -12,6 +12,7 @@ const BdogId = () => {
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showVpnDetails, setShowVpnDetails] = useState(false);
 
   const canLogin = agreedToTerms && agreedToPrivacy;
 
@@ -99,6 +100,30 @@ const BdogId = () => {
             </div>
           </div>
           
+          {/* VPN Warning */}
+          <div className="space-y-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm text-yellow-200">
+                  /!\ При входе в аккаунт пожалуйста отключите VPN, во избежание последствий.{' '}
+                  <button
+                    onClick={() => setShowVpnDetails(!showVpnDetails)}
+                    className="text-yellow-400 hover:text-yellow-300 underline inline-flex items-center gap-1"
+                  >
+                    Подробнее
+                    <ChevronDown className={`w-4 h-4 transition-transform ${showVpnDetails ? 'rotate-180' : ''}`} />
+                  </button>
+                </p>
+                {showVpnDetails && (
+                  <p className="text-sm text-yellow-200 mt-2 pt-2 border-t border-yellow-500/30">
+                    Помните, что если вы пользуетесь приложением с VPN, мы не несём ответственность за некорректную работу приложения.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Login Button */}
           {canLogin && (
             <div className="pt-4 animate-fade-in">
@@ -111,6 +136,19 @@ const BdogId = () => {
               </Button>
             </div>
           )}
+
+          {/* Already have account */}
+          <div className="text-center pt-4 border-t border-gold/20">
+            <p className="text-sm text-white-glow mb-2">
+              Уже есть аккаунт?{' '}
+              <button
+                onClick={() => navigate('/bdog-id-login')}
+                className="text-gold hover:text-gold/80 font-semibold underline"
+              >
+                Войти
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -29,6 +29,7 @@ export default function TopNavigation() {
     { icon: Users, label: t('nav.referral'), path: '/referral' },
     { icon: Megaphone, label: t('nav.promotion'), path: '/promotion' },
     { icon: HeadphonesIcon, label: t('nav.support'), path: 'https://t.me/Deff0xq', external: true },
+    { icon: Shield, label: 'BDOG ID', path: '/bdog-id-management' },
   ];
 
   // Add admin if user has admin IP
@@ -46,10 +47,8 @@ export default function TopNavigation() {
   };
 
   const copyUserId = () => {
-    if (profile?.user_id) {
-      const cleanId = profile.user_id.replace(/-/g, '');
-      const bdogId = `BDOG_${cleanId.substring(0, 4).toUpperCase()}...${cleanId.slice(-4).toUpperCase()}`;
-      navigator.clipboard.writeText(bdogId);
+    if (profile?.bdog_id) {
+      navigator.clipboard.writeText(profile.bdog_id);
       toast.success(t('toast.copied'));
     }
   };
@@ -89,9 +88,7 @@ export default function TopNavigation() {
                   </div>
                   <div className="flex items-center gap-2">
                     <code className="text-xs font-mono text-muted-foreground flex-1">
-                      {profile.user_id 
-                        ? `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 4)}...${profile.user_id.replace(/-/g, '').slice(-4)}`.toUpperCase()
-                        : t('profile.no_id')}
+                      {profile.bdog_id || t('profile.no_id')}
                     </code>
                     <Button
                       variant="ghost"

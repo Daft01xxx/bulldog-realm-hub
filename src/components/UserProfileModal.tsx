@@ -29,21 +29,19 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
           <DialogTitle className="text-xl sm:text-2xl font-bold text-gradient break-words">
             {profile.nickname || 'Пользователь'}
           </DialogTitle>
-          {/* User ID with Copy */}
-          {profile.user_id && (
+          {/* BDOG ID with Copy */}
+          {profile.bdog_id && (
             <div className="flex items-center justify-center gap-2 mt-2">
               <code className="text-xs sm:text-sm font-mono text-muted-foreground">
-                {`BDOG_${profile.user_id.replace(/-/g, '').substring(0, 4)}...${profile.user_id.replace(/-/g, '').slice(-4)}`.toUpperCase()}
+                {profile.bdog_id}
               </code>
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6"
                 onClick={() => {
-                  const cleanId = profile.user_id.replace(/-/g, '');
-                  const bdogId = `BDOG_${cleanId.substring(0, 4).toUpperCase()}...${cleanId.slice(-4).toUpperCase()}`;
-                  navigator.clipboard.writeText(bdogId);
-                  toast.success('ID скопирован');
+                  navigator.clipboard.writeText(profile.bdog_id);
+                  toast.success('BDOG ID скопирован');
                 }}
               >
                 <Copy className="w-3 h-3" />
@@ -89,26 +87,24 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
             </div>
           )}
 
-          {/* User ID (BDOG format) */}
+          {/* BDOG ID */}
           <div className="space-y-2">
             <label className="text-sm text-muted-foreground">
-              ID пользователя
+              BDOG ID
             </label>
             <div className="flex items-center gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
               <User className="w-4 h-4 text-muted-foreground" />
               <code className="flex-1 text-sm font-mono">
-                {profile.user_id ? `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 4).toUpperCase()}...${profile.user_id.replace(/-/g, '').slice(-4).toUpperCase()}` : 'Не указан'}
+                {profile.bdog_id || 'Не указан'}
               </code>
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
                 onClick={() => {
-                  if (profile.user_id) {
-                    const cleanId = profile.user_id.replace(/-/g, '');
-                    const bdogId = `BDOG_${cleanId.substring(0, 4).toUpperCase()}...${cleanId.slice(-4).toUpperCase()}`;
-                    navigator.clipboard.writeText(bdogId);
-                    toast.success('ID скопирован');
+                  if (profile.bdog_id) {
+                    navigator.clipboard.writeText(profile.bdog_id);
+                    toast.success('BDOG ID скопирован');
                   }
                 }}
               >

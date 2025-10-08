@@ -10,6 +10,7 @@ interface VerificationRequest {
   contactType: 'email';
   contactValue: string;
   code: string;
+  subject?: string;
 }
 
 serve(async (req) => {
@@ -19,9 +20,9 @@ serve(async (req) => {
   }
 
   try {
-    const { contactType, contactValue, code }: VerificationRequest = await req.json();
+    const { contactType, contactValue, code, subject }: VerificationRequest = await req.json();
 
-    console.log('Verification code request:', { contactType, contactValue, code });
+    console.log('Verification code request:', { contactType, contactValue, code, subject });
 
     // In a production environment, you would integrate with services like:
     // - Twilio for SMS
@@ -38,13 +39,16 @@ serve(async (req) => {
     
     const resend = new Resend(resendApiKey);
     
+    const emailSubject = subject || "Код верификации BDOG";
+    const emailTitle = subject || "Код верификации BDOG";
+    
     const emailResponse = await resend.emails.send({
       from: "BDOG <onboarding@resend.dev>",
       to: [contactValue],
-      subject: "Код верификации BDOG",
+      subject: emailSubject,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h1 style="color: #333;">Код верификации BDOG</h1>
+          <h1 style="color: #333;">${emailTitle}</h1>
           <p style="font-size: 16px; color: #555;">Ваш код верификации:</p>
           <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
             <strong style="font-size: 24px; color: #333;">${code}</strong>

@@ -25,8 +25,14 @@ const Verification: React.FC = () => {
       return;
     }
 
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(nickname)) {
-      toast.error('Никнейм должен содержать 3-20 символов (буквы, цифры, _)');
+    // Validate nickname: max 12 chars, no spaces, underscores, special chars
+    if (nickname.length > 12) {
+      toast.error('Никнейм не может быть длиннее 12 символов');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9]+$/.test(nickname)) {
+      toast.error('Никнейм может содержать только буквы и цифры');
       return;
     }
 
@@ -38,14 +44,28 @@ const Verification: React.FC = () => {
     setLoading(true);
     try {
       // Check if nickname already exists
-      const { data: existingUser, error: checkError } = await supabase
+      const { data: existingNickname } = await supabase
         .from('profiles')
         .select('id')
         .ilike('nickname', nickname)
-        .single();
+        .limit(1);
 
-      if (existingUser) {
+      if (existingNickname && existingNickname.length > 0) {
         toast.error('Этот никнейм уже занят. Выберите другой.');
+        setLoading(false);
+        return;
+      }
+
+      // Check if email already used for verification
+      const { data: existingEmail } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('verification_email', contactValue)
+        .eq('verified', true)
+        .limit(1);
+
+      if (existingEmail && existingEmail.length > 0) {
+        toast.error('Данную почту нельзя использовать для верификации');
         setLoading(false);
         return;
       }
@@ -177,12 +197,12 @@ const Verification: React.FC = () => {
                   type="text"
                   placeholder="username"
                   value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
+                  onChange={(e) => setNickname(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                   className="text-center text-lg"
-                  maxLength={20}
+                  maxLength={12}
                 />
                 <p className="text-xs text-muted-foreground mt-1 text-center">
-                  3-20 символов (буквы, цифры, _)
+                  Максимум 12 символов (только буквы и цифры)
                 </p>
               </div>
 

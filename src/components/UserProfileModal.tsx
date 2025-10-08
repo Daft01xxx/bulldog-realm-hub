@@ -24,9 +24,9 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-gold/20">
+      <DialogContent className="w-[95vw] max-w-md bg-background/95 backdrop-blur-xl border-gold/20">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gradient">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-gradient break-words">
             Профиль пользователя
           </DialogTitle>
         </DialogHeader>
@@ -102,9 +102,9 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
               <label className="text-sm text-muted-foreground">
                 Адрес кошелька
               </label>
-              <div className="flex items-center gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
-                <Wallet className="w-4 h-4 text-muted-foreground" />
-                <code className="flex-1 text-sm font-mono truncate">
+              <div className="flex items-start gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
+                <Wallet className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                <code className="flex-1 text-xs sm:text-sm font-mono break-all leading-relaxed">
                   {profile.wallet_address}
                 </code>
                 <Button

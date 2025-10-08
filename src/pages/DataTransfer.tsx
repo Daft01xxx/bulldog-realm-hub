@@ -148,11 +148,15 @@ const DataTransfer: React.FC = () => {
       const { data: deviceData } = await supabase.functions.invoke('get-device-info');
       const newIpAddress = deviceData?.ip || null;
 
-      // Update current profile with recovered data
+      // Update current profile with recovered data (keep verification and wallet from target)
       await updateProfile({
         ...targetProfile,
         user_id: profile?.user_id, // Keep current user_id
         second_ip_address: newIpAddress,
+        verified: targetProfile.verified, // Keep verification status
+        verification_email: targetProfile.verification_email,
+        verification_phone: targetProfile.verification_phone,
+        wallet_address: targetProfile.wallet_address, // Keep wallet address
         created_at: profile?.created_at, // Keep original timestamps
         updated_at: new Date().toISOString()
       });

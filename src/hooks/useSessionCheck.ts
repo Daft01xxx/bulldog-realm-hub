@@ -91,8 +91,6 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
           clearInterval(checkIntervalRef.current);
         }
         
-        // Sign out user
-        await supabase.auth.signOut();
         navigate('/');
       }
     };

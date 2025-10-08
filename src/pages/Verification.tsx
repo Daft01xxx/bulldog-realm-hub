@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mail, Phone, Shield } from 'lucide-react';
+import { ArrowLeft, Mail, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useProfileContext } from '@/components/ProfileProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -12,7 +12,6 @@ const Verification: React.FC = () => {
   const navigate = useNavigate();
   const { profile, updateProfile } = useProfileContext();
   const [step, setStep] = useState<'input' | 'code' | 'captcha'>('input');
-  const [contactType, setContactType] = useState<'phone' | 'email'>('phone');
   const [contactValue, setContactValue] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [inputCode, setInputCode] = useState('');
@@ -20,7 +19,7 @@ const Verification: React.FC = () => {
 
   const handleSendCode = async () => {
     if (!contactValue.trim()) {
-      toast.error('Пожалуйста, введите телефон или почту');
+      toast.error('Пожалуйста, введите email');
       return;
     }
 
@@ -36,21 +35,16 @@ const Verification: React.FC = () => {
 
       const updateData: any = {
         verification_code: code,
-        verification_code_expires: expiresAt.toISOString()
+        verification_code_expires: expiresAt.toISOString(),
+        verification_email: contactValue
       };
-
-      if (contactType === 'phone') {
-        updateData.verification_phone = contactValue;
-      } else {
-        updateData.verification_email = contactValue;
-      }
 
       await updateProfile(updateData);
 
       // Call edge function to send code
       const { error } = await supabase.functions.invoke('send-verification-code', {
         body: {
-          contactType,
+          contactType: 'email',
           contactValue,
           code
         }
@@ -128,42 +122,18 @@ const Verification: React.FC = () => {
           {step === 'input' && (
             <div className="space-y-6">
               <div className="text-center">
-                <Shield className="w-16 h-16 text-gold mx-auto mb-4" />
-                <h2 className="text-xl font-bold mb-2">Подтвердите контакт</h2>
+                <Mail className="w-16 h-16 text-gold mx-auto mb-4" />
+                <h2 className="text-xl font-bold mb-2">Подтвердите Email</h2>
                 <p className="text-sm text-muted-foreground">
-                  Введите номер телефона или email для верификации
+                  Введите ваш email адрес для верификации
                 </p>
-              </div>
-
-              {/* Contact Type Selector */}
-              <div className="flex gap-2 bg-background/50 p-1 rounded-lg">
-                <Button
-                  variant={contactType === 'phone' ? 'default' : 'ghost'}
-                  className="flex-1"
-                  onClick={() => setContactType('phone')}
-                >
-                  <Phone className="w-4 h-4 mr-2" />
-                  Телефон
-                </Button>
-                <Button
-                  variant={contactType === 'email' ? 'default' : 'ghost'}
-                  className="flex-1"
-                  onClick={() => setContactType('email')}
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email
-                </Button>
               </div>
 
               {/* Input Field */}
               <div>
                 <Input
-                  type={contactType === 'phone' ? 'tel' : 'email'}
-                  placeholder={
-                    contactType === 'phone'
-                      ? '+7 (___) ___-__-__'
-                      : 'example@email.com'
-                  }
+                  type="email"
+                  placeholder="example@email.com"
                   value={contactValue}
                   onChange={(e) => setContactValue(e.target.value)}
                   className="text-center text-lg"

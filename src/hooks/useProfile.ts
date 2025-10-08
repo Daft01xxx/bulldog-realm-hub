@@ -7,6 +7,7 @@ interface UserProfile {
   user_id: string;
   wallet_address?: string;
   reg?: string;
+  nickname?: string;
   balance: number;
   balance2: number;
   bdog_balance?: number;
@@ -41,6 +42,7 @@ interface UserProfile {
   verification_code?: string;
   verification_code_expires?: string;
   verification_completed_at?: string;
+  recovery_phrase?: string;
 }
 
 interface DeviceInfo {

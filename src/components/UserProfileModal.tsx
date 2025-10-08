@@ -76,7 +76,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
             <div className="flex items-center gap-2 p-3 bg-background/50 rounded-lg border border-border/50">
               <User className="w-4 h-4 text-muted-foreground" />
               <code className="flex-1 text-sm font-mono">
-                {profile.user_id ? `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 13).toUpperCase()}` : 'Не указан'}
+                {profile.user_id ? `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 4).toUpperCase()}...${profile.user_id.replace(/-/g, '').slice(-4).toUpperCase()}` : 'Не указан'}
               </code>
               <Button
                 variant="ghost"
@@ -84,7 +84,8 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
                 className="h-8 w-8"
                 onClick={() => {
                   if (profile.user_id) {
-                    const bdogId = `BDOG_${profile.user_id.replace(/-/g, '').substring(0, 13).toUpperCase()}`;
+                    const cleanId = profile.user_id.replace(/-/g, '');
+                    const bdogId = `BDOG_${cleanId.substring(0, 4).toUpperCase()}...${cleanId.slice(-4).toUpperCase()}`;
                     navigator.clipboard.writeText(bdogId);
                     toast.success('ID скопирован');
                   }

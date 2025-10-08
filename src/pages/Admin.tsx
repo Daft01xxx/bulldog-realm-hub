@@ -491,7 +491,11 @@ const Admin = () => {
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <strong>ID:</strong><br/>
-                      <span className="text-xs font-mono">{profile.user_id.substring(0, 8)}...</span>
+                      <span className="text-xs font-mono">
+                        {profile.user_id.length > 8 
+                          ? `${profile.user_id.substring(0, 4)}...${profile.user_id.slice(-4)}` 
+                          : profile.user_id}
+                      </span>
                     </div>
                     <div>
                       <strong>Имя:</strong><br/>

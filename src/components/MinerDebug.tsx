@@ -65,7 +65,11 @@ const MinerDebug: React.FC = () => {
 
         <div>
           <div className="text-sm text-muted-foreground">User ID</div>
-          <div className="text-xs font-mono break-all">{profile.user_id}</div>
+          <div className="text-xs font-mono break-all">
+            {profile.user_id && profile.user_id.length > 8 
+              ? `${profile.user_id.substring(0, 4)}...${profile.user_id.slice(-4)}` 
+              : profile.user_id}
+          </div>
         </div>
 
         <Button onClick={reloadProfile} className="w-full" size="sm">

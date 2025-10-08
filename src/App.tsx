@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef, lazy, Suspense } from "react";
 import { useDevicePerformance } from "./hooks/useDevicePerformance";
 import PageTransition from "./components/LazyPageTransition";
@@ -45,12 +45,30 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { reduceAnimations, disableAllAnimations, isMobile, isVeryLowEnd } = useDevicePerformance();
   // Temporarily disable profile loading to avoid infinite loading
   // const { profile, loading } = useProfile();
   const isOnBanPage = location.pathname === '/ban';
   const isOnAuthPage = location.pathname === '/auth';
   const banRedirectProcessed = useRef(false);
+
+  // Check app version and reset if needed
+  useEffect(() => {
+    const APP_VERSION = 'v2.0.0'; // Increment this to force reset
+    const currentVersion = localStorage.getItem('bdog-app-version');
+    
+    if (currentVersion !== APP_VERSION) {
+      // Clear all localStorage data
+      localStorage.clear();
+      // Set new version
+      localStorage.setItem('bdog-app-version', APP_VERSION);
+      // Redirect to welcome page
+      if (location.pathname !== '/') {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [navigate]);
 
   // Scroll to top on route change
   useEffect(() => {

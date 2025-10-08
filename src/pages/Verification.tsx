@@ -12,12 +12,23 @@ const Verification: React.FC = () => {
   const navigate = useNavigate();
   const { profile, updateProfile } = useProfileContext();
   const [step, setStep] = useState<'input' | 'code' | 'captcha'>('input');
+  const [nickname, setNickname] = useState('');
   const [contactValue, setContactValue] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
   const [inputCode, setInputCode] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSendCode = async () => {
+    if (!nickname.trim()) {
+      toast.error('Пожалуйста, введите никнейм');
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(nickname)) {
+      toast.error('Никнейм должен содержать 3-20 символов (буквы, цифры, _)');
+      return;
+    }
+
     if (!contactValue.trim()) {
       toast.error('Пожалуйста, введите email');
       return;
@@ -25,6 +36,19 @@ const Verification: React.FC = () => {
 
     setLoading(true);
     try {
+      // Check if nickname already exists
+      const { data: existingUser, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('nickname', nickname)
+        .single();
+
+      if (existingUser) {
+        toast.error('Этот никнейм уже занят. Выберите другой.');
+        setLoading(false);
+        return;
+      }
+
       // Generate 6-digit code
       const code = Math.floor(100000 + Math.random() * 900000).toString();
       setVerificationCode(code);
@@ -34,6 +58,7 @@ const Verification: React.FC = () => {
       expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Code valid for 10 minutes
 
       const updateData: any = {
+        nickname: nickname,
         verification_code: code,
         verification_code_expires: expiresAt.toISOString(),
         verification_email: contactValue
@@ -123,14 +148,35 @@ const Verification: React.FC = () => {
             <div className="space-y-6">
               <div className="text-center">
                 <Mail className="w-16 h-16 text-gold mx-auto mb-4" />
-                <h2 className="text-xl font-bold mb-2">Подтвердите Email</h2>
+                <h2 className="text-xl font-bold mb-2">Создание аккаунта</h2>
                 <p className="text-sm text-muted-foreground">
-                  Введите ваш email адрес для верификации
+                  Введите никнейм и email для верификации
                 </p>
               </div>
 
-              {/* Input Field */}
+              {/* Nickname Input */}
               <div>
+                <label className="text-sm text-muted-foreground mb-2 block">
+                  Никнейм
+                </label>
+                <Input
+                  type="text"
+                  placeholder="username"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="text-center text-lg"
+                  maxLength={20}
+                />
+                <p className="text-xs text-muted-foreground mt-1 text-center">
+                  3-20 символов (буквы, цифры, _)
+                </p>
+              </div>
+
+              {/* Email Input */}
+              <div>
+                <label className="text-sm text-muted-foreground mb-2 block">
+                  Email
+                </label>
                 <Input
                   type="email"
                   placeholder="example@email.com"

@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,10 +29,38 @@ serve(async (req) => {
     // For now, we'll just log the code and return success
 
     if (contactType === 'email') {
-      // TODO: Integrate with email service (Resend, SendGrid, etc.)
       console.log(`Email verification code for ${contactValue}: ${code}`);
       
-      // Email integration can be added later with Resend
+      const resendApiKey = Deno.env.get("RESEND_API_KEY");
+      
+      if (!resendApiKey) {
+        throw new Error('Resend API key not configured');
+      }
+      
+      const resend = new Resend(resendApiKey);
+      
+      const emailResponse = await resend.emails.send({
+        from: "BDOG <onboarding@resend.dev>",
+        to: [contactValue],
+        subject: "Код верификации BDOG",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h1 style="color: #333;">Код верификации BDOG</h1>
+            <p style="font-size: 16px; color: #555;">Ваш код верификации:</p>
+            <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0;">
+              <strong style="font-size: 24px; color: #333;">${code}</strong>
+            </div>
+            <p style="font-size: 14px; color: #777;">Код действителен в течение 10 минут.</p>
+            <p style="font-size: 14px; color: #777;">Если вы не запрашивали этот код, просто проигнорируйте это письмо.</p>
+          </div>
+        `,
+      });
+      
+      console.log('Resend response:', emailResponse);
+      
+      if (emailResponse.error) {
+        throw new Error(`Resend error: ${emailResponse.error.message}`);
+      }
     } else if (contactType === 'phone') {
       console.log(`SMS verification code for ${contactValue}: ${code}`);
       

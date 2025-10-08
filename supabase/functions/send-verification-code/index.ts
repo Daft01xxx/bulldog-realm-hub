@@ -43,7 +43,7 @@ serve(async (req) => {
     const emailTitle = subject || "Код верификации BDOG";
     
     const emailResponse = await resend.emails.send({
-      from: "BDOG <onboarding@resend.dev>",
+      from: "BDOG <noreply@bdog.com>",
       to: [contactValue],
       subject: emailSubject,
       html: `

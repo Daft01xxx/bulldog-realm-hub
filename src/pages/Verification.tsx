@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mail, Shield } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ArrowLeft, Shield, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useProfileContext } from '@/components/ProfileProvider';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,16 +11,12 @@ import { toast } from 'sonner';
 
 const Verification: React.FC = () => {
   const navigate = useNavigate();
-  const { profile, updateProfile } = useProfileContext();
-  const [step, setStep] = useState<'input' | 'code' | 'captcha'>('input');
+  const { updateProfile } = useProfileContext();
   const [nickname, setNickname] = useState('');
-  const [contactValue, setContactValue] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [inputCode, setInputCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [captchaChecked, setCaptchaChecked] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const handleSendCode = async () => {
+  const handleCompleteVerification = async () => {
     if (!nickname.trim()) {
       toast.error('Пожалуйста, введите никнейм');
       return;
@@ -36,8 +33,8 @@ const Verification: React.FC = () => {
       return;
     }
 
-    if (!contactValue.trim()) {
-      toast.error('Пожалуйста, введите email');
+    if (!agreedToTerms) {
+      toast.error('Необходимо согласие на обработку персональных данных');
       return;
     }
 
@@ -56,78 +53,6 @@ const Verification: React.FC = () => {
         return;
       }
 
-      // Check if email already used for verification
-      const { data: existingEmail } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('verification_email', contactValue)
-        .eq('verified', true)
-        .limit(1);
-
-      if (existingEmail && existingEmail.length > 0) {
-        toast.error('Данную почту нельзя использовать для верификации');
-        setLoading(false);
-        return;
-      }
-
-      // Generate 6-digit code
-      const code = Math.floor(100000 + Math.random() * 900000).toString();
-      setVerificationCode(code);
-
-      // Save code to database
-      const expiresAt = new Date();
-      expiresAt.setMinutes(expiresAt.getMinutes() + 10); // Code valid for 10 minutes
-
-      const updateData: any = {
-        nickname: nickname,
-        verification_code: code,
-        verification_code_expires: expiresAt.toISOString(),
-        verification_email: contactValue
-      };
-
-      await updateProfile(updateData);
-
-      // Call edge function to send code
-      const { error } = await supabase.functions.invoke('send-verification-code', {
-        body: {
-          contactType: 'email',
-          contactValue,
-          code
-        }
-      });
-
-      if (error) {
-        console.error('Error sending code:', error);
-        toast.error('Ошибка отправки кода. Попробуйте снова.');
-      } else {
-        toast.success(`Код отправлен на ${contactValue}`);
-        setStep('code');
-      }
-    } catch (error) {
-      console.error('Error in handleSendCode:', error);
-      toast.error('Произошла ошибка. Попробуйте снова.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyCode = () => {
-    if (!inputCode.trim()) {
-      toast.error('Введите код');
-      return;
-    }
-
-    if (inputCode === verificationCode) {
-      toast.success('Код подтвержден!');
-      setStep('captcha');
-    } else {
-      toast.error('Неверный код. Попробуйте снова.');
-    }
-  };
-
-  const handleCompleteCaptcha = async () => {
-    setLoading(true);
-    try {
       // Generate recovery phrase using database function
       const { data: phraseData, error: phraseError } = await supabase.rpc('generate_recovery_phrase');
       
@@ -140,6 +65,7 @@ const Verification: React.FC = () => {
 
       // Update profile with verification and recovery phrase
       await updateProfile({
+        nickname: nickname,
         verified: true,
         verification_completed_at: new Date().toISOString(),
         recovery_phrase: phraseData
@@ -178,142 +104,61 @@ const Verification: React.FC = () => {
         </div>
 
         <Card className="p-6 bg-background/95 backdrop-blur-xl border-gold/20">
-          {step === 'input' && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <Mail className="w-16 h-16 text-gold mx-auto mb-4" />
-                <h2 className="text-xl font-bold mb-2">Создание аккаунта</h2>
-                <p className="text-sm text-muted-foreground">
-                  Введите никнейм и email для верификации
-                </p>
-              </div>
+          <div className="space-y-6">
+            <div className="text-center">
+              <User className="w-16 h-16 text-gold mx-auto mb-4" />
+              <h2 className="text-xl font-bold mb-2">Создание аккаунта</h2>
+              <p className="text-sm text-muted-foreground">
+                Введите никнейм для верификации
+              </p>
+            </div>
 
-              {/* Nickname Input */}
-              <div>
-                <label className="text-sm text-muted-foreground mb-2 block">
-                  Никнейм
+            {/* Nickname Input */}
+            <div>
+              <label className="text-sm text-muted-foreground mb-2 block">
+                Никнейм
+              </label>
+              <Input
+                type="text"
+                placeholder="username"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+                className="text-center text-lg"
+                maxLength={12}
+              />
+              <p className="text-xs text-muted-foreground mt-1 text-center">
+                Максимум 12 символов (только буквы и цифры)
+              </p>
+            </div>
+
+            {/* Terms Agreement Checkbox */}
+            <div className="bg-background/50 border-2 border-gold/30 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  id="terms-check"
+                  checked={agreedToTerms}
+                  onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
+                  className="mt-1"
+                />
+                <label 
+                  htmlFor="terms-check" 
+                  className="text-sm cursor-pointer leading-relaxed"
+                >
+                  Я согласен на обработку персональных данных и принимаю условия пользовательского соглашения
                 </label>
-                <Input
-                  type="text"
-                  placeholder="username"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
-                  className="text-center text-lg"
-                  maxLength={12}
-                />
-                <p className="text-xs text-muted-foreground mt-1 text-center">
-                  Максимум 12 символов (только буквы и цифры)
-                </p>
               </div>
-
-              {/* Email Input */}
-              <div>
-                <label className="text-sm text-muted-foreground mb-2 block">
-                  Email
-                </label>
-                <Input
-                  type="email"
-                  placeholder="example@email.com"
-                  value={contactValue}
-                  onChange={(e) => setContactValue(e.target.value)}
-                  className="text-center text-lg"
-                />
-              </div>
-
-              {/* Continue Button */}
-              <Button
-                onClick={handleSendCode}
-                disabled={loading}
-                className="w-full bg-gold hover:bg-gold/90 text-black font-semibold"
-                size="lg"
-              >
-                {loading ? 'Отправка...' : 'Продолжить'}
-              </Button>
             </div>
-          )}
 
-          {step === 'code' && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <Mail className="w-16 h-16 text-gold mx-auto mb-4" />
-                <h2 className="text-xl font-bold mb-2">Введите код</h2>
-                <p className="text-sm text-muted-foreground">
-                  Код отправлен на {contactValue}
-                </p>
-              </div>
-
-              {/* Code Input */}
-              <div>
-                <Input
-                  type="text"
-                  placeholder="000000"
-                  maxLength={6}
-                  value={inputCode}
-                  onChange={(e) => setInputCode(e.target.value.replace(/\D/g, ''))}
-                  className="text-center text-2xl tracking-widest font-mono"
-                />
-              </div>
-
-              {/* Verify Button */}
-              <Button
-                onClick={handleVerifyCode}
-                disabled={inputCode.length !== 6}
-                className="w-full bg-gold hover:bg-gold/90 text-black font-semibold"
-                size="lg"
-              >
-                Подтвердить код
-              </Button>
-
-              <Button
-                variant="ghost"
-                onClick={() => setStep('input')}
-                className="w-full"
-              >
-                Изменить контакт
-              </Button>
-            </div>
-          )}
-
-          {step === 'captcha' && (
-            <div className="space-y-6">
-              <div className="text-center">
-                <Shield className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h2 className="text-xl font-bold mb-2">Почти готово!</h2>
-                <p className="text-sm text-muted-foreground">
-                  Подтвердите, что вы не робот
-                </p>
-              </div>
-
-              {/* Simple Captcha */}
-              <div className="bg-background/50 border-2 border-gold/30 rounded-lg p-6">
-                <div className="flex items-center justify-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="captcha-check"
-                      className="w-6 h-6 cursor-pointer accent-green-500"
-                      checked={captchaChecked}
-                      onChange={(e) => setCaptchaChecked(e.target.checked)}
-                    />
-                    <label htmlFor="captcha-check" className="text-sm cursor-pointer">
-                      Я не робот
-                    </label>
-                  </div>
-                  <Shield className="w-8 h-8 text-green-500" />
-                </div>
-              </div>
-
-              {/* Complete Button */}
-              <Button
-                onClick={handleCompleteCaptcha}
-                disabled={!captchaChecked || loading}
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold disabled:opacity-50"
-                size="lg"
-              >
-                {loading ? 'Завершение...' : 'Завершить верификацию'}
-              </Button>
-            </div>
-          )}
+            {/* Complete Button */}
+            <Button
+              onClick={handleCompleteVerification}
+              disabled={loading || !agreedToTerms || !nickname.trim()}
+              className="w-full bg-gold hover:bg-gold/90 text-black font-semibold disabled:opacity-50"
+              size="lg"
+            >
+              {loading ? 'Завершение...' : 'Завершить верификацию'}
+            </Button>
+          </div>
         </Card>
       </div>
     </div>

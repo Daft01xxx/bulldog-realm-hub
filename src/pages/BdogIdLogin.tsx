@@ -17,7 +17,7 @@ const BdogIdLogin = () => {
 
   const handleLogin = async () => {
     if (!identifier.trim()) {
-      toast.error('Введите BDOG ID, Ник или Email');
+      toast.error('Введите BDOG ID или Ник');
       return;
     }
 
@@ -28,7 +28,7 @@ const BdogIdLogin = () => {
 
     setLoading(true);
     try {
-      // Search for user by BDOG ID, nickname, or email
+      // Search for user by BDOG ID or nickname
       let targetProfile = null;
       
       // Try to find by BDOG ID
@@ -50,17 +50,6 @@ const BdogIdLogin = () => {
 
         if (nicknameProfile) {
           targetProfile = nicknameProfile;
-        } else {
-          // Try to find by email
-          const { data: emailProfile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('verification_email', identifier)
-            .single();
-
-          if (emailProfile) {
-            targetProfile = emailProfile;
-          }
         }
       }
 
@@ -166,7 +155,7 @@ const BdogIdLogin = () => {
           <div className="space-y-4">
             <div>
               <label className="text-sm text-muted-foreground mb-2 block">
-                BDOG ID / Ник / Email
+                BDOG ID / Ник
               </label>
               <Input
                 type="text"

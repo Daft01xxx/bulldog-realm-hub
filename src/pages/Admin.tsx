@@ -69,15 +69,17 @@ const Admin = () => {
       try {
         console.log('Checking admin access for user:', profile.user_id);
         
-        // Check if user has admin role using secure server-side function
-        const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
-          _user_id: profile.user_id,
-          _role: 'admin'
-        });
+        // Check if user has admin role by directly querying user_roles table
+        const { data: userRoles, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', profile.user_id)
+          .eq('role', 'admin')
+          .maybeSingle();
 
-        console.log('Admin role check result:', { hasAdminRole, error });
+        console.log('Admin role check result:', { userRoles, error });
 
-        if (error) {
+        if (error && error.code !== 'PGRST116') {
           console.error('Error checking admin role:', error);
           toast({
             title: "Ошибка",
@@ -88,7 +90,7 @@ const Admin = () => {
           return;
         }
 
-        if (hasAdminRole) {
+        if (userRoles) {
           console.log('User has admin role, loading users...');
           await loadUsers();
         } else {

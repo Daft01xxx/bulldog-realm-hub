@@ -40,12 +40,15 @@ const AdminLoginModal = ({ isOpen, onClose, userId, currentAttempts }: AdminLogi
           .update({ admin_login_attempts: 0 })
           .eq('user_id', userId);
 
-        // Assign admin role to user
-        await supabase
+        // Assign admin role to user (ignore if already exists)
+        const { error: roleError } = await supabase
           .from('user_roles')
-          .insert({ user_id: userId, role: 'admin' })
-          .select()
-          .single();
+          .insert({ user_id: userId, role: 'admin' });
+
+        // Ignore unique constraint violation (role already exists)
+        if (roleError && !roleError.message.includes('duplicate key')) {
+          console.error('Error assigning admin role:', roleError);
+        }
 
         toast({
           title: "✅ Доступ разрешен",

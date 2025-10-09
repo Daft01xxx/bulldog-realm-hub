@@ -3,12 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Menu as MenuIcon, Shield, Key, AlertCircle, Copy } from "lucide-react";
+import { ArrowLeft, Shield, Key, AlertCircle, Copy } from "lucide-react";
 import { useProfileContext } from "@/components/ProfileProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
-import TopNavigation from "@/components/TopNavigation";
 
 const BdogIdManagement = () => {
   const navigate = useNavigate();
@@ -123,24 +122,17 @@ const BdogIdManagement = () => {
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-dark"></div>
       
-      {/* Header без трех палочек */}
+      {/* Header */}
       <div className="relative z-10">
         <div className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(-1)}
-            className="hover:bg-transparent"
-          >
-            <ArrowLeft className="w-5 h-5 text-gold" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
             onClick={() => navigate('/menu')}
-            className="hover:bg-transparent"
+            className="hover:bg-transparent text-gold hover:text-gold/80"
           >
-            <MenuIcon className="w-5 h-5 text-gold" />
+            <ArrowLeft className="w-5 h-5" />
+            <span className="ml-2">Назад</span>
           </Button>
         </div>
       </div>

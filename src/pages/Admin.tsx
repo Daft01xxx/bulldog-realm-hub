@@ -66,29 +66,45 @@ const Admin = () => {
         return;
       }
 
-      // Check if user has admin role using secure server-side function
-      const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
-        _user_id: profile.user_id,
-        _role: 'admin'
-      });
+      try {
+        console.log('Checking admin access for user:', profile.user_id);
+        
+        // Check if user has admin role using secure server-side function
+        const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
+          _user_id: profile.user_id,
+          _role: 'admin'
+        });
 
-      if (error) {
-        console.error('Error checking admin role:', error);
+        console.log('Admin role check result:', { hasAdminRole, error });
+
+        if (error) {
+          console.error('Error checking admin role:', error);
+          toast({
+            title: "Ошибка",
+            description: `Не удалось проверить права доступа: ${error.message}`,
+            variant: "destructive",
+          });
+          navigate("/menu");
+          return;
+        }
+
+        if (hasAdminRole) {
+          console.log('User has admin role, loading users...');
+          await loadUsers();
+        } else {
+          console.log('User does not have admin role');
+          toast({
+            title: "Доступ запрещен",
+            description: "У вас нет прав доступа к админ-панели",
+            variant: "destructive",
+          });
+          navigate("/menu");
+        }
+      } catch (err) {
+        console.error('Unexpected error in checkAdminAccess:', err);
         toast({
           title: "Ошибка",
-          description: "Не удалось проверить права доступа",
-          variant: "destructive",
-        });
-        navigate("/menu");
-        return;
-      }
-
-      if (hasAdminRole) {
-        await loadUsers();
-      } else {
-        toast({
-          title: "Доступ запрещен",
-          description: "У вас нет прав доступа к админ-панели",
+          description: "Произошла неожиданная ошибка",
           variant: "destructive",
         });
         navigate("/menu");
@@ -131,20 +147,26 @@ const Admin = () => {
   const loadUsers = async () => {
     setLoading(true);
     try {
+      console.log('Loading users from profiles table...');
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
 
+      console.log('Users loaded:', { data, error });
+
       if (error) throw error;
 
       setProfiles(data as unknown as UserProfile[] || []);
       setFilteredProfiles(data as unknown as UserProfile[] || []);
+      
+      console.log(`Successfully loaded ${data?.length || 0} users`);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
         title: "Ошибка",
-        description: "Не удалось загрузить пользователей",
+        description: `Не удалось загрузить пользователей: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     } finally {

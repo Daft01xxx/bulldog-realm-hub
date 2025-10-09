@@ -360,15 +360,13 @@ const Menu = () => {
       </div>
 
       <div className="mx-auto relative z-10">
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="grid grid-cols-1 gap-2 mb-4">
           {menuItems.map((item, index) => {
             const IconComponent = typeof item.icon !== "string" ? item.icon : null;
             return (
               <Card
                 key={index}
-                className={`p-4 cursor-pointer hover-lift group ${
-                  item.fullWidth ? 'col-span-2' : ''
-                } ${animate ? 'animate-slide-in-right' : 'opacity-0'}`}
+                className={`p-2 cursor-pointer hover-lift group ${animate ? 'animate-slide-in-right' : 'opacity-0'}`}
                 style={{ animationDelay: item.delay }}
                 onClick={() => {
                   if (item.external) {
@@ -378,21 +376,21 @@ const Menu = () => {
                   }
                 }}
               >
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
+                <div className="flex items-center space-x-2">
+                  <div className="p-1.5 rounded-full bg-gradient-gold group-hover:animate-pulse-gold transition-all duration-300">
                     {item.icon === "support" ? (
-                      <HeadphonesIcon className="w-6 h-6 icon-gold" />
+                      <HeadphonesIcon className="w-4 h-4 icon-gold" />
                     ) : item.icon === "miner" ? (
-                      <Pickaxe className="w-6 h-6 icon-gold" />
+                      <Pickaxe className="w-4 h-4 icon-gold" />
                     ) : IconComponent ? (
-                      <IconComponent className="w-6 h-6 icon-gold" />
+                      <IconComponent className="w-4 h-4 icon-gold" />
                     ) : null}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-sm font-semibold text-foreground mb-0 group-hover:text-gold transition-colors">
+                    <h3 className="text-xs font-semibold text-foreground mb-0 group-hover:text-gold transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] text-muted-foreground line-clamp-1">
                       {item.description}
                     </p>
                   </div>

@@ -5,13 +5,14 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, Lock, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { useProfileContext } from '@/components/ProfileProvider';
 import { useLanguage } from '@/contexts/LanguageContext';
 import TopNavigation from '@/components/TopNavigation';
 
 const ChangePassword = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { profile, updateProfile } = useProfileContext();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -24,8 +25,18 @@ const ChangePassword = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
-      toast.error('Пароль должен содержать минимум 6 символов');
+    if (newPassword.length < 8) {
+      toast.error('Пароль должен содержать минимум 8 символов');
+      return;
+    }
+
+    if (!/[a-zA-Z]/.test(newPassword)) {
+      toast.error('Пароль должен содержать хотя бы одну букву');
+      return;
+    }
+
+    if (!/[!@#%]/.test(newPassword)) {
+      toast.error('Пароль должен содержать хотя бы один спецсимвол (!@#%)');
       return;
     }
 
@@ -37,17 +48,14 @@ const ChangePassword = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
+      await updateProfile({
+        bdog_password: newPassword
       });
 
-      if (error) {
-        toast.error(`Ошибка: ${error.message}`);
-      } else {
-        toast.success('Пароль успешно изменён');
-        navigate('/menu');
-      }
+      toast.success('Пароль успешно изменён');
+      navigate('/bdog-id-management');
     } catch (error) {
+      console.error('Error changing password:', error);
       toast.error('Произошла ошибка при смене пароля');
     } finally {
       setIsLoading(false);
@@ -130,7 +138,7 @@ const ChangePassword = () => {
             </Button>
 
             <p className="text-xs text-muted-foreground text-center">
-              Пароль должен содержать минимум 6 символов
+              Минимум 8 символов, 1 буква, 1 спецсимвол (!@#%)
             </p>
           </div>
         </Card>

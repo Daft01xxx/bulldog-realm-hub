@@ -18,6 +18,8 @@ export type Database = {
         Row: {
           active_session_id: string | null
           active_sessions: Json | null
+          admin_access_blocked: boolean | null
+          admin_login_attempts: number | null
           balance: number | null
           balance2: number | null
           ban: number | null
@@ -66,6 +68,8 @@ export type Database = {
         Insert: {
           active_session_id?: string | null
           active_sessions?: Json | null
+          admin_access_blocked?: boolean | null
+          admin_login_attempts?: number | null
           balance?: number | null
           balance2?: number | null
           ban?: number | null
@@ -114,6 +118,8 @@ export type Database = {
         Update: {
           active_session_id?: string | null
           active_sessions?: Json | null
+          admin_access_blocked?: boolean | null
+          admin_login_attempts?: number | null
           balance?: number | null
           balance2?: number | null
           ban?: number | null

@@ -45,6 +45,8 @@ interface UserProfile {
   recovery_phrase?: string;
   bdog_id?: string;
   bdog_password?: string;
+  admin_login_attempts?: number;
+  admin_access_blocked?: boolean;
 }
 
 interface DeviceInfo {

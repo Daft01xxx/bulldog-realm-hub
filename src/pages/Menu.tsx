@@ -12,6 +12,7 @@ import { AudioManager, playLogoClickSound } from '@/components/AudioManager';
 import FallingCoins2D from '@/components/FallingCoins2D';
 import FloatingCosmicCoins from '@/components/FloatingCosmicCoins';
 import TopNavigation from '@/components/TopNavigation';
+import AdminLoginModal from '@/components/AdminLoginModal';
 
 import bdogBackground from "@/assets/bdog-background.png";
 import bdogGoldCoin from "@/assets/bulldog-gold-coin.png";
@@ -31,6 +32,8 @@ const Menu = () => {
   const [timeUntilNextGift, setTimeUntilNextGift] = useState("");
   const [showCoins, setShowCoins] = useState(false);
   const [showAdminButton, setShowAdminButton] = useState(false);
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const [adminAttempts, setAdminAttempts] = useState(0);
 
   useEffect(() => {
     // Load user data from profile or localStorage
@@ -77,11 +80,12 @@ const Menu = () => {
       setTimeUntilNextGift("");
     }
     
-    // Check if admin button should be shown based on IP
-    if (profile && profile.ip_address) {
-      // Show admin panel for specific IP addresses (add your admin IP here)
-      const adminIPs = ['178.205.158.61', '127.0.0.1', 'localhost']; // Add your admin IP addresses here
-      setShowAdminButton(adminIPs.includes(profile.ip_address));
+    // Check if admin button should be shown based on access status
+    if (profile) {
+      const isBlocked = profile.admin_access_blocked || false;
+      const attempts = profile.admin_login_attempts || 0;
+      setAdminAttempts(attempts);
+      setShowAdminButton(!isBlocked);
     }
     
     // Trigger animations
@@ -268,17 +272,6 @@ const Menu = () => {
     }
   ];
 
-  // Add admin panel button if user has admin IP
-  if (showAdminButton) {
-    menuItems.splice(-1, 0, {
-      title: t('menu.admin'),
-      icon: Shield,
-      path: "/admin",
-      description: t('menu.admin.desc'),
-      delay: "0.55s",
-      fullWidth: false
-    });
-  }
 
   return (
     <div className="min-h-screen bg-background px-2 py-4 relative overflow-hidden">
@@ -423,7 +416,29 @@ const Menu = () => {
             {t('menu.ad.link')}
           </a>
         </Card>
+
+        {/* Developer Access Button */}
+        {showAdminButton && (
+          <div className="mt-4 text-center">
+            <button
+              onClick={() => setShowAdminLoginModal(true)}
+              className="text-xs text-muted-foreground hover:text-gold transition-colors underline opacity-50 hover:opacity-100"
+            >
+              Для разработчиков
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Admin Login Modal */}
+      {profile && (
+        <AdminLoginModal
+          isOpen={showAdminLoginModal}
+          onClose={() => setShowAdminLoginModal(false)}
+          userId={profile.user_id}
+          currentAttempts={adminAttempts}
+        />
+      )}
     </div>
   );
 };

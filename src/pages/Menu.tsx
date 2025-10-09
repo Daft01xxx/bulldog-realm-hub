@@ -82,10 +82,13 @@ const Menu = () => {
     
     // Check if admin button should be shown based on access status
     if (profile) {
-      const isBlocked = profile.admin_access_blocked || false;
+      const isBlocked = profile.admin_access_blocked === true;
       const attempts = profile.admin_login_attempts || 0;
       setAdminAttempts(attempts);
       setShowAdminButton(!isBlocked);
+    } else {
+      // Show button by default if no profile yet
+      setShowAdminButton(true);
     }
     
     // Trigger animations

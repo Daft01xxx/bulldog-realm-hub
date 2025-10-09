@@ -22,7 +22,9 @@ const BdogIdManagement = () => {
 
   const handleSendCode = async () => {
     if (!profile?.verification_email) {
-      toast.error('Email не найден');
+      console.log('Profile verification_email missing:', profile);
+      toast.error('Email не найден. Пройдите верификацию.');
+      navigate('/verification');
       return;
     }
 
@@ -34,12 +36,14 @@ const BdogIdManagement = () => {
       const expiresAt = new Date();
       expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
+      console.log('Updating profile with verification code...');
       await updateProfile({
         verification_code: code,
         verification_code_expires: expiresAt.toISOString()
       });
 
-      const { error } = await supabase.functions.invoke('send-verification-code', {
+      console.log('Invoking send-verification-code function...');
+      const { data, error } = await supabase.functions.invoke('send-verification-code', {
         body: {
           contactType: 'email',
           contactValue: profile.verification_email,
@@ -48,15 +52,18 @@ const BdogIdManagement = () => {
         }
       });
 
+      console.log('Function response:', { data, error });
+
       if (error) {
-        toast.error('Ошибка отправки кода');
+        console.error('Function error:', error);
+        toast.error(`Ошибка отправки кода: ${error.message}`);
       } else {
         toast.success(`Код отправлен на ${profile.verification_email}`);
         setStep('code');
       }
     } catch (error) {
       console.error('Error sending code:', error);
-      toast.error('Произошла ошибка');
+      toast.error(`Произошла ошибка: ${error instanceof Error ? error.message : 'Unknown'}`);
     } finally {
       setLoading(false);
     }

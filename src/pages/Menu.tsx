@@ -65,7 +65,7 @@ const Menu = () => {
         const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
         const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-        setTimeUntilNextGift(`${hours}ч ${minutes}м ${seconds}с`);
+        setTimeUntilNextGift(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
       } else {
         // Cooldown expired, can claim again
         setCanClaimDaily(true);
@@ -102,7 +102,7 @@ const Menu = () => {
           const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
           const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
-          setTimeUntilNextGift(`${hours}ч ${minutes}м ${seconds}с`);
+          setTimeUntilNextGift(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
           setCanClaimDaily(false);
         } else {
           setTimeUntilNextGift("");
@@ -171,13 +171,19 @@ const Menu = () => {
       const timeRemaining = nextGiftTime - Date.now();
       const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
       const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
-      setTimeUntilNextGift(`${hours}ч ${minutes}м`);
+      const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+      setTimeUntilNextGift(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
 
       toast({
         title: t('toast.daily.claimed'),
         description: `${t('toast.daily.congrats')} ${reward}`,
         duration: 1000,
       });
+
+      // Navigate to game (tапалки)
+      setTimeout(() => {
+        navigate('/game');
+      }, 1500);
     } catch (error) {
       toast({
         title: t('toast.error'),

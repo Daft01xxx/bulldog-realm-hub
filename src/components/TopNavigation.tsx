@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLanguage, languageNames } from '@/contexts/LanguageContext';
 import { useProfileContext } from '@/components/ProfileProvider';
 import UserProfileModal from '@/components/UserProfileModal';
+import LeaderboardModal from '@/components/LeaderboardModal';
 import { toast } from 'sonner';
 
 type Language = 'ru' | 'en' | 'zh' | 'es' | 'de' | 'fr' | 'it' | 'ja' | 'ko' | 'uk' | 'sv';
@@ -14,6 +15,7 @@ type Language = 'ru' | 'en' | 'zh' | 'es' | 'de' | 'fr' | 'it' | 'ja' | 'ko' | '
 export default function TopNavigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { t, language, setLanguage } = useLanguage();
   const { profile } = useProfileContext();
@@ -149,7 +151,7 @@ export default function TopNavigation() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/leaderboard')}
+            onClick={() => setIsLeaderboardOpen(true)}
             className="hover:bg-transparent"
           >
             <DollarSign className="w-4 h-4 text-gold" />
@@ -176,6 +178,7 @@ export default function TopNavigation() {
       </div>
 
       <UserProfileModal open={isProfileOpen} onOpenChange={setIsProfileOpen} />
+      <LeaderboardModal open={isLeaderboardOpen} onOpenChange={setIsLeaderboardOpen} />
     </>
   );
 }

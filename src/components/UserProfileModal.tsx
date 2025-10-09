@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { useProfileContext } from '@/components/ProfileProvider';
 import { useNavigate } from 'react-router-dom';
-import { User, Wallet, Copy, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Wallet, Copy, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface UserProfileModalProps {
@@ -18,6 +18,11 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
   const handleVerification = () => {
     onOpenChange(false);
     navigate('/verification');
+  };
+
+  const handleChangePassword = () => {
+    onOpenChange(false);
+    navigate('/change-password');
   };
 
   if (!profile) return null;
@@ -139,9 +144,21 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ open, onOpenChange 
             </div>
           )}
 
+          {/* Change Password Button */}
+          <div className="pt-2">
+            <Button
+              onClick={handleChangePassword}
+              variant="outline"
+              className="w-full border-gold/20 hover:bg-gold/10 text-foreground font-semibold gap-2"
+            >
+              <KeyRound className="w-4 h-4" />
+              Сменить пароль
+            </Button>
+          </div>
+
           {/* Verification Button */}
           {!profile.verified && (
-            <div className="pt-4">
+            <div className="pt-2">
               <p className="text-sm text-muted-foreground mb-3">
                 Пройдите верификацию для доступа ко всем функциям
               </p>

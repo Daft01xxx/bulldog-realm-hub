@@ -38,6 +38,7 @@ import DataTransfer from "./pages/DataTransfer";
 import Verification from "./pages/Verification";
 import BdogIdManagement from "./pages/BdogIdManagement";
 import BdogIdLogin from "./pages/BdogIdLogin";
+import ChangePassword from "./pages/ChangePassword";
 import NotFound from "./pages/NotFound";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -152,6 +153,7 @@ function AppContent() {
           <Route path="/data-transfer" element={<DataTransfer />} />
           <Route path="/bdog-id-management" element={<BdogIdManagement />} />
           <Route path="/bdog-id-login" element={<BdogIdLogin />} />
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/ban" element={<Ban />} />
           <Route path="/auth" element={<Auth />} />

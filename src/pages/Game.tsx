@@ -756,18 +756,6 @@ const Game = memo(function Game() {
             </h3>
               
               <Card className="card-glow p-3">
-                <div className="text-center mb-3 border-b border-border pb-3">
-                  <div className="text-xs text-muted-foreground mb-1">
-                    Еженедельный сброс через:
-                  </div>
-                  <div className="text-sm font-bold text-gold">
-                    {weeklyTimeLeft}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Топ-5 получат по 5,000,000 V-BDOG!<br/>
-                    <span className="text-xs">Воскресенье 20:00 (МСК)</span>
-                  </div>
-                </div>
                 <div className="space-y-1">
                   {topPlayers.length > 0 ? (
                     topPlayers.map((player, index) => (

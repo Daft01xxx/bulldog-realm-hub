@@ -24,6 +24,7 @@ export type Database = {
           bdog_balance: number | null
           bdog_id: string | null
           bdog_password: string | null
+          blacklisted: boolean | null
           bone: number | null
           bone_farm_record: number | null
           booster_expires_at: string | null
@@ -71,6 +72,7 @@ export type Database = {
           bdog_balance?: number | null
           bdog_id?: string | null
           bdog_password?: string | null
+          blacklisted?: boolean | null
           bone?: number | null
           bone_farm_record?: number | null
           booster_expires_at?: string | null
@@ -118,6 +120,7 @@ export type Database = {
           bdog_balance?: number | null
           bdog_id?: string | null
           bdog_password?: string | null
+          blacklisted?: boolean | null
           bone?: number | null
           bone_farm_record?: number | null
           booster_expires_at?: string | null
@@ -221,6 +224,47 @@ export type Database = {
           v_bdog_reward?: number
         }
         Relationships: []
+      }
+      purchases: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          id: string
+          item_name: string
+          purchased_at: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          item_name: string
+          purchased_at?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          item_name?: string
+          purchased_at?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchases_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       wallet_data: {
         Row: {

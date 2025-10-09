@@ -28,7 +28,10 @@ const BdogIdManagement = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => navigate('/menu')}
+            onClick={() => {
+              console.log('Menu button clicked, navigating to /menu');
+              navigate('/menu');
+            }}
             className="border-gold text-gold hover:bg-gold hover:text-black transition-colors"
           >
             <Menu className="w-5 h-5 mr-2" />

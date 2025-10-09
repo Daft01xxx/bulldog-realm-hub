@@ -24,7 +24,6 @@ const Menu = () => {
   const { isConnected, walletData } = useBdogTonWallet();
   const { theme, toggleTheme } = useTheme();
   const { t } = useLanguage();
-  const [reg, setReg] = useState("");
   const [bdogBalance, setBdogBalance] = useState("0");
   const [vBdogBalance, setVBdogBalance] = useState("0");
   const [animate, setAnimate] = useState(false);
@@ -36,8 +35,6 @@ const Menu = () => {
   useEffect(() => {
     // Load user data from profile or localStorage
     if (profile) {
-      setReg(profile.reg || "");
-      
       // BDOG token balance prioritizing wallet data
       if (isConnected && walletData?.bdogBalance) {
         setBdogBalance(walletData.bdogBalance);
@@ -49,7 +46,6 @@ const Menu = () => {
       const totalVBdog = profile.v_bdog_earned || 0;
       setVBdogBalance(totalVBdog.toString());
     } else {
-      setReg(localStorage.getItem("bdog-reg") || "");
       setBdogBalance("0");
       const localVBdog = localStorage.getItem("bdog-v-bdog-earned") || "0";
       setVBdogBalance(localVBdog);
@@ -297,34 +293,37 @@ const Menu = () => {
           />
         </div>
         
-        {/* User info */}
+        {/* Balance Card */}
         <Card 
-          className={`mx-auto p-6 mb-4 ${
+          className={`mx-auto p-4 mb-4 ${
             animate ? 'animate-fade-in-up' : 'opacity-0'
           }`}
           style={{ animationDelay: '0.3s' }}
         >
-          <div className="space-y-4">
-            <div className="space-y-3">
-              {/* Balance Table */}
-              <div className="bg-surface/50 rounded-lg p-3 border border-border/30">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">BDOG:</span>
-                    <span className="text-gradient font-bold text-lg">{parseFloat(bdogBalance).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between items-center pt-1 border-t border-border/20">
-                    <span className="text-sm text-muted-foreground">V-BDOG:</span>
-                    <span className="text-gradient font-bold text-lg">{parseFloat(vBdogBalance).toLocaleString()}</span>
-                  </div>
-                  {profile?.referrals && profile.referrals > 0 && (
-                    <div className="flex justify-between items-center pt-1 border-t border-border/20">
-                      <span className="text-xs text-gold">{t('menu.referrals')}</span>
-                      <span className="text-xs text-gold font-semibold">{profile.referrals}</span>
-                    </div>
-                  )}
-                </div>
+          <div className="bg-surface/50 rounded-lg p-3 border border-border/30">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">BDOG:</span>
+                <span className="text-gradient font-bold text-lg">
+                  {bdogBalance && parseFloat(bdogBalance) > 0 
+                    ? parseFloat(bdogBalance).toLocaleString() 
+                    : '0'}
+                </span>
               </div>
+              <div className="flex justify-between items-center pt-1 border-t border-border/20">
+                <span className="text-sm text-muted-foreground">V-BDOG:</span>
+                <span className="text-gradient font-bold text-lg">
+                  {vBdogBalance && parseFloat(vBdogBalance) > 0 
+                    ? parseFloat(vBdogBalance).toLocaleString() 
+                    : '0'}
+                </span>
+              </div>
+              {profile?.referrals && profile.referrals > 0 && (
+                <div className="flex justify-between items-center pt-1 border-t border-border/20">
+                  <span className="text-xs text-gold">{t('menu.referrals')}</span>
+                  <span className="text-xs text-gold font-semibold">{profile.referrals}</span>
+                </div>
+              )}
             </div>
           </div>
         </Card>

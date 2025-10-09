@@ -305,37 +305,6 @@ const Menu = () => {
           style={{ animationDelay: '0.3s' }}
         >
           <div className="space-y-4">
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-gold font-semibold text-lg">
-                {reg && reg.length > 8 ? `${reg.slice(0, 4)}...${reg.slice(-4)}` : reg}
-              </span>
-              {reg && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(reg);
-                      toast({
-                        title: t('toast.copied'),
-                        description: t('toast.copied.desc'),
-                        duration: 1000,
-                      });
-                    } catch {
-                      toast({
-                        title: t('toast.error'),
-                        description: t('toast.copy.error'),
-                        variant: "destructive",
-                        duration: 1000,
-                      });
-                    }
-                  }}
-                  className="h-6 w-6 p-0 hover:bg-gold/10"
-                >
-                  <Copy className="w-3 h-3 text-gold" />
-                </Button>
-              )}
-            </div>
             <div className="space-y-3">
               {/* Balance Table */}
               <div className="bg-surface/50 rounded-lg p-3 border border-border/30">

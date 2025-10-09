@@ -318,12 +318,6 @@ const Menu = () => {
                     : '0'}
                 </span>
               </div>
-              {profile?.referrals && profile.referrals > 0 && (
-                <div className="flex justify-between items-center pt-1 border-t border-border/20">
-                  <span className="text-xs text-gold">{t('menu.referrals')}</span>
-                  <span className="text-xs text-gold font-semibold">{profile.referrals}</span>
-                </div>
-              )}
             </div>
           </div>
         </Card>

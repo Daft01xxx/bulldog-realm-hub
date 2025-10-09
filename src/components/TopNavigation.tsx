@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Moon, Sun, User as UserIcon, Menu, X, Home, Wallet, Info, Users, Megaphone, Shield, Gamepad2, Pickaxe, HeadphonesIcon, Copy, Languages, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage, languageNames } from '@/contexts/LanguageContext';
 import { useProfileContext } from '@/components/ProfileProvider';
@@ -130,17 +131,29 @@ export default function TopNavigation() {
                   <Languages className="w-4 h-4 text-gold" />
                   <span className="text-sm font-medium">{t('language.select')}</span>
                 </div>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value as Language)}
-                  className="w-full p-2 rounded-lg bg-surface/50 border border-border/30 text-sm"
-                >
-                  {sortedLanguages.map(([code, name]) => (
-                    <option key={code} value={code}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Languages className="w-4 h-4 mr-2" />
+                      {languageNames[language]}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56">
+                    <div className="grid grid-cols-2 gap-2">
+                      {sortedLanguages.map(([code, name]) => (
+                        <Button
+                          key={code}
+                          variant={language === code ? "default" : "outline"}
+                          size="sm"
+                          className="text-xs"
+                          onClick={() => setLanguage(code as Language)}
+                        >
+                          {name}
+                        </Button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </SheetContent>

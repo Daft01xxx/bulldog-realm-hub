@@ -88,14 +88,9 @@ export const VideoWatchModal = ({ isOpen, onClose, onComplete }: VideoWatchModal
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl p-0">
         <DialogHeader className="p-6 pb-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-bold text-gradient">
-              Просмотр видео {currentVideo + 1}/2
-            </DialogTitle>
-            <Button variant="ghost" size="sm" onClick={handleClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-xl font-bold text-gradient">
+            Просмотр видео {currentVideo + 1}/2
+          </DialogTitle>
         </DialogHeader>
 
         <div className="p-6">

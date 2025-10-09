@@ -232,17 +232,17 @@ const translations: Translations = {
     sv: 'BDOG APP'
   },
   'menu.wallet': {
-    ru: 'Кошелёк BDOG',
-    en: 'BDOG Wallet',
-    zh: 'BDOG 钱包',
-    es: 'Billetera BDOG',
-    de: 'BDOG Geldbörse',
-    fr: 'Portefeuille BDOG',
-    it: 'Portafoglio BDOG',
-    ja: 'BDOG ウォレット',
-    ko: 'BDOG 지갑',
-    uk: 'Гаманець BDOG',
-    sv: 'BDOG Plånbok'
+    ru: 'Кошелёк',
+    en: 'Wallet',
+    zh: '钱包',
+    es: 'Billetera',
+    de: 'Geldbörse',
+    fr: 'Portefeuille',
+    it: 'Portafoglio',
+    ja: 'ウォレット',
+    ko: '지갑',
+    uk: 'Гаманець',
+    sv: 'Plånbok'
   },
   'menu.wallet.desc': {
     ru: 'Управляйте своими токенами',
@@ -310,17 +310,17 @@ const translations: Translations = {
     sv: 'Passiv V-BDOG inkomst'
   },
   'menu.info': {
-    ru: 'Информация о BDOG',
-    en: 'BDOG Information',
-    zh: 'BDOG 信息',
-    es: 'Información BDOG',
-    de: 'BDOG Information',
-    fr: 'Information BDOG',
-    it: 'Informazioni BDOG',
-    ja: 'BDOG 情報',
-    ko: 'BDOG 정보',
-    uk: 'Інформація про BDOG',
-    sv: 'BDOG Information'
+    ru: 'Информация',
+    en: 'Information',
+    zh: '信息',
+    es: 'Información',
+    de: 'Information',
+    fr: 'Information',
+    it: 'Informazioni',
+    ja: '情報',
+    ko: '정보',
+    uk: 'Інформація',
+    sv: 'Information'
   },
   'menu.info.desc': {
     ru: 'Узнайте больше о проекте',

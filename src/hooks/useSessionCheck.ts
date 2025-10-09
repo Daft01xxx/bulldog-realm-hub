@@ -66,12 +66,17 @@ export function useSessionCheck(userId: string | undefined, enabled: boolean = t
     const checkSession = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('active_sessions')
+        .select('active_sessions, is_vpn_user')
         .eq('user_id', userId)
         .single();
 
       if (error) {
         console.error('Failed to check session:', error);
+        return;
+      }
+
+      // Skip session check for VPN users
+      if (data?.is_vpn_user) {
         return;
       }
 

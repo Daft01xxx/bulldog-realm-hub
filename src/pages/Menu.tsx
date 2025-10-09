@@ -88,7 +88,7 @@ const Menu = () => {
     setAnimate(true);
   }, [profile, isConnected, walletData]);
   
-  // Update timer every minute
+  // Update timer every second
   useEffect(() => {
     const interval = setInterval(() => {
       const lastDailyGift = localStorage.getItem("bdog-last-daily-gift");
@@ -112,7 +112,7 @@ const Menu = () => {
         setCanClaimDaily(true);
         setTimeUntilNextGift("");
       }
-    }, 60000); // Update every minute
+    }, 1000); // Update every second
     
     return () => clearInterval(interval);
   }, []);
@@ -200,49 +200,56 @@ const Menu = () => {
       icon: Wallet,
       path: isConnected ? "/connected-wallet" : "/wallet",
       description: t('menu.wallet.desc'),
-      delay: "0.1s"
+      delay: "0.1s",
+      fullWidth: false
     },
     {
       title: t('menu.game'),
       icon: Gamepad2,
       path: "/game",
       description: t('menu.game.desc'),
-      delay: "0.2s"
+      delay: "0.2s",
+      fullWidth: false
     },
     {
       title: t('menu.miner'),
       icon: "miner",
       path: "/miner",
       description: t('menu.miner.desc'),
-      delay: "0.25s"
+      delay: "0.25s",
+      fullWidth: false
     },
     {
       title: t('menu.info'),
       icon: Info,
       path: "/info",
       description: t('menu.info.desc'),
-      delay: "0.3s"
+      delay: "0.3s",
+      fullWidth: false
     },
     {
       title: t('menu.referral'),
       icon: Users,
       path: "/referral",
       description: t('menu.referral.desc'),
-      delay: "0.4s"
+      delay: "0.4s",
+      fullWidth: true
     },
     {
       title: t('menu.promotion'),
       icon: Megaphone,
       path: "/promotion",
       description: t('menu.promotion.desc'),
-      delay: "0.5s"
+      delay: "0.5s",
+      fullWidth: true
     },
     {
       title: "BDOG ID",
       icon: LogIn,
       path: "/bdog-id-login",
       description: "Вход в BDOG ID",
-      delay: "0.55s"
+      delay: "0.55s",
+      fullWidth: false
     },
     {
       title: t('menu.support'),
@@ -250,7 +257,8 @@ const Menu = () => {
       path: "https://t.me/Deff0xq",
       description: t('menu.support.desc'),
       delay: "0.6s",
-      external: true
+      external: true,
+      fullWidth: false
     }
   ];
 
@@ -261,7 +269,8 @@ const Menu = () => {
       icon: Shield,
       path: "/admin",
       description: t('menu.admin.desc'),
-      delay: "0.55s"
+      delay: "0.55s",
+      fullWidth: false
     });
   }
 
@@ -356,8 +365,8 @@ const Menu = () => {
               <Card
                 key={index}
                 className={`p-4 cursor-pointer hover-lift group ${
-                  animate ? 'animate-slide-in-right' : 'opacity-0'
-                }`}
+                  item.fullWidth ? 'col-span-2' : ''
+                } ${animate ? 'animate-slide-in-right' : 'opacity-0'}`}
                 style={{ animationDelay: item.delay }}
                 onClick={() => {
                   if (item.external) {

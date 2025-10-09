@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Moon, Sun, User as UserIcon, Menu, X, Home, Wallet, Info, Users, Megaphone, Shield, Gamepad2, Pickaxe, HeadphonesIcon, Copy, Languages } from 'lucide-react';
+import { Moon, Sun, User as UserIcon, Menu, X, Home, Wallet, Info, Users, Megaphone, Shield, Gamepad2, Pickaxe, HeadphonesIcon, Copy, Languages, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useTheme } from '@/hooks/useTheme';
@@ -144,8 +144,17 @@ export default function TopNavigation() {
           </SheetContent>
         </Sheet>
 
-        {/* Right: Profile & Theme */}
+        {/* Right: Leaderboard, Profile & Theme */}
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/leaderboard')}
+            className="hover:bg-transparent"
+          >
+            <DollarSign className="w-4 h-4 text-gold" />
+          </Button>
+          
           <Button
             variant="ghost"
             size="sm"

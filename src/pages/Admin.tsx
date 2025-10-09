@@ -66,8 +66,24 @@ const Admin = () => {
         return;
       }
 
-      // Check if user has admin BDOG ID
-      if (profile.bdog_id === "BDOGG7S52RAODZAE") {
+      // Check if user has admin role using secure server-side function
+      const { data: hasAdminRole, error } = await supabase.rpc('has_role', {
+        _user_id: profile.user_id,
+        _role: 'admin'
+      });
+
+      if (error) {
+        console.error('Error checking admin role:', error);
+        toast({
+          title: "Ошибка",
+          description: "Не удалось проверить права доступа",
+          variant: "destructive",
+        });
+        navigate("/menu");
+        return;
+      }
+
+      if (hasAdminRole) {
         await loadUsers();
       } else {
         toast({

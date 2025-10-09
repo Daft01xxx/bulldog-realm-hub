@@ -34,11 +34,18 @@ const AdminLoginModal = ({ isOpen, onClose, userId, currentAttempts }: AdminLogi
     try {
       // Check credentials
       if (login === ADMIN_LOGIN && password === ADMIN_PASSWORD) {
-        // Success - reset attempts and navigate to admin panel
+        // Success - reset attempts, assign admin role, and navigate
         await supabase
           .from('profiles')
           .update({ admin_login_attempts: 0 })
           .eq('user_id', userId);
+
+        // Assign admin role to user
+        await supabase
+          .from('user_roles')
+          .insert({ user_id: userId, role: 'admin' })
+          .select()
+          .single();
 
         toast({
           title: "✅ Доступ разрешен",

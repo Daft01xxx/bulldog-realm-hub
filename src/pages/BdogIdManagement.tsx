@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Key, AlertCircle, Copy } from "lucide-react";
+import { Menu, Key, AlertCircle, Copy } from "lucide-react";
 import { useProfileContext } from "@/components/ProfileProvider";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -28,14 +28,11 @@ const BdogIdManagement = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              console.log('Back button clicked, navigating to /menu');
-              navigate('/menu');
-            }}
+            onClick={() => navigate('/menu')}
             className="border-gold text-gold hover:bg-gold hover:text-black transition-colors"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Назад
+            <Menu className="w-5 h-5 mr-2" />
+            Меню
           </Button>
         </div>
       </div>

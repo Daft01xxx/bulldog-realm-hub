@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Menu, Key, AlertCircle, Copy } from "lucide-react";
@@ -25,18 +25,16 @@ const BdogIdManagement = () => {
       {/* Header */}
       <div className="relative z-10">
         <div className="fixed top-4 left-4 z-50">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              console.log('Menu button clicked, navigating to /menu');
-              navigate('/menu');
-            }}
-            className="border-gold text-gold hover:bg-gold hover:text-black transition-colors"
-          >
-            <Menu className="w-5 h-5 mr-2" />
-            Меню
-          </Button>
+          <Link to="/menu">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-gold text-gold hover:bg-gold hover:text-black transition-colors"
+            >
+              <Menu className="w-5 h-5 mr-2" />
+              Меню
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -84,12 +82,13 @@ const BdogIdManagement = () => {
                 </div>
               </div>
 
-              <Button
-                onClick={() => navigate('/change-password')}
-                className="w-full bg-gold hover:bg-gold/90 text-black font-semibold"
-              >
-                Сменить пароль
-              </Button>
+              <Link to="/change-password" className="w-full">
+                <Button
+                  className="w-full bg-gold hover:bg-gold/90 text-black font-semibold"
+                >
+                  Сменить пароль
+                </Button>
+              </Link>
             </Card>
           ) : (
             <Card className="p-6 bg-background/95 backdrop-blur-xl border-gold/20 space-y-6">

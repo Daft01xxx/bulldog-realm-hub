@@ -719,10 +719,10 @@ const Game = memo(function Game() {
             ) : (
               <Button
                 onClick={() => setShowBooster(true)}
-                className="button-gold group text-xs px-2 sm:px-3 py-2"
+                className="bg-black/80 hover:bg-black text-gold border-2 border-gold/50 hover:border-gold group text-xs px-2 sm:px-3 py-2 shadow-lg shadow-gold/20"
                 size="sm"
               >
-                <Zap className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
+                <Zap className="w-4 h-4 mr-1 text-gold group-hover:animate-pulse" />
                 <span className="hidden xs:inline">Ускорить</span>
               </Button>
             )}

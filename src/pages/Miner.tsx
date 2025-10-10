@@ -345,23 +345,23 @@ const Miner = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {gridMiners.map((miner, index) => (
               <div
                 key={index}
                 className={`aspect-square rounded-lg border-2 border-dashed ${
                   miner ? 'border-gold/50 bg-gold/5' : 'border-muted'
-                } flex flex-col items-center justify-center cursor-pointer hover:border-gold/70 transition-colors`}
+                } flex flex-col items-center justify-center cursor-pointer hover:border-gold/70 transition-colors p-1 sm:p-2`}
                 onClick={() => miner && handleRemoveFromGrid(miner)}
               >
                 {miner ? (
                   <>
-                    <img src={minerTypes.find(m => m.id === miner.miner_id)?.image} alt={miner.miner_name} className="w-16 h-16 object-contain mb-2" />
-                    <p className="text-xs text-gold font-bold">{miner.miner_name}</p>
-                    <p className="text-xs text-muted-foreground">{miner.hourly_income}/час</p>
+                    <img src={minerTypes.find(m => m.id === miner.miner_id)?.image} alt={miner.miner_name} className="w-10 h-10 sm:w-16 sm:h-16 object-contain mb-1" />
+                    <p className="text-[10px] sm:text-xs text-gold font-bold text-center leading-tight">{miner.miner_name}</p>
+                    <p className="text-[9px] sm:text-xs text-muted-foreground text-center">{miner.hourly_income}/ч</p>
                   </>
                 ) : (
-                  <Grid3x3 className="w-8 h-8 text-muted-foreground" />
+                  <Grid3x3 className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
                 )}
               </div>
             ))}
@@ -370,39 +370,40 @@ const Miner = () => {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid grid-cols-4 mb-6">
-            <TabsTrigger value="regular">Обычные</TabsTrigger>
-            <TabsTrigger value="powerful">Мощные</TabsTrigger>
-            <TabsTrigger value="limited">Лимитированные</TabsTrigger>
-            <TabsTrigger value="my-miners">Мои майнеры</TabsTrigger>
+          <TabsList className="grid grid-cols-4 mb-6 h-auto">
+            <TabsTrigger value="regular" className="text-xs sm:text-sm px-1 py-2">Обычные</TabsTrigger>
+            <TabsTrigger value="powerful" className="text-xs sm:text-sm px-1 py-2">Мощные</TabsTrigger>
+            <TabsTrigger value="limited" className="text-xs sm:text-sm px-1 py-2">Лимит.</TabsTrigger>
+            <TabsTrigger value="my-miners" className="text-xs sm:text-sm px-1 py-2">Мои</TabsTrigger>
           </TabsList>
 
           <TabsContent value="regular">
             <div className="space-y-4">
               {minerTypes.filter(m => m.category === 'regular').map((miner) => (
-                <Card key={miner.id} className="card-glow p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <img src={miner.image} alt={miner.name} className="w-16 h-16 object-contain" />
-                      <div>
-                        <h3 className="text-lg font-bold text-gold">{miner.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-1">{miner.description}</p>
-                        <p className="text-lg font-bold text-gradient">
-                          {miner.income.toLocaleString()} V-BDOG/час
+                <Card key={miner.id} className="card-glow p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <img src={miner.image} alt={miner.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-bold text-gold truncate">{miner.name}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-1 line-clamp-1">{miner.description}</p>
+                        <p className="text-sm sm:text-lg font-bold text-gradient">
+                          {miner.income.toLocaleString()} V-BDOG/ч
                         </p>
                       </div>
                     </div>
                     
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-gold mb-2">
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 w-full sm:w-auto">
+                      <p className="text-lg sm:text-xl font-bold text-gold">
                         {miner.price.toLocaleString()} {miner.priceType}
                       </p>
                       <Button
                         onClick={() => handlePurchaseMiner(miner)}
-                        className="button-gradient-gold"
+                        className="button-gradient-gold text-sm sm:text-base"
                         disabled={isPurchasing}
+                        size="sm"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Купить
                       </Button>
                     </div>
@@ -415,29 +416,30 @@ const Miner = () => {
           <TabsContent value="powerful">
             <div className="space-y-4">
               {minerTypes.filter(m => m.category === 'powerful').map((miner) => (
-                <Card key={miner.id} className="card-glow p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <img src={miner.image} alt={miner.name} className="w-16 h-16 object-contain" />
-                      <div>
-                        <h3 className="text-lg font-bold text-gold">{miner.name}</h3>
-                        <p className="text-sm text-muted-foreground mb-1">{miner.description}</p>
-                        <p className="text-lg font-bold text-gradient">
-                          {miner.income.toLocaleString()} V-BDOG/час
+                <Card key={miner.id} className="card-glow p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <img src={miner.image} alt={miner.name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base sm:text-lg font-bold text-gold truncate">{miner.name}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground mb-1 line-clamp-1">{miner.description}</p>
+                        <p className="text-sm sm:text-lg font-bold text-gradient">
+                          {miner.income.toLocaleString()} V-BDOG/ч
                         </p>
                       </div>
                     </div>
                     
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-gold mb-2">
+                    <div className="flex items-center justify-between sm:flex-col sm:items-end gap-2 w-full sm:w-auto">
+                      <p className="text-lg sm:text-xl font-bold text-gold">
                         {miner.price === 0 ? 'Бесплатно' : `${miner.price} ${miner.priceType}`}
                       </p>
                       <Button
                         onClick={() => handlePurchaseMiner(miner)}
-                        className="button-gradient-gold"
+                        className="button-gradient-gold text-sm sm:text-base"
                         disabled={isPurchasing || (miner.priceType === 'TON' && !isConnected)}
+                        size="sm"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Купить
                       </Button>
                     </div>

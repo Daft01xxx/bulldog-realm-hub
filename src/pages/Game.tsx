@@ -604,50 +604,50 @@ const Game = memo(function Game() {
     <div className="min-h-screen bg-background px-2 py-4">
       <AudioManager backgroundMusic={false} volume={0.1} />
       {/* Navigation */}
-      <div className="flex justify-center gap-4 mb-4 pt-4">
+      <div className="flex justify-center gap-2 sm:gap-4 mb-4 pt-4">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/tasks")}
-          className="button-outline-gold text-xs px-3 py-2 hover:scale-105 transition-all duration-200"
+          className="button-outline-gold text-xs px-2 sm:px-3 py-2 hover:scale-105 transition-all duration-200"
         >
-          <ClipboardList className="w-3 h-3 mr-1 text-gold" />
-          Задания
+          <ClipboardList className="w-3 h-3 sm:mr-1 text-gold" />
+          <span className="hidden sm:inline ml-1">Задания</span>
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate("/menu")}
-          className="button-outline-gold text-xs px-3 py-2 hover:scale-105 transition-all duration-200"
+          className="button-outline-gold text-xs px-2 sm:px-3 py-2 hover:scale-105 transition-all duration-200"
         >
-          <Home className="w-3 h-3 mr-1 text-gold" />
-          Меню
+          <Home className="w-3 h-3 sm:mr-1 text-gold" />
+          <span className="hidden sm:inline ml-1">Меню</span>
         </Button>
       </div>
 
       {/* Main Content */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 bg-card/50 backdrop-blur-sm">
+        <TabsList className="grid w-full grid-cols-3 mb-6 bg-card/50 backdrop-blur-sm h-auto">
           <TabsTrigger 
             value="game" 
-            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
+            className="flex items-center gap-1 sm:gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse text-xs sm:text-sm py-2"
           >
-            <Gamepad2 className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
-            Игра
+            <Gamepad2 className="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
+            <span className="hidden xs:inline">Игра</span>
           </TabsTrigger>
           <TabsTrigger 
             value="shop" 
-            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
+            className="flex items-center gap-1 sm:gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse text-xs sm:text-sm py-2"
           >
-            <ShoppingCart className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
-            Магазин
+            <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
+            <span className="hidden xs:inline">Магазин</span>
           </TabsTrigger>
           <TabsTrigger 
             value="bonefarm" 
-            className="flex items-center gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse"
+            className="flex items-center gap-1 sm:gap-2 transition-all duration-300 hover:scale-105 data-[state=active]:bg-gradient-to-r data-[state=active]:from-gold/30 data-[state=active]:to-gold/20 data-[state=active]:text-gold data-[state=active]:shadow-lg data-[state=active]:shadow-gold/20 data-[state=active]:animate-pulse text-xs sm:text-sm py-2"
           >
-            <Coins className="w-4 h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
-            Фарм
+            <Coins className="w-3 h-3 sm:w-4 sm:h-4 transition-transform duration-300 data-[state=active]:animate-bounce" />
+            <span className="hidden xs:inline">Фарм</span>
           </TabsTrigger>
         </TabsList>
 
@@ -710,7 +710,7 @@ const Game = memo(function Game() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex justify-center gap-2 mb-6">
+          <div className="flex justify-center gap-2 mb-6 flex-wrap">
             {boosterEndTime && boosterTimeLeft ? (
               <div className="bg-primary/20 border border-primary/30 rounded-md px-2 py-1 flex items-center gap-1">
                 <Zap className="w-3 h-3 text-gold animate-pulse" />
@@ -719,20 +719,22 @@ const Game = memo(function Game() {
             ) : (
               <Button
                 onClick={() => setShowBooster(true)}
-                className="button-gold group text-xs px-3 py-2"
+                className="button-gold group text-xs px-2 sm:px-3 py-2"
+                size="sm"
               >
                 <Zap className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
-                Ускорить
+                <span className="hidden xs:inline">Ускорить</span>
               </Button>
             )}
             
             <Button
               onClick={() => setShowRules(true)}
               variant="outline"
-              className="button-outline-gold group text-xs px-3 py-2"
+              className="button-outline-gold group text-xs px-2 sm:px-3 py-2"
+              size="sm"
             >
               <Info className="w-3 h-3 mr-1 text-gold group-hover:animate-pulse" />
-              Правила
+              <span className="hidden xs:inline">Правила</span>
             </Button>
           </div>
 

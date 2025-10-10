@@ -5,11 +5,11 @@ import { toast } from 'sonner';
 import { useDevicePerformance } from '@/hooks/useDevicePerformance';
 
 const AutoMinerRewards: React.FC = () => {
-  const { profile, updateProfile } = useProfileContext();
+  const { profile, reloadProfile } = useProfileContext();
   const { isVeryLowEnd, isMobile } = useDevicePerformance();
 
   useEffect(() => {
-    if (!profile || !profile.miner_active) return; // Only work for active miners
+    if (!profile) return;
 
     const checkAndClaimReward = async () => {
       if (!profile.last_miner_reward_at) return;
@@ -22,47 +22,32 @@ const AutoMinerRewards: React.FC = () => {
       if (hoursPassed <= 0) return;
 
       try {
-        const minerType = profile.current_miner || 'default';
-        const minerLevel = profile.miner_level || 1;
+        // Get total income from grid miners
+        const { data: gridMiners, error: gridError } = await supabase
+          .from('user_miners')
+          .select('hourly_income')
+          .eq('user_id', profile.user_id)
+          .eq('is_on_grid', true);
+
+        if (gridError) throw gridError;
+
+        const totalHourlyIncome = gridMiners?.reduce((sum, miner) => sum + miner.hourly_income, 0) || 0;
         
-        const incomeRates: { [key: string]: number } = {
-          'default': 100,
-          'silver': 1400,
-          'gold': 2500,
-          'diamond': 6000,
-          'premium': 10000,
-          'plus': 500,
-          'stellar': 5000,
-          'quantum-harvester': 10000,
-          'galactic-harvester': 25000,
-          'void-driller': 50000,
-          'solar-collector': 100000,
-          'bone-extractor': 250000,
-        };
+        if (totalHourlyIncome === 0) return;
 
-        const hourlyReward = (incomeRates[minerType] || 100) * minerLevel;
-        const totalReward = hourlyReward * hoursPassed;
-
-        // Calculate new last reward time (aligned to full hours from the original time)
+        const totalReward = totalHourlyIncome * hoursPassed;
         const newLastRewardTime = new Date(lastRewardTime.getTime() + (hoursPassed * 60 * 60 * 1000));
-
-        // Update profile with accumulated rewards
-        const updatedProfile = {
-          ...profile,
-          v_bdog_earned: (profile.v_bdog_earned || 0) + totalReward,
-          last_miner_reward_at: newLastRewardTime.toISOString(),
-        };
 
         const { error } = await supabase
           .from('profiles')
           .update({
-            v_bdog_earned: updatedProfile.v_bdog_earned,
-            last_miner_reward_at: updatedProfile.last_miner_reward_at,
+            v_bdog_earned: (profile.v_bdog_earned || 0) + totalReward,
+            last_miner_reward_at: newLastRewardTime.toISOString(),
           })
           .eq('user_id', profile.user_id);
 
         if (!error) {
-          updateProfile(updatedProfile);
+          await reloadProfile();
           if (hoursPassed > 1) {
             toast.success(`Получено ${totalReward.toLocaleString()} V-BDOG за ${hoursPassed} часов!`, {
               duration: 4000,
@@ -73,16 +58,13 @@ const AutoMinerRewards: React.FC = () => {
             });
           }
         }
-
       } catch (error) {
         console.error('Auto claim failed:', error);
       }
     };
 
-    // Much longer intervals on very low-end devices to reduce load
-    const checkInterval = isVeryLowEnd ? 300000 : isMobile ? 180000 : 60000; // 5min, 3min, 1min
+    const checkInterval = isVeryLowEnd ? 300000 : isMobile ? 180000 : 60000;
 
-    // Check every interval for new rewards
     const interval = setInterval(() => {
       if (!profile?.last_miner_reward_at) return;
       
@@ -95,13 +77,12 @@ const AutoMinerRewards: React.FC = () => {
       }
     }, checkInterval);
     
-    // Check immediately on mount to catch offline rewards
     checkAndClaimReward();
 
     return () => clearInterval(interval);
-  }, [profile?.miner_active, profile, updateProfile, isVeryLowEnd, isMobile]);
+  }, [profile, reloadProfile, isVeryLowEnd, isMobile]);
 
-  return null; // This component doesn't render anything
+  return null;
 };
 
 export default AutoMinerRewards;

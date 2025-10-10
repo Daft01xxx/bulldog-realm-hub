@@ -2,17 +2,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, Pickaxe, Star, TrendingUp } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowLeft, Wallet, ShoppingCart, Grid3x3, PackageOpen } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useBdogTonWallet } from "@/hooks/useTonWallet";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 import FloatingCosmicCoins from "@/components/FloatingCosmicCoins";
-import MinerTimer from '@/components/MinerTimer';
-import ClaimMinerRewards from '@/components/ClaimMinerRewards';
 import AutoMinerRewards from '@/components/AutoMinerRewards';
-import bdogLogoTransparent from "@/assets/bulldog-logo-transparent.png";
 
 // Import miner images
 import defaultMinerImage from '@/assets/default-miner.png';
@@ -21,73 +20,106 @@ import silverMinerImage from '@/assets/silver-miner.png';
 import goldMinerImage from '@/assets/gold-miner.png';
 import diamondMinerImage from '@/assets/diamond-miner.png';
 import premiumMinerImage from '@/assets/premium-miner.png';
+import homemadeMinerImage from '@/assets/homemade-miner.png';
+import oldMinerImage from '@/assets/old-miner.png';
 
 interface MinerType {
   id: string;
   name: string;
-  price: string;
+  price: number;
+  priceType: 'V-BDOG' | 'TON';
   income: number;
   description: string;
-  image?: string;
+  image: string;
+  category: 'regular' | 'powerful' | 'limited';
+}
+
+interface UserMiner {
+  id: string;
+  miner_id: string;
+  miner_name: string;
+  purchase_price: number;
+  hourly_income: number;
+  is_on_grid: boolean;
+  grid_position: number | null;
 }
 
 const minerTypes: MinerType[] = [
-  { id: 'default', name: 'DEFOLT', price: '0', income: 100, description: 'Бесплатный майнер для всех', image: defaultMinerImage },
-  { id: 'plus', name: 'PLUS', price: '1', income: 500, description: 'Улучшенная производительность', image: plusMinerImage },
-  { id: 'silver', name: 'SILVER', price: '3', income: 1400, description: 'Серебряный уровень майнинга', image: silverMinerImage },
-  { id: 'gold', name: 'GOLD', price: '6', income: 2500, description: 'Золотой стандарт майнинга', image: goldMinerImage },
-  { id: 'diamond', name: 'DIAMOND', price: '15', income: 6000, description: 'Алмазная мощность', image: diamondMinerImage },
-  { id: 'premium', name: 'PREMIUM', price: '35', income: 10000, description: 'Максимальная производительность', image: premiumMinerImage }
+  { id: 'homemade', name: 'Самодельный', price: 100000, priceType: 'V-BDOG', income: 100, description: 'Простой самодельный майнер', image: homemadeMinerImage, category: 'regular' },
+  { id: 'old', name: 'Старый', price: 200000, priceType: 'V-BDOG', income: 200, description: 'Старый но надежный', image: oldMinerImage, category: 'regular' },
+  { id: 'default', name: 'DEFOLT', price: 0, priceType: 'TON', income: 100, description: 'Бесплатный майнер', image: defaultMinerImage, category: 'powerful' },
+  { id: 'plus', name: 'PLUS', price: 1, priceType: 'TON', income: 500, description: 'Улучшенная производительность', image: plusMinerImage, category: 'powerful' },
+  { id: 'silver', name: 'SILVER', price: 3, priceType: 'TON', income: 1400, description: 'Серебряный уровень', image: silverMinerImage, category: 'powerful' },
+  { id: 'gold', name: 'GOLD', price: 6, priceType: 'TON', income: 2500, description: 'Золотой стандарт', image: goldMinerImage, category: 'powerful' },
+  { id: 'diamond', name: 'DIAMOND', price: 15, priceType: 'TON', income: 6000, description: 'Алмазная мощность', image: diamondMinerImage, category: 'powerful' },
+  { id: 'premium', name: 'PREMIUM', price: 35, priceType: 'TON', income: 10000, description: 'Максимальная производительность', image: premiumMinerImage, category: 'powerful' }
 ];
 
 const Miner = () => {
   const navigate = useNavigate();
   const { profile, updateProfile } = useProfile();
   const { isConnected, walletData, sendTransaction } = useBdogTonWallet();
-  const [currentMiner, setCurrentMiner] = useState('default');
-  const [minerLevel, setMinerLevel] = useState(1);
-  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [activeTab, setActiveTab] = useState('regular');
+  const [userMiners, setUserMiners] = useState<UserMiner[]>([]);
+  const [gridMiners, setGridMiners] = useState<(UserMiner | null)[]>([null, null, null]);
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [selectedMiner, setSelectedMiner] = useState<UserMiner | null>(null);
+  const [showMinerDialog, setShowMinerDialog] = useState(false);
 
   useEffect(() => {
     if (profile) {
-      const profileMiner = (profile as any).current_miner || 'default';
-      const profileLevel = (profile as any).miner_level || 1;
-      
-      console.log('Profile miner data:', { profileMiner, profileLevel });
-      
-      setCurrentMiner(profileMiner);
-      setMinerLevel(profileLevel);
-      
-      // Also update localStorage
-      localStorage.setItem("bdog-current-miner", profileMiner);
-      localStorage.setItem("bdog-miner-level", profileLevel.toString());
-    } else {
-      setCurrentMiner(localStorage.getItem("bdog-current-miner") || 'default');
-      setMinerLevel(parseInt(localStorage.getItem("bdog-miner-level") || "1"));
+      loadUserMiners();
     }
   }, [profile]);
 
-  const getCurrentMinerData = () => {
-    return minerTypes.find(m => m.id === currentMiner) || minerTypes[0];
+  const loadUserMiners = async () => {
+    if (!profile) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_miners')
+        .select('*')
+        .eq('user_id', profile.user_id)
+        .order('purchased_at', { ascending: false });
+
+      if (error) throw error;
+
+      setUserMiners(data || []);
+
+      // Load grid miners
+      const onGridMiners = (data || []).filter(m => m.is_on_grid).sort((a, b) => (a.grid_position || 0) - (b.grid_position || 0));
+      const newGrid: (UserMiner | null)[] = [null, null, null];
+      onGridMiners.forEach(miner => {
+        if (miner.grid_position && miner.grid_position >= 1 && miner.grid_position <= 3) {
+          newGrid[miner.grid_position - 1] = miner;
+        }
+      });
+      setGridMiners(newGrid);
+    } catch (error) {
+      console.error('Failed to load miners:', error);
+    }
   };
 
-  const getCurrentIncome = () => {
-    const baseMiner = getCurrentMinerData();
-    return Math.floor(baseMiner.income * Math.pow(1.2, minerLevel - 1));
-  };
-
-  const getAvailableMiners = () => {
-    const currentMinerIndex = minerTypes.findIndex(m => m.id === currentMiner);
-    return minerTypes.filter((_, index) => index > currentMinerIndex);
+  const getTotalHourlyIncome = () => {
+    return gridMiners.reduce((total, miner) => {
+      return total + (miner?.hourly_income || 0);
+    }, 0);
   };
 
   const handlePurchaseMiner = async (miner: MinerType) => {
-    if (!isConnected) {
+    if (!profile) {
+      toast({
+        title: "Ошибка",
+        description: "Профиль не загружен",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (miner.priceType === 'TON' && !isConnected) {
       toast({
         title: "Кошелек не подключен",
-        description: "Подключите кошелек для покупки майнера",
+        description: "Подключите кошелек для покупки",
         variant: "destructive",
       });
       return;
@@ -95,44 +127,64 @@ const Miner = () => {
 
     setIsPurchasing(true);
     try {
-      const price = parseFloat(miner.price);
+      let success = false;
 
-      const availableBalance = parseFloat(walletData?.tonBalance || "0");
-      if (availableBalance < price) {
-        toast({
-          title: "Недостаточно TON",
-          description: `Нужно ${price.toFixed(2)} TON`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
-      const comment = `BDOG: Майнер ${miner.name}`;
-      
-      const result = await sendTransaction(merchantWallet, miner.price, comment);
-      
-      if (result) {
-        // When buying new miner: reset level to 1, deactivate current miner
-        const updateData = {
-          current_miner: miner.id,
-          miner_level: 1, // Reset level to 1
-          miner_active: false // Deactivate - user must activate manually
-        };
-
-        if (profile) {
-          await updateProfile(updateData as any);
-        } else {
-          localStorage.setItem("bdog-current-miner", miner.id);
-          localStorage.setItem("bdog-miner-level", "1");
+      if (miner.priceType === 'V-BDOG') {
+        const currentBalance = profile.v_bdog_earned || 0;
+        if (currentBalance < miner.price) {
+          toast({
+            title: "Недостаточно средств",
+            description: `Нужно ${miner.price.toLocaleString()} V-BDOG`,
+            variant: "destructive",
+          });
+          setIsPurchasing(false);
+          return;
         }
 
-        setCurrentMiner(miner.id);
-        setMinerLevel(1);
+        await updateProfile({
+          v_bdog_earned: currentBalance - miner.price
+        });
+        success = true;
+      } else {
+        const availableBalance = parseFloat(walletData?.tonBalance || "0");
+        if (availableBalance < miner.price) {
+          toast({
+            title: "Недостаточно TON",
+            description: `Нужно ${miner.price} TON`,
+            variant: "destructive",
+          });
+          setIsPurchasing(false);
+          return;
+        }
+
+        const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
+        const comment = `BDOG: Майнер ${miner.name}`;
+        const result = await sendTransaction(merchantWallet, miner.price.toString(), comment);
+        success = !!result;
+      }
+
+      if (success) {
+        // Add miner to user's inventory
+        const { error } = await supabase
+          .from('user_miners')
+          .insert({
+            user_id: profile.user_id,
+            miner_id: miner.id,
+            miner_name: miner.name,
+            purchase_price: miner.price,
+            hourly_income: miner.income,
+            miner_category: miner.category,
+            is_on_grid: false,
+            grid_position: null
+          });
+
+        if (error) throw error;
+
+        await loadUserMiners();
 
         toast({
-          title: "Майнер успешно куплен!",
-          description: `Майнер ${miner.name} куплен. Активируйте его для получения дохода.`,
+          title: "Майнер куплен!",
+          description: `${miner.name} добавлен в ваши майнеры`,
         });
       }
     } catch (error) {
@@ -147,75 +199,119 @@ const Miner = () => {
     }
   };
 
-  const handleUpgradeMiner = async () => {
-    if (minerLevel >= 5) {
-      toast({
-        title: "Максимальный уровень",
-        description: "Майнер уже достиг максимального уровня",
-        variant: "destructive",
-      });
-      return;
-    }
+  const handlePlaceOnGrid = async (miner: UserMiner, position: number) => {
+    if (!profile) return;
 
-    if (!isConnected) {
-      toast({
-        title: "Кошелек не подключен",
-        description: "Подключите кошелек для прокачки майнера",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Cost in TON equals the target level (upgrading to level 2 costs 2 TON, etc.)
-    const upgradeCostTON = minerLevel + 1;
-    const availableBalance = parseFloat(walletData?.tonBalance || "0");
-
-    if (availableBalance < upgradeCostTON) {
-      toast({
-        title: "Недостаточно TON",
-        description: `Нужно ${upgradeCostTON} TON для улучшения`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsUpgrading(true);
     try {
-      const merchantWallet = "UQBN-LD_8VQJFG_Y2F3TEKcZDwBjQ9uCMlU7EwOA8beQ_gX7";
-      const comment = `BDOG: Прокачка майнера до уровня ${minerLevel + 1}`;
-      
-      const result = await sendTransaction(merchantWallet, upgradeCostTON.toString(), comment);
-      
-      if (result) {
-        const updateData = {
-          miner_level: minerLevel + 1
-          // V-BDOG не трогаем!
-        };
-
-        if (profile) {
-          await updateProfile(updateData as any);
-        } else {
-          localStorage.setItem("bdog-miner-level", (minerLevel + 1).toString());
-        }
-
-        setMinerLevel(minerLevel + 1);
-        setShowUpgradeDialog(false);
-
+      // Check if position is occupied
+      if (gridMiners[position - 1]) {
         toast({
-          title: "Майнер улучшен!",
-          description: `Уровень ${minerLevel + 1}. Новый доход: ${getCurrentIncome()} V-BDOG/час`,
+          title: "Место занято",
+          description: "Сначала снимите майнер с этой позиции",
+          variant: "destructive",
         });
+        return;
       }
-    } catch (error) {
-      console.error('Upgrade failed:', error);
+
+      // Update miner in database
+      const { error } = await supabase
+        .from('user_miners')
+        .update({
+          is_on_grid: true,
+          grid_position: position
+        })
+        .eq('id', miner.id);
+
+      if (error) throw error;
+
+      await loadUserMiners();
+      setShowMinerDialog(false);
+
       toast({
-        title: "Ошибка улучшения",
-        description: "Не удалось улучшить майнер",
+        title: "Майнер установлен",
+        description: `${miner.miner_name} начинает приносить доход`,
+      });
+    } catch (error) {
+      console.error('Failed to place miner:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось установить майнер",
         variant: "destructive",
       });
-    } finally {
-      setIsUpgrading(false);
     }
+  };
+
+  const handleRemoveFromGrid = async (miner: UserMiner) => {
+    if (!profile) return;
+
+    try {
+      const { error } = await supabase
+        .from('user_miners')
+        .update({
+          is_on_grid: false,
+          grid_position: null
+        })
+        .eq('id', miner.id);
+
+      if (error) throw error;
+
+      await loadUserMiners();
+
+      toast({
+        title: "Майнер снят",
+        description: `${miner.miner_name} убран с сетки`,
+      });
+    } catch (error) {
+      console.error('Failed to remove miner:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось снять майнер",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSellMiner = async (miner: UserMiner) => {
+    if (!profile) return;
+
+    const sellPrice = Math.floor(miner.purchase_price * 0.5);
+
+    try {
+      // Remove miner from database
+      const { error: deleteError } = await supabase
+        .from('user_miners')
+        .delete()
+        .eq('id', miner.id);
+
+      if (deleteError) throw deleteError;
+
+      // Add V-BDOG to user's balance
+      await updateProfile({
+        v_bdog_earned: (profile.v_bdog_earned || 0) + sellPrice
+      });
+
+      await loadUserMiners();
+      setShowMinerDialog(false);
+
+      toast({
+        title: "Майнер продан",
+        description: `Получено ${sellPrice.toLocaleString()} V-BDOG`,
+      });
+    } catch (error) {
+      console.error('Failed to sell miner:', error);
+      toast({
+        title: "Ошибка",
+        description: "Не удалось продать майнер",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getAvailableGridPosition = () => {
+    for (let i = 0; i < 3; i++) {
+      if (!gridMiners[i]) return i + 1;
+    }
+    return null;
   };
 
   return (
@@ -240,141 +336,235 @@ const Miner = () => {
           </div>
         </div>
 
-        {/* Current Miner Display */}
+        {/* Grid Display */}
         <Card className="card-glow p-6 mb-6">
-          <div className="text-center">
-            <div className="relative w-24 h-24 mx-auto mb-4">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30 overflow-hidden">
-                <img src={getCurrentMinerData().image} alt={getCurrentMinerData().name} className="w-20 h-20 object-cover rounded-full" />
-              </div>
-              <div className="absolute -top-2 -right-2 bg-gold text-black text-xs font-bold px-2 py-1 rounded-full">
-                LVL {minerLevel}
-              </div>
-            </div>
-            <h2 className="text-xl font-bold text-gold mb-2">
-              Майнер {getCurrentMinerData().name}
-            </h2>
-            <p className="text-2xl font-bold text-gradient mb-2">
-              {getCurrentIncome()} V-BDOG/час
+          <div className="text-center mb-4">
+            <h2 className="text-xl font-bold text-gold mb-2">Сетка майнинга</h2>
+            <p className="text-sm text-muted-foreground mb-1">
+              Прибыль в час: <span className="text-gold font-bold">{getTotalHourlyIncome().toLocaleString()} V-BDOG</span>
             </p>
-            <p className="text-sm text-muted-foreground mb-4">
-              {getCurrentMinerData().description}
-            </p>
-            
-            {/* Miner Timer */}
-            <div className="mb-4">
-              <MinerTimer />
-            </div>
           </div>
-
-          <div className="flex gap-3 mt-6 justify-center flex-wrap">
-            {/* Claim rewards only if miner is active */}
-            {(profile as any)?.miner_active && <ClaimMinerRewards />}
-            
-            <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={`border-gold/20 text-gold hover:bg-gold/10 ${
-                    minerLevel >= 5 ? 'opacity-50 cursor-not-allowed' : ''
-                  }`}
-                  disabled={minerLevel >= 5}
-                >
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Прокачать майнер
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle className="text-gold">Улучшение майнера</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <p className="text-lg mb-2">Текущий уровень: <span className="text-gold font-bold">{minerLevel}</span></p>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Доход после улучшения: <span className="text-gold">{Math.floor(getCurrentIncome() * 1.2)} V-BDOG/час</span>
-                    </p>
-                    <div className="p-4 bg-gold/10 rounded-lg border border-gold/20 mb-4">
-                      <p className="text-center">
-                        <span className="text-lg font-bold text-gold">{minerLevel + 1} TON</span>
-                      </p>
-                      <p className="text-sm text-muted-foreground">Стоимость улучшения</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => setShowUpgradeDialog(false)}
-                    >
-                      Отмена
-                    </Button>
-                    <Button
-                      className="flex-1 button-gradient-gold"
-                      onClick={handleUpgradeMiner}
-                      disabled={isUpgrading || !isConnected || parseFloat(walletData?.tonBalance || "0") < (minerLevel + 1)}
-                    >
-                      {isUpgrading ? "Улучшение..." : "Улучшить"}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+          
+          <div className="grid grid-cols-3 gap-4">
+            {gridMiners.map((miner, index) => (
+              <div
+                key={index}
+                className={`aspect-square rounded-lg border-2 border-dashed ${
+                  miner ? 'border-gold/50 bg-gold/5' : 'border-muted'
+                } flex flex-col items-center justify-center cursor-pointer hover:border-gold/70 transition-colors`}
+                onClick={() => miner && handleRemoveFromGrid(miner)}
+              >
+                {miner ? (
+                  <>
+                    <img src={minerTypes.find(m => m.id === miner.miner_id)?.image} alt={miner.miner_name} className="w-16 h-16 object-contain mb-2" />
+                    <p className="text-xs text-gold font-bold">{miner.miner_name}</p>
+                    <p className="text-xs text-muted-foreground">{miner.hourly_income}/час</p>
+                  </>
+                ) : (
+                  <Grid3x3 className="w-8 h-8 text-muted-foreground" />
+                )}
+              </div>
+            ))}
           </div>
         </Card>
 
-        {/* Available Miners */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-gradient text-center mb-4">
-            Доступные майнеры
-          </h2>
-          
-          {getAvailableMiners().map((miner) => (
-            <Card key={miner.id} className="card-glow p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="relative w-16 h-16">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold/20 to-primary/20 flex items-center justify-center border-2 border-gold/30 overflow-hidden">
-                      <img src={miner.image} alt={miner.name} className="w-14 h-14 object-cover rounded-full" />
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid grid-cols-4 mb-6">
+            <TabsTrigger value="regular">Обычные</TabsTrigger>
+            <TabsTrigger value="powerful">Мощные</TabsTrigger>
+            <TabsTrigger value="limited">Лимитированные</TabsTrigger>
+            <TabsTrigger value="my-miners">Мои майнеры</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="regular">
+            <div className="space-y-4">
+              {minerTypes.filter(m => m.category === 'regular').map((miner) => (
+                <Card key={miner.id} className="card-glow p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <img src={miner.image} alt={miner.name} className="w-16 h-16 object-contain" />
+                      <div>
+                        <h3 className="text-lg font-bold text-gold">{miner.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">{miner.description}</p>
+                        <p className="text-lg font-bold text-gradient">
+                          {miner.income.toLocaleString()} V-BDOG/час
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-gold mb-2">
+                        {miner.price.toLocaleString()} {miner.priceType}
+                      </p>
+                      <Button
+                        onClick={() => handlePurchaseMiner(miner)}
+                        className="button-gradient-gold"
+                        disabled={isPurchasing}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Купить
+                      </Button>
                     </div>
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gold">{miner.name}</h3>
-                    <p className="text-sm text-muted-foreground mb-1">{miner.description}</p>
-                    <p className="text-lg font-bold text-gradient">
-                      {miner.income.toLocaleString()} V-BDOG/час
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="text-right">
-                  <p className="text-xl font-bold text-gold mb-2">
-                    {miner.price} TON
-                  </p>
-                  <Button
-                    onClick={() => handlePurchaseMiner(miner)}
-                    className="button-gradient-gold"
-                    disabled={isPurchasing || !isConnected}
-                  >
-                    {isPurchasing ? "Покупка..." : "Купить"}
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
-        {!isConnected && (
-          <Card className="card-glow p-6 mt-6 text-center bg-gold/5 border-gold/20">
-            <Star className="w-12 h-12 text-gold mx-auto mb-4" />
-            <p className="text-gold font-semibold mb-2">Подключите кошелек</p>
-            <p className="text-sm text-muted-foreground">
-              Для покупки майнеров необходимо подключить TON кошелек
-            </p>
-          </Card>
-        )}
+          <TabsContent value="powerful">
+            <div className="space-y-4">
+              {minerTypes.filter(m => m.category === 'powerful').map((miner) => (
+                <Card key={miner.id} className="card-glow p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <img src={miner.image} alt={miner.name} className="w-16 h-16 object-contain" />
+                      <div>
+                        <h3 className="text-lg font-bold text-gold">{miner.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">{miner.description}</p>
+                        <p className="text-lg font-bold text-gradient">
+                          {miner.income.toLocaleString()} V-BDOG/час
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-gold mb-2">
+                        {miner.price === 0 ? 'Бесплатно' : `${miner.price} ${miner.priceType}`}
+                      </p>
+                      <Button
+                        onClick={() => handlePurchaseMiner(miner)}
+                        className="button-gradient-gold"
+                        disabled={isPurchasing || (miner.priceType === 'TON' && !isConnected)}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Купить
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+              
+              {!isConnected && (
+                <Card className="card-glow p-6 text-center bg-gold/5 border-gold/20">
+                  <Wallet className="w-12 h-12 text-gold mx-auto mb-4" />
+                  <p className="text-gold font-semibold mb-2">Подключите кошелек</p>
+                  <p className="text-sm text-muted-foreground">
+                    Для покупки мощных майнеров необходим TON кошелек
+                  </p>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="limited">
+            <Card className="card-glow p-12 text-center">
+              <PackageOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <p className="text-lg text-muted-foreground">Лимитированные майнеры скоро появятся</p>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="my-miners">
+            <div className="space-y-4">
+              {userMiners.length === 0 ? (
+                <Card className="card-glow p-12 text-center">
+                  <PackageOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-lg text-muted-foreground">У вас пока нет майнеров</p>
+                </Card>
+              ) : (
+                userMiners.map((miner) => (
+                  <Card 
+                    key={miner.id} 
+                    className="card-glow p-6 cursor-pointer hover:border-gold/50 transition-colors"
+                    onClick={() => {
+                      setSelectedMiner(miner);
+                      setShowMinerDialog(true);
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <img 
+                          src={minerTypes.find(m => m.id === miner.miner_id)?.image} 
+                          alt={miner.miner_name} 
+                          className="w-16 h-16 object-contain" 
+                        />
+                        <div>
+                          <h3 className="text-lg font-bold text-gold">{miner.miner_name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Прибыль: {miner.hourly_income.toLocaleString()} V-BDOG/час
+                          </p>
+                          {miner.is_on_grid && (
+                            <p className="text-xs text-gold">На сетке (Позиция {miner.grid_position})</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
+
+      {/* Miner Action Dialog */}
+      <Dialog open={showMinerDialog} onOpenChange={setShowMinerDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-gold">{selectedMiner?.miner_name}</DialogTitle>
+          </DialogHeader>
+          {selectedMiner && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <img 
+                  src={minerTypes.find(m => m.id === selectedMiner.miner_id)?.image} 
+                  alt={selectedMiner.miner_name} 
+                  className="w-24 h-24 mx-auto object-contain mb-4" 
+                />
+                <p className="text-sm text-muted-foreground mb-2">
+                  Доход: <span className="text-gold">{selectedMiner.hourly_income.toLocaleString()} V-BDOG/час</span>
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Цена продажи: <span className="text-gold">{Math.floor(selectedMiner.purchase_price * 0.5).toLocaleString()} V-BDOG</span>
+                </p>
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                {selectedMiner.is_on_grid ? (
+                  <Button
+                    onClick={() => handleRemoveFromGrid(selectedMiner)}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Снять с сетки
+                  </Button>
+                ) : (
+                  <>
+                    {[1, 2, 3].map(pos => (
+                      <Button
+                        key={pos}
+                        onClick={() => handlePlaceOnGrid(selectedMiner, pos)}
+                        disabled={!!gridMiners[pos - 1]}
+                        className="w-full button-gradient-gold"
+                      >
+                        Поставить на позицию {pos} {gridMiners[pos - 1] && '(Занято)'}
+                      </Button>
+                    ))}
+                  </>
+                )}
+                
+                <Button
+                  onClick={() => handleSellMiner(selectedMiner)}
+                  variant="destructive"
+                  className="w-full"
+                >
+                  Продать за {Math.floor(selectedMiner.purchase_price * 0.5).toLocaleString()} V-BDOG
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

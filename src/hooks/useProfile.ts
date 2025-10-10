@@ -176,13 +176,28 @@ export const useProfile = () => {
           newProfileData.balance = 5000;
           newProfileData.grow = 5000;
           
-          await supabase
-            .from('profiles')
-            .update({ 
-              referrals: (referrerData.referrals || 0) + 1,
-              v_bdog_earned: (referrerData.v_bdog_earned || 0) + 2500
-            })
-            .eq('user_id', referrerData.user_id);
+          // Check if referrer has received rewards for less than 10 referrals
+          const rewardsGiven = referrerData.referral_rewards_given || 0;
+          
+          if (rewardsGiven < 10) {
+            // Give reward for first 10 referrals only (100,000 V-BDOG each)
+            await supabase
+              .from('profiles')
+              .update({ 
+                referrals: (referrerData.referrals || 0) + 1,
+                v_bdog_earned: (referrerData.v_bdog_earned || 0) + 100000,
+                referral_rewards_given: rewardsGiven + 1
+              })
+              .eq('user_id', referrerData.user_id);
+          } else {
+            // Just increment referral count, no reward
+            await supabase
+              .from('profiles')
+              .update({ 
+                referrals: (referrerData.referrals || 0) + 1
+              })
+              .eq('user_id', referrerData.user_id);
+          }
         }
 
         const { data: newProfile, error: createError } = await supabase

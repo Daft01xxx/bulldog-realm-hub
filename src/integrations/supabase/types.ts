@@ -50,6 +50,7 @@ export type Database = {
           recovery_phrase: string | null
           referral_code_used: boolean | null
           referral_notifications: Json | null
+          referral_rewards_given: number | null
           referrals: number | null
           referred_by: string | null
           reg: string | null
@@ -100,6 +101,7 @@ export type Database = {
           recovery_phrase?: string | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
+          referral_rewards_given?: number | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
@@ -150,6 +152,7 @@ export type Database = {
           recovery_phrase?: string | null
           referral_code_used?: boolean | null
           referral_notifications?: Json | null
+          referral_rewards_given?: number | null
           referrals?: number | null
           referred_by?: string | null
           reg?: string | null
@@ -272,6 +275,53 @@ export type Database = {
           },
         ]
       }
+      user_miners: {
+        Row: {
+          grid_position: number | null
+          hourly_income: number
+          id: string
+          is_on_grid: boolean | null
+          miner_category: string
+          miner_id: string
+          miner_name: string
+          purchase_price: number
+          purchased_at: string | null
+          user_id: string
+        }
+        Insert: {
+          grid_position?: number | null
+          hourly_income: number
+          id?: string
+          is_on_grid?: boolean | null
+          miner_category: string
+          miner_id: string
+          miner_name: string
+          purchase_price: number
+          purchased_at?: string | null
+          user_id: string
+        }
+        Update: {
+          grid_position?: number | null
+          hourly_income?: number
+          id?: string
+          is_on_grid?: boolean | null
+          miner_category?: string
+          miner_id?: string
+          miner_name?: string
+          purchase_price?: number
+          purchased_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -337,6 +387,10 @@ export type Database = {
       complete_task: {
         Args: { reward_amount?: number; task_id: string }
         Returns: boolean
+      }
+      distribute_grid_miner_rewards: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
       distribute_miner_rewards: {
         Args: Record<PropertyKey, never>

@@ -257,14 +257,6 @@ const Menu = () => {
       fullWidth: true
     },
     {
-      title: "BDOG ID",
-      icon: LogIn,
-      path: "/bdog-id-login",
-      description: "Вход в BDOG ID",
-      delay: "0.55s",
-      fullWidth: false
-    },
-    {
       title: t('menu.support'),
       icon: "support",
       path: "https://t.me/Deff0xq",

@@ -135,37 +135,18 @@ const Menu = () => {
       return;
     }
 
-    // Random reward logic
-    const random = Math.floor(Math.random() * 100) + 1;
-    let reward = "";
-    let updateData: any = {};
-
-    if (random <= 10) {
-      // 10% chance for 10,000 V-BDOG
-      reward = "10,000 V-BDOG";
-      updateData.v_bdog_earned = (profile?.v_bdog_earned || 0) + 10000;
-    } else if (random <= 15) {
-      // 5% chance for 20,000 V-BDOG
-      reward = "20,000 V-BDOG";
-      updateData.v_bdog_earned = (profile?.v_bdog_earned || 0) + 20000;
-    } else if (random <= 65) {
-      // 50% chance for 100 bones
-      reward = "100 косточек";
-      updateData.bone = (profile?.bone || 0) + 100;
-    } else {
-      // 35% chance for growth +100
-      reward = "Рост +100";
-      updateData.grow = (profile?.grow || 0) + 100;
-    }
+    // Give 100 bones as reward
+    const updateData: any = {
+      bone: (profile?.bone || 0) + 100
+    };
 
     try {
       if (profile) {
         await updateProfile(updateData);
       } else {
         // Update localStorage if no profile
-        if (updateData.v_bdog_earned) {
-          localStorage.setItem("bdog-v-bdog-earned", updateData.v_bdog_earned.toString());
-        }
+        const currentBones = parseInt(localStorage.getItem("bdog-bone") || "1000");
+        localStorage.setItem("bdog-bone", (currentBones + 100).toString());
       }
 
       // Mark daily gift as claimed with current timestamp
@@ -182,15 +163,10 @@ const Menu = () => {
       setTimeUntilNextGift(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
 
       toast({
-        title: t('toast.daily.claimed'),
-        description: `${t('toast.daily.congrats')} ${reward}`,
-        duration: 1000,
+        title: "Косточки получены!",
+        description: "Вы успешно получили 100 косточек",
+        duration: 2000,
       });
-
-      // Navigate to game (tапалки)
-      setTimeout(() => {
-        navigate('/game');
-      }, 1500);
     } catch (error) {
       toast({
         title: t('toast.error'),

@@ -84,6 +84,34 @@ const Miner = () => {
 
       if (error) throw error;
 
+      // If user has no miners, give them the default one
+      if (!data || data.length === 0) {
+        const { error: insertError } = await supabase
+          .from('user_miners')
+          .insert({
+            user_id: profile.user_id,
+            miner_id: 'default',
+            miner_name: 'DEFOLT',
+            purchase_price: 0,
+            hourly_income: 100,
+            miner_category: 'powerful',
+            is_on_grid: false,
+            grid_position: null
+          });
+
+        if (!insertError) {
+          // Reload miners after adding default
+          const { data: newData } = await supabase
+            .from('user_miners')
+            .select('*')
+            .eq('user_id', profile.user_id)
+            .order('purchased_at', { ascending: false });
+          
+          setUserMiners(newData || []);
+          return;
+        }
+      }
+
       setUserMiners(data || []);
 
       // Load grid miners

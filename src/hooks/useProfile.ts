@@ -208,6 +208,20 @@ export const useProfile = () => {
 
         if (createError) throw createError;
         userProfile = newProfile;
+        
+        // Give new user a default miner in their inventory
+        await supabase
+          .from('user_miners')
+          .insert({
+            user_id: uniqueUserId,
+            miner_id: 'default',
+            miner_name: 'DEFOLT',
+            purchase_price: 0,
+            hourly_income: 100,
+            miner_category: 'powerful',
+            is_on_grid: false,
+            grid_position: null
+          });
       } else {
         const updateData: any = {};
         
